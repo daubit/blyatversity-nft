@@ -85,7 +85,7 @@ contract Blyatversity is
 
     function burn(bytes32 bookingRef) public onlyRole(DEFAULT_ADMIN_ROLE) {
         uint256 id = bookingRefs[bookingRef];
-        if (_exists(id)) revert InvalidTokenId();
+        if (!_exists(id)) revert InvalidTokenId();
         _burn(id);
     }
 
