@@ -1,5 +1,5 @@
 {
-  "name": "smartcontract-solidity-hardhat",
+  "name": "blyatversity-nft",
   "version": "1.0.0",
   "scripts": {
     "node": "npx hardhat node",
@@ -29,7 +29,7 @@
     "@typescript-eslint/eslint-plugin": "^5.34.0",
     "@typescript-eslint/parser": "^5.34.0",
     "chai": "^4.3.6",
-    "dotenv": "^16.0.1",
+    "dotenv": "^16.0.3",
     "eslint": "^8.22.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-config-standard": "^17.0.0",
@@ -50,9 +50,13 @@
     "solidity-coverage": "^0.7.21",
     "ts-node": ">=8.0.0",
     "typechain": "^8.1.0",
-    "typescript": ">=4.5.0"
+    "typescript": "^4.9.3"
   },
   "engines": {
     "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.8.0",
+    "erc721a": "^4.2.3"
   }
 }

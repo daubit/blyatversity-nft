@@ -15,6 +15,20 @@ import "@nomiclabs/hardhat-solpp";
 
 dotenv.config();
 
+task(
+  "accounts",
+  "Prints the list of accounts",
+  async (_args, hre: HardhatRuntimeEnvironment) => {
+    const accounts = await hre.ethers.getSigners();
+
+    for (const account of accounts) {
+      console.log(account.address);
+      console.log(await account.getBalance());
+    }
+  }
+);
+
+
 const MNEMONIC = process.env.MNEMONIC;
 const ALCHEMY_KEY_MAINNET = process.env.ALCHEMY_KEY_MAINNET;
 const ALCHEMY_KEY_TESTNET = process.env.ALCHEMY_KEY_TESTNET;
@@ -27,7 +41,7 @@ const evmosDevNodeUrl = `https://eth.bd.evmos.dev:8545`;
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.16",
+    version: "0.8.17",
     settings: {
       optimizer: {
         enabled: true,
@@ -82,15 +96,3 @@ const config: HardhatUserConfig = {
 };
 export default config;
 
-task(
-  "accounts",
-  "Prints the list of accounts",
-  async (_args, hre: HardhatRuntimeEnvironment) => {
-    const accounts = await hre.ethers.getSigners();
-
-    for (const account of accounts) {
-      console.log(account.address);
-      console.log(await account.getBalance());
-    }
-  }
-);
