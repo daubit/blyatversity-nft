@@ -7,6 +7,7 @@
 import hardhat, { ethers } from "hardhat";
 import { AddressStorage, Storage } from "../util/storage";
 import { verify } from "../util/utils";
+import { REGISTRY_ADDRESS, FOLDER_CID, CONTRACT_METADATA_CID } from "../util/const.json"
 
 async function main() {
   const network = await ethers.provider.getNetwork();
@@ -18,7 +19,7 @@ async function main() {
   // We get the contract to deploy
   if (!blyatAddress) {
     const Blyat = await ethers.getContractFactory("Blyatversity");
-    const blyat = await Blyat.deploy();
+    const blyat = await Blyat.deploy(FOLDER_CID, CONTRACT_METADATA_CID, REGISTRY_ADDRESS);
     await blyat.deployed();
     addresses.blyat = blyat.address;
     console.log("Blyat deployed to:", blyat.address);
