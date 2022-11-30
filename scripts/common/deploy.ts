@@ -5,7 +5,7 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 import hardhat, { ethers } from "hardhat";
-import { AddrStorage, Storage } from "../util/storage";
+import { AddressStorage, Storage } from "../util/storage";
 import { verify } from "../util/utils";
 
 async function main() {
@@ -13,19 +13,17 @@ async function main() {
   const { provider } = ethers;
   const chainId = (await provider.getNetwork()).chainId;
   const storage = new Storage("addresses.json");
-  let { lock: lockAddress } = storage.fetch(network.chainId);
-  const addresses: AddrStorage = {};
+  let { blyat: blyatAddress } = storage.fetch(network.chainId);
+  const addresses: AddressStorage = {};
   // We get the contract to deploy
-  if (!lockAddress) {
-    const LOCK = await ethers.getContractFactory("Lock");
-    const lock = await LOCK.deploy();
-    await lock.deployed();
-    addresses.lock = lock.address;
-    lockAddress = lock.address;
-    console.log("Lock deployed to:", lock.address);
-
+  if (!blyatAddress) {
+    const Blyat = await ethers.getContractFactory("Blyatversity");
+    const blyat = await Blyat.deploy();
+    await blyat.deployed();
+    addresses.blyat = blyat.address;
+    console.log("Blyat deployed to:", blyat.address);
     console.log("Waiting for verification...");
-    await verify(hardhat, lock.address, chainId);
+    await verify(hardhat, blyat.address, chainId);
   }
   storage.save(network.chainId, addresses);
 }
