@@ -16,17 +16,66 @@ contract Blyatversity is
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     address public proxyRegistryAddress;
+    string private _folderCID;
+    string private _contractCID;
 
     mapping(bytes32 => uint256) private bookingRefs;
 
     error InvalidTokenId();
 
     constructor(
+        string memory folderCID_,
+        string memory contractCID_,
         address _proxyRegistryAddress
     ) ERC721A("Blyatversity", "Blyat") {
+        _folderCID = folderCID_;
+        _contractCID = contractCID_;
+        proxyRegistryAddress = _proxyRegistryAddress;
+
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);
-        proxyRegistryAddress = _proxyRegistryAddress;
+    }
+
+    function _beforeTokenTransfers(
+        address from,
+        address to,
+        uint256 startTokenId,
+        uint256 quantity
+    ) internal virtual override {}
+
+    /**
+     * @dev This is used instead of msg.sender as transactions won't be sent by the original token owner, but by OpenSea.
+     */
+    function _msgSenderERC721A()
+        internal
+        view
+        override
+        returns (address sender)
+    {
+        return ContextMixin.msgSender();
+    }
+
+    function _baseURI() internal pure override returns (string memory) {
+        return "ipfs://";
+    }
+
+    function setFolderCID(
+        string memory folderCID_
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _folderCID = folderCID_;
+    }
+
+    function setContractCID(
+        string memory contractCID_
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _contractCID = contractCID_;
+    }
+
+    /**
+     * @dev Returns the contract CID.
+     */
+    function contractCID() external view returns (string memory) {
+        return string(abi.encodePacked(_baseURI(), _contractCID));
     }
 
     function mint(address to, bytes32 bookingRef) public onlyRole(MINTER_ROLE) {
@@ -39,13 +88,6 @@ contract Blyatversity is
         if (_exists(id)) revert InvalidTokenId();
         _burn(id);
     }
-
-    function _beforeTokenTransfers(
-        address from,
-        address to,
-        uint256 startTokenId,
-        uint256 quantity
-    ) internal virtual override {}
 
     /**
      * @dev Override isApprovedForAll to whitelist user's OpenSea proxy accounts to enable gas-less listings.
@@ -61,18 +103,6 @@ contract Blyatversity is
         }
 
         return super.isApprovedForAll(owner, operator);
-    }
-
-    /**
-     * @dev This is used instead of msg.sender as transactions won't be sent by the original token owner, but by OpenSea.
-     */
-    function _msgSenderERC721A()
-        internal
-        view
-        override
-        returns (address sender)
-    {
-        return ContextMixin.msgSender();
     }
 
     function supportsInterface(
