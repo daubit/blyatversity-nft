@@ -83,9 +83,17 @@ contract Blyatversity is
         _mint(to, 1);
     }
 
+    function mint(address to) public onlyRole(MINTER_ROLE) {
+        _mint(to, 1);
+    }
+
     function burn(bytes32 bookingRef) public onlyRole(DEFAULT_ADMIN_ROLE) {
         uint256 id = bookingRefs[bookingRef];
         if (!_exists(id)) revert InvalidTokenId();
+        _burn(id);
+    }
+
+    function burn(uint256 id) public onlyRole(DEFAULT_ADMIN_ROLE){
         _burn(id);
     }
 
