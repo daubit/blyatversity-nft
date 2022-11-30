@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 export const sleep = (ms: number) =>
@@ -31,3 +32,7 @@ export const verify = async (
     console.log(`Cannot verify for ChainId ${chainId}`);
   }
 };
+
+export function keccak256(text: string) {
+  return ethers.utils.keccak256(ethers.utils.toUtf8Bytes(text))
+}

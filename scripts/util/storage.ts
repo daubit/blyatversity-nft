@@ -1,5 +1,5 @@
 import { assert } from "console";
-import { readFileSync, writeFileSync } from "fs";
+import { existsSync, readFileSync, writeFileSync } from "fs";
 
 export interface AddressStorage {
   [contract: string]: string;
@@ -17,6 +17,10 @@ export class Storage {
     assert(filePath.length > 0, "No file path given!");
     this.addresses = {};
     this.path = filePath;
+    if (!existsSync(filePath)) {
+      console.log("Creating storage!")
+      writeFileSync(this.path, JSON.stringify(this.addresses, null, 2));
+    }
   }
 
   fetch(network: number) {

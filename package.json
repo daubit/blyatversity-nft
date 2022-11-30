@@ -7,7 +7,8 @@
     "compile": "npx hardhat compile",
     "coverage": "npx hardhat coverage",
     "test": "npx hardhat test",
-    "size": "npx hardhat size-contracts"
+    "size": "npx hardhat size-contracts",
+    "deploy:mumbai": "npx hardhat run scripts/common/deploy.ts --network mumbai"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.7.0",

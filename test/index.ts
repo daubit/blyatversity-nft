@@ -1,4 +1,4 @@
-import { expect, use } from "chai";
+import { expect} from "chai";
 import { ethers, } from "hardhat";
 import { Blyatversity } from "../typechain-types/cache/solpp-generated-contracts/index"
 import CONST from "../scripts/util/const.json";
@@ -18,13 +18,13 @@ function keccak256(text: string) {
 
 describe("Blyatversity", function () {
 
-	let Blyat: Blyatversity;
+	let blyat: Blyatversity;
 	let admin: SignerWithAddress;
 	let userA: SignerWithAddress;
 	before(async () => {
-		const blyat = await ethers.getContractFactory("Blyatversity");
-		Blyat = (await blyat.deploy(FOLDER_CID, CONTRACT_METADATA_CID, REGISTRY_ADDRESS)) as Blyatversity;
-		await Blyat.deployed()
+		const Blyat = await ethers.getContractFactory("Blyatversity");
+		blyat = (await Blyat.deploy(FOLDER_CID, CONTRACT_METADATA_CID, REGISTRY_ADDRESS)) as Blyatversity;
+		await blyat.deployed()
 
 		const signers = await ethers.getSigners()
 		admin = signers[0];
@@ -32,35 +32,35 @@ describe("Blyatversity", function () {
 	})
 	describe("Deployment", function () {
 		it("should have contract cid", async () => {
-			const cid = await Blyat.contractCID()
+			const cid = await blyat.contractCID()
 			expect(cid).equals(`ipfs://${CONTRACT_METADATA_CID}`);
 		})
 		it("should have admin", async () => {
-			const hasRole = await Blyat.hasRole(ADMIN_ROLE, admin.address);
+			const hasRole = await blyat.hasRole(ADMIN_ROLE, admin.address);
 			expect(hasRole).to.be.true;
 		})
 	});
 	describe("NFT", function () {
 		it("should mint for booking reference", async () => {
 			const bytes = keccak256(bookingReferences[0])
-			await Blyat.mint(userA.address, bytes);
-			const balance = await Blyat.balanceOf(userA.address)
+			await blyat.mint(userA.address, bytes);
+			const balance = await blyat.balanceOf(userA.address)
 			expect(balance.toNumber()).to.be.equal(1)
 		})
 		it("should not able for user to mint", async () => {
 			const bytes = keccak256(bookingReferences[1])
-			const mintTx = Blyat.mint(userA.address, bytes, { from: userA.address })
+			const mintTx = blyat.mint(userA.address, bytes, { from: userA.address })
 			expect(mintTx).to.be.reverted;
 		})
 		it("should burn with booking reference", async () => {
 			const bytes = keccak256(bookingReferences[0])
-			await Blyat.burn(bytes);
-			const balance = await Blyat.balanceOf(userA.address);
+			await blyat.burn(bytes);
+			const balance = await blyat.balanceOf(userA.address);
 			expect(balance.toNumber()).to.be.equal(0)
 		})
 		it("should not be able for user to burn", async () => {
 			const bytes = keccak256(bookingReferences[0])
-			const burnTx = Blyat.burn(bytes, { from: userA.address });
+			const burnTx = blyat.burn(bytes, { from: userA.address });
 			expect(burnTx).to.be.reverted
 		})
 	})

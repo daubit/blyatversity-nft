@@ -24,7 +24,7 @@ async function main() {
     addresses.blyat = blyat.address;
     console.log("Blyat deployed to:", blyat.address);
     console.log("Waiting for verification...");
-    await verify(hardhat, blyat.address, chainId);
+    await verify(hardhat, blyat.address, chainId, [FOLDER_CID, CONTRACT_METADATA_CID, REGISTRY_ADDRESS]);
   }
   storage.save(network.chainId, addresses);
 }

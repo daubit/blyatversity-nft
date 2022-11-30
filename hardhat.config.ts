@@ -12,6 +12,8 @@ import "hardhat-ethernal";
 import "hardhat-contract-sizer";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import "@nomiclabs/hardhat-solpp";
+import { ethers } from "hardhat";
+import { mint } from "./scripts/mint";
 
 dotenv.config();
 
@@ -28,6 +30,7 @@ task(
   }
 );
 
+task("mint", "Mint Blyat Token", mint).addParam("booking", "Id of the receipt").addParam("to", "Address to mint to")
 
 const MNEMONIC = process.env.MNEMONIC;
 const ALCHEMY_KEY_MAINNET = process.env.ALCHEMY_KEY_MAINNET;

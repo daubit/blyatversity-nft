@@ -1,4 +1,4 @@
-import { AddrStorage, Storage } from "../util/storage";
+import { AddressStorage, Storage } from "../util/storage";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { MFSWrapper } from "../util/ipfs";
 import { readFileSync } from "fs";
@@ -41,18 +41,18 @@ export async function airdrop(
     throw new Error("Folder does not exists");
   }
 
-  const { hiddenNft: hiddenNftAddress } = storage.fetch(chainId);
-  if (!hiddenNftAddress) throw new Error("Need an address!");
-  const HiddenNFT = await hre.ethers.getContractFactory("HiddenNFT");
-  const hiddenNFT = HiddenNFT.attach(hiddenNftAddress);
+  const { blyat: blyatAddress } = storage.fetch(chainId);
+  if (!blyatAddress) throw new Error("Need an address!");
+  const Blyat = await hre.ethers.getContractFactory("Blyatversity");
+  const blyat = Blyat.attach(blyatAddress);
 
-  const totalSupply = (await hiddenNFT.totalSupply()).toNumber();
+  const totalSupply = (await blyat.totalSupply()).toNumber();
   const quantity = Object.values(airdrop).reduce((a, b) => a + b, 0);
   if (amountFilesOnIPFS < totalSupply + quantity)
     throw new Error("IPFS does not contain enough files for minting!");
   for (const address in airdrop) {
     const quantity = airdrop[address];
-    const mint = await hiddenNFT.mint(address, quantity);
+    const mint = await blyat.mint(address, quantity);
     console.log(
       `Attempting to mint ${quantity} NFT${
         quantity > 1 ? "s" : ""
