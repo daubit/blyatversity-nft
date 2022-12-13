@@ -134,6 +134,11 @@ contract Blyatversity is
         _bookId.increment();
     }
 
+    function getBook(uint256 tokenId) external view returns (uint256) {
+        if (!_exists(tokenId)) revert InvalidTokenId();
+        return _bookIds[tokenId];
+    }
+
     /**
      * @dev Returns the Uniform Resource Identifier (URI) for `tokenId` token.
      */
