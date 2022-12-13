@@ -3,6 +3,7 @@ pragma solidity 0.8.17;
 
 import "erc721a/contracts/ERC721A.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 import "./common/OpenSeaPolygonProxy.sol";
 import "./common/meta-transactions/ContentMixin.sol";
 import "./common/meta-transactions/NativeMetaTransaction.sol";
@@ -13,13 +14,21 @@ contract Blyatversity is
     ContextMixin,
     NativeMetaTransaction
 {
+    using Counters for Counters.Counter;
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+
+    uint32 constant MAX_AMOUNT = 11233;
+
+    Counters.Counter private _bookId;
 
     address public proxyRegistryAddress;
     string private _folderCID;
     string private _contractCID;
 
-    mapping(bytes32 => uint256) private bookingRefs;
+    // BookId => BookRef => TokenId
+    mapping(uint256 => mapping(bytes32 => uint256)) private _bookingRefs;
+    // TokenId to BookId
+    mapping(uint256 => uint256) private _bookIds;
 
     error InvalidTokenId();
 
@@ -31,7 +40,6 @@ contract Blyatversity is
         _folderCID = folderCID_;
         _contractCID = contractCID_;
         proxyRegistryAddress = _proxyRegistryAddress;
-
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);
     }
@@ -78,23 +86,75 @@ contract Blyatversity is
         return string(abi.encodePacked(_baseURI(), _contractCID));
     }
 
-    function mint(address to, bytes32 bookingRef) public onlyRole(MINTER_ROLE) {
-        bookingRefs[bookingRef] = _nextTokenId();
+    function mint(
+        uint256 bookId,
+        address to,
+        bytes32 bookingRef
+    ) public onlyRole(MINTER_ROLE) {
+        uint256 _totalSupply = totalSupply();
+        if (_totalSupply >= MAX_AMOUNT) {
+            revert("MAX_AMOUNT_REACHED");
+        }
+        if (bookId > _bookId.current()) {
+            revert("INVALID_BOOK");
+        }
+        uint256 nextToken = _nextTokenId();
+        _bookingRefs[bookId][bookingRef] = nextToken;
+        _bookIds[nextToken] = bookId;
         _mint(to, 1);
     }
 
-    function mint(address to) public onlyRole(MINTER_ROLE) {
+    function mint(uint256 bookId, address to) public onlyRole(MINTER_ROLE) {
+        uint256 _totalSupply = totalSupply();
+        if (_totalSupply >= MAX_AMOUNT) {
+            revert("MAX_AMOUNT_REACHED");
+        }
+        if (bookId > _bookId.current()) {
+            revert("INVALID_BOOK");
+        }
+        uint256 nextToken = _nextTokenId();
+        _bookIds[nextToken] = bookId;
         _mint(to, 1);
     }
 
-    function burn(bytes32 bookingRef) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        uint256 id = bookingRefs[bookingRef];
-        if (!_exists(id)) revert InvalidTokenId();
+    function burn(
+        uint256 bookId,
+        bytes32 bookingRef
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        uint256 id = _bookingRefs[bookId][bookingRef];
+        if (!_exists(id) || bookId > _bookId.current()) revert InvalidTokenId();
         _burn(id);
     }
 
-    function burn(uint256 id) public onlyRole(DEFAULT_ADMIN_ROLE){
+    function burn(uint256 id) public onlyRole(DEFAULT_ADMIN_ROLE) {
         _burn(id);
+    }
+
+    function addBook() public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _bookId.increment();
+    }
+
+    /**
+     * @dev Returns the Uniform Resource Identifier (URI) for `tokenId` token.
+     */
+    function tokenURI(
+        uint256 tokenId
+    ) public view virtual override returns (string memory) {
+        if (!_exists(tokenId)) revert URIQueryForNonexistentToken();
+
+        string memory baseURI = _baseURI();
+        uint256 bookId = _bookIds[tokenId];
+        string memory path = string(abi.encodePacked(baseURI, _folderCID));
+        string memory tokenPath = string(
+            abi.encodePacked(
+                abi.encodePacked(_toString(bookId), "/"),
+                _toString(tokenId)
+            )
+        );
+        return
+            bytes(baseURI).length != 0
+                ? string(abi.encodePacked(path, tokenPath))
+                : "";
     }
 
     /**
