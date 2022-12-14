@@ -19,7 +19,6 @@ contract Blyatversity is
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    uint32 constant MAX_AMOUNT = 11233;
     address public _proxyRegistryAddress;
     string private _folderCID;
     string private _contractCID;
@@ -29,8 +28,26 @@ contract Blyatversity is
     mapping(uint256 => mapping(bytes32 => uint256)) private _bookingRefs;
     // TokenId to BookId
     mapping(uint256 => uint256) private _bookIds;
+    // BookId => Max Supply
+    mapping(uint256 => uint256) private _bookMaxSupply;
+    // BookId => Total Supply
+    mapping(uint256 => uint256) private _bookTotalSupply;
+    //BookId => boolean
+    mapping(uint256 => bool) private _bookPaused;
 
     error InvalidTokenId();
+    error InvalidBookId();
+    error InvalidSupply();
+
+    modifier bookValid(uint256 bookId) {
+        if (bookId <= 0 && bookId > _bookId.current()) revert InvalidBookId();
+        _;
+    }
+
+    modifier bookPaused(uint256 bookId) {
+        if (!_bookPaused[bookId]) revert InvalidBookId();
+        _;
+    }
 
     function initialize(
         string memory folderCID_,
@@ -93,28 +110,35 @@ contract Blyatversity is
         uint256 bookId,
         address to,
         bytes32 bookingRef
-    ) public onlyRole(MINTER_ROLE) {
-        uint256 _totalSupply = totalSupply();
-        if (_totalSupply >= MAX_AMOUNT) {
-            revert("MAX_AMOUNT_REACHED");
-        }
-        if (bookId > _bookId.current()) {
-            revert("INVALID_BOOK");
-        }
+    )
+        external
+        bookValid(bookId)
+        bookPaused(bookId)
+        onlyRole(MINTER_ROLE)
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        uint256 _totalSupply = _bookTotalSupply[bookId];
+        uint256 _maxSupply = _bookMaxSupply[bookId];
+        if (_totalSupply >= _maxSupply) revert("MAX_AMOUNT_REACHED");
         uint256 nextToken = _nextTokenId();
         _bookingRefs[bookId][bookingRef] = nextToken;
         _bookIds[nextToken] = bookId;
         _mint(to, 1);
     }
 
-    function mint(uint256 bookId, address to) public onlyRole(MINTER_ROLE) {
-        uint256 _totalSupply = totalSupply();
-        if (_totalSupply >= MAX_AMOUNT) {
-            revert("MAX_AMOUNT_REACHED");
-        }
-        if (bookId > _bookId.current()) {
-            revert("INVALID_BOOK");
-        }
+    function mint(
+        uint256 bookId,
+        address to
+    )
+        external
+        bookValid(bookId)
+        bookPaused(bookId)
+        onlyRole(MINTER_ROLE)
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        uint256 _totalSupply = _bookTotalSupply[bookId];
+        uint256 _maxSupply = _bookMaxSupply[bookId];
+        if (_totalSupply >= _maxSupply) revert("MAX_AMOUNT_REACHED");
         uint256 nextToken = _nextTokenId();
         _bookIds[nextToken] = bookId;
         _mint(to, 1);
@@ -123,9 +147,9 @@ contract Blyatversity is
     function burn(
         uint256 bookId,
         bytes32 bookingRef
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) bookValid(bookId) {
         uint256 id = _bookingRefs[bookId][bookingRef];
-        if (!_exists(id) || bookId > _bookId.current()) revert InvalidTokenId();
+        if (!_exists(id)) revert InvalidTokenId();
         _burn(id);
     }
 
@@ -133,13 +157,38 @@ contract Blyatversity is
         _burn(id);
     }
 
-    function addBook() public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function addBook(uint256 supply) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        if (supply == 0) revert InvalidSupply();
         _bookId.increment();
+        uint256 bookId = _bookId.current();
+        _bookSupply[bookId] = supply;
+        _bookPaused[bookId] = false;
+    }
+
+    function addBook() onlyRole(DEFAULT_ADMIN_ROLE) {
+        _bookId.increment();
+        _bookPaused[bookid.current()] = false;
     }
 
     function getBook(uint256 tokenId) external view returns (uint256) {
         if (!_exists(tokenId)) revert InvalidTokenId();
         return _bookIds[tokenId];
+    }
+
+    function getBookSupply(uint256 bookId) external view returns (uint256) {
+        return _bookSupply[bookId];
+    }
+
+    function pauseBook(
+        uint256 bookId
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) bookValid(bookId) {
+        _bookPaused[bookId] = true;
+    }
+
+    function unpauseBook(
+        uint256 bookId
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) bookValid(bookId) {
+        _bookPaused[bookId] = false;
     }
 
     /**
@@ -149,7 +198,6 @@ contract Blyatversity is
         uint256 tokenId
     ) public view virtual override returns (string memory) {
         if (!_exists(tokenId)) revert URIQueryForNonexistentToken();
-
         string memory baseURI = _baseURI();
         uint256 bookId = _bookIds[tokenId];
         string memory path = string(abi.encodePacked(baseURI, _folderCID));
