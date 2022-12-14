@@ -36,7 +36,7 @@ contract Blyatversity is
         string memory folderCID_,
         string memory contractCID_,
         address proxyRegistryAddress
-    ) public initializer {
+    ) public initializer initializerERC721A {
         __ERC721A_init("Blyatversity", "Blyat");
         _folderCID = folderCID_;
         _contractCID = contractCID_;
