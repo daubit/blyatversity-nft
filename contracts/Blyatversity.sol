@@ -9,6 +9,13 @@ import "./common/OpenSeaPolygonProxy.sol";
 import "./common/meta-transactions/ContentMixin.sol";
 import "./common/meta-transactions/NativeMetaTransaction.sol";
 
+/**
+ *
+ * TODO: Kein Product -> Produkt
+ *       Opensea: 10%
+ *       Lock per Product, NFT for 13 months
+ *
+ * */
 contract Blyatversity is
     Initializable,
     ERC721AUpgradeable,
@@ -22,30 +29,29 @@ contract Blyatversity is
     address public _proxyRegistryAddress;
     string private _folderCID;
     string private _contractCID;
-    CountersUpgradeable.Counter private _bookId;
+    CountersUpgradeable.Counter private _productId;
 
-    // BookId => BookRef => TokenId
-    mapping(uint256 => mapping(bytes32 => uint256)) private _bookingRefs;
-    // TokenId to BookId
-    mapping(uint256 => uint256) private _bookIds;
-    // BookId => Max Supply
-    mapping(uint256 => uint256) private _bookMaxSupply;
-    // BookId => Total Supply
-    mapping(uint256 => uint256) private _bookTotalSupply;
-    //BookId => boolean
-    mapping(uint256 => bool) private _bookPaused;
+    // TokenId to ProductId
+    mapping(uint256 => uint256) private _productIds;
+    // ProductId => Max Supply
+    mapping(uint256 => uint256) private _productMaxSupply;
+    // ProductId => Total Supply
+    mapping(uint256 => uint256) private _productTotalSupply;
+    //ProductId => boolean
+    mapping(uint256 => bool) private _productPaused;
 
     error InvalidTokenId();
-    error InvalidBookId();
+    error InvalidProductId();
     error InvalidSupply();
 
-    modifier bookValid(uint256 bookId) {
-        if (bookId <= 0 && bookId > _bookId.current()) revert InvalidBookId();
+    modifier productValid(uint256 productId) {
+        if (productId <= 0 && productId > _productId.current())
+            revert InvalidProductId();
         _;
     }
 
-    modifier bookPaused(uint256 bookId) {
-        if (!_bookPaused[bookId]) revert InvalidBookId();
+    modifier productPaused(uint256 productId) {
+        if (!_productPaused[productId]) revert InvalidProductId();
         _;
     }
 
@@ -107,48 +113,28 @@ contract Blyatversity is
     }
 
     function mint(
-        uint256 bookId,
-        address to,
-        bytes32 bookingRef
-    )
-        external
-        bookValid(bookId)
-        bookPaused(bookId)
-        onlyRole(MINTER_ROLE)
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {
-        uint256 _totalSupply = _bookTotalSupply[bookId];
-        uint256 _maxSupply = _bookMaxSupply[bookId];
-        if (_totalSupply >= _maxSupply) revert("MAX_AMOUNT_REACHED");
-        uint256 nextToken = _nextTokenId();
-        _bookingRefs[bookId][bookingRef] = nextToken;
-        _bookIds[nextToken] = bookId;
-        _mint(to, 1);
-    }
-
-    function mint(
-        uint256 bookId,
+        uint256 productId,
         address to
     )
         external
-        bookValid(bookId)
-        bookPaused(bookId)
+        productValid(productId)
+        productPaused(productId)
         onlyRole(MINTER_ROLE)
         onlyRole(DEFAULT_ADMIN_ROLE)
     {
-        uint256 _totalSupply = _bookTotalSupply[bookId];
-        uint256 _maxSupply = _bookMaxSupply[bookId];
+        uint256 _totalSupply = _productTotalSupply[productId];
+        uint256 _maxSupply = _productMaxSupply[productId];
         if (_totalSupply >= _maxSupply) revert("MAX_AMOUNT_REACHED");
         uint256 nextToken = _nextTokenId();
-        _bookIds[nextToken] = bookId;
+        _productIds[nextToken] = productId;
         _mint(to, 1);
     }
 
     function burn(
-        uint256 bookId,
-        bytes32 bookingRef
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) bookValid(bookId) {
-        uint256 id = _bookingRefs[bookId][bookingRef];
+        uint256 productId,
+        bytes32 productingRef
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) productValid(productId) {
+        uint256 id = _productingRefs[productId][productingRef];
         if (!_exists(id)) revert InvalidTokenId();
         _burn(id);
     }
@@ -157,38 +143,46 @@ contract Blyatversity is
         _burn(id);
     }
 
-    function addBook(uint256 supply) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function addProduct(uint256 supply) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (supply == 0) revert InvalidSupply();
-        _bookId.increment();
-        uint256 bookId = _bookId.current();
-        _bookSupply[bookId] = supply;
-        _bookPaused[bookId] = false;
+        _productId.increment();
+        uint256 productId = _productId.current();
+        _productMaxSupply[productId] = supply;
+        _productPaused[productId] = false;
     }
 
-    function addBook() onlyRole(DEFAULT_ADMIN_ROLE) {
-        _bookId.increment();
-        _bookPaused[bookid.current()] = false;
+    function addProduct() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _productId.increment();
+        _productPaused[_productId.current()] = false;
     }
 
-    function getBook(uint256 tokenId) external view returns (uint256) {
+    function getProduct(uint256 tokenId) external view returns (uint256) {
         if (!_exists(tokenId)) revert InvalidTokenId();
-        return _bookIds[tokenId];
+        return _productIds[tokenId];
     }
 
-    function getBookSupply(uint256 bookId) external view returns (uint256) {
-        return _bookSupply[bookId];
+    function getProductMaxSupply(
+        uint256 productId
+    ) external view returns (uint256) {
+        return _productMaxSupply[productId];
     }
 
-    function pauseBook(
-        uint256 bookId
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) bookValid(bookId) {
-        _bookPaused[bookId] = true;
+    function getProductTotalSupply(
+        uint256 productId
+    ) external view returns (uint256) {
+        return _productTotalSupply[productId];
     }
 
-    function unpauseBook(
-        uint256 bookId
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) bookValid(bookId) {
-        _bookPaused[bookId] = false;
+    function pauseProduct(
+        uint256 productId
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) productValid(productId) {
+        _productPaused[productId] = true;
+    }
+
+    function unpauseProduct(
+        uint256 productId
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) productValid(productId) {
+        _productPaused[productId] = false;
     }
 
     /**
@@ -199,11 +193,11 @@ contract Blyatversity is
     ) public view virtual override returns (string memory) {
         if (!_exists(tokenId)) revert URIQueryForNonexistentToken();
         string memory baseURI = _baseURI();
-        uint256 bookId = _bookIds[tokenId];
+        uint256 productId = _productIds[tokenId];
         string memory path = string(abi.encodePacked(baseURI, _folderCID));
         string memory tokenPath = string(
             abi.encodePacked(
-                abi.encodePacked(_toString(bookId), "/"),
+                abi.encodePacked(_toString(productId), "/"),
                 _toString(tokenId)
             )
         );
