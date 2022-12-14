@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ethers, } from "hardhat";
+import { ethers, upgrades, } from "hardhat";
 import { Blyatversity } from "../typechain-types/cache/solpp-generated-contracts/index"
 import CONST from "../scripts/util/const.json";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
@@ -25,7 +25,7 @@ describe("Blyatversity", function () {
 	let userA: SignerWithAddress;
 	before(async () => {
 		const Blyat = await ethers.getContractFactory("Blyatversity");
-		blyat = (await Blyat.deploy(FOLDER_CID, CONTRACT_METADATA_CID, REGISTRY_ADDRESS)) as Blyatversity;
+		blyat = (await upgrades.deployProxy(Blyat, [FOLDER_CID, CONTRACT_METADATA_CID, REGISTRY_ADDRESS])) as Blyatversity;
 		await blyat.deployed()
 
 		const signers = await ethers.getSigners()

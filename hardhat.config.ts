@@ -1,6 +1,7 @@
 import * as dotenv from "dotenv";
 
 import { HardhatUserConfig, task } from "hardhat/config";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-solhint";
@@ -10,9 +11,8 @@ import "hardhat-gas-reporter";
 import "solidity-coverage";
 import "hardhat-ethernal";
 import "hardhat-contract-sizer";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
 import "@nomiclabs/hardhat-solpp";
-import { ethers } from "hardhat";
+import '@openzeppelin/hardhat-upgrades';
 import { mint } from "./scripts/mint";
 
 dotenv.config();

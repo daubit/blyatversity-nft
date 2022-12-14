@@ -1,29 +1,29 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
 
-import "erc721a/contracts/ERC721A.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "erc721a-upgradeable/contracts/ERC721AUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./common/OpenSeaPolygonProxy.sol";
 import "./common/meta-transactions/ContentMixin.sol";
 import "./common/meta-transactions/NativeMetaTransaction.sol";
 
 contract Blyatversity is
-    ERC721A,
-    AccessControl,
+    Initializable,
+    ERC721AUpgradeable,
+    AccessControlUpgradeable,
     ContextMixin,
     NativeMetaTransaction
 {
-    using Counters for Counters.Counter;
+    using CountersUpgradeable for CountersUpgradeable.Counter;
+
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-
     uint32 constant MAX_AMOUNT = 11233;
-
-    Counters.Counter private _bookId;
-
-    address public proxyRegistryAddress;
+    address public _proxyRegistryAddress;
     string private _folderCID;
     string private _contractCID;
+    CountersUpgradeable.Counter private _bookId;
 
     // BookId => BookRef => TokenId
     mapping(uint256 => mapping(bytes32 => uint256)) private _bookingRefs;
@@ -32,14 +32,17 @@ contract Blyatversity is
 
     error InvalidTokenId();
 
-    constructor(
+    function initialize(
         string memory folderCID_,
         string memory contractCID_,
-        address _proxyRegistryAddress
-    ) ERC721A("Blyatversity", "Blyat") {
+        address proxyRegistryAddress
+    ) public initializer {
+        __ERC721A_init("Blyatversity", "Blyat");
         _folderCID = folderCID_;
         _contractCID = contractCID_;
-        proxyRegistryAddress = _proxyRegistryAddress;
+        _proxyRegistryAddress = proxyRegistryAddress;
+
+        __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);
     }
@@ -170,7 +173,7 @@ contract Blyatversity is
         address operator
     ) public view override returns (bool) {
         // Whitelist OpenSea proxy contract for easy trading.
-        ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistryAddress);
+        ProxyRegistry proxyRegistry = ProxyRegistry(_proxyRegistryAddress);
         if (address(proxyRegistry.proxies(owner)) == operator) {
             return true;
         }
@@ -180,14 +183,20 @@ contract Blyatversity is
 
     function supportsInterface(
         bytes4 interfaceId
-    ) public view virtual override(ERC721A, AccessControl) returns (bool) {
+    )
+        public
+        view
+        virtual
+        override(ERC721AUpgradeable, AccessControlUpgradeable)
+        returns (bool)
+    {
         // Supports the following `interfaceId`s:
         // - IERC165: 0x01ffc9a7
         // - IERC721: 0x80ac58cd
         // - IERC721Metadata: 0x5b5e139f
         // - IERC2981: 0x2a55205a
         return
-            ERC721A.supportsInterface(interfaceId) ||
-            AccessControl.supportsInterface(interfaceId);
+            ERC721AUpgradeable.supportsInterface(interfaceId) ||
+            AccessControlUpgradeable.supportsInterface(interfaceId);
     }
 }

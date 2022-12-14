@@ -4,7 +4,7 @@
 //
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
-import hardhat, { ethers } from "hardhat";
+import hardhat, { ethers, upgrades } from "hardhat";
 import { AddressStorage, Storage } from "../util/storage";
 import { verify } from "../util/utils";
 import { REGISTRY_ADDRESS, FOLDER_CID, CONTRACT_METADATA_CID } from "../util/const.json"
@@ -19,7 +19,7 @@ async function main() {
   // We get the contract to deploy
   if (!blyatAddress) {
     const Blyat = await ethers.getContractFactory("Blyatversity");
-    const blyat = await Blyat.deploy(FOLDER_CID, CONTRACT_METADATA_CID, REGISTRY_ADDRESS);
+    const blyat = await upgrades.deployProxy(Blyat, [FOLDER_CID, CONTRACT_METADATA_CID, REGISTRY_ADDRESS]);
     await blyat.deployed();
     addresses.blyat = blyat.address;
     console.log("Blyat deployed to:", blyat.address);
