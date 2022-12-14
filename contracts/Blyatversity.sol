@@ -117,8 +117,8 @@ contract Blyatversity is
         address to
     )
         external
-        productValid(productId)
         productPaused(productId)
+        productValid(productId)
         onlyRole(MINTER_ROLE)
         onlyRole(DEFAULT_ADMIN_ROLE)
     {
