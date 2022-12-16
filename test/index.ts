@@ -6,17 +6,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 const { REGISTRY_ADDRESS, CONTRACT_METADATA_CID, FOLDER_CID, ADMIN_ROLE } = CONST;
 
-const bookingReferences = [
-	"000-1234567-1234567",
-	"001-1234567-1234567",
-	"010-1234567-1234567"
-]
-
-const BookId = 0;
-
-function keccak256(text: string) {
-	return ethers.utils.keccak256(ethers.utils.toUtf8Bytes(text))
-}
+const ItemId = 0;
 
 describe("Blyatversity", function () {
 
@@ -44,40 +34,35 @@ describe("Blyatversity", function () {
 	});
 	describe("NFT", function () {
 		it("should mint for booking reference", async () => {
-			const bytes = keccak256(bookingReferences[0])
-			await blyat["mint(uint256,address,bytes32)"](BookId, userA.address, bytes);
+			await blyat.mint(ItemId, userA.address);
 			const balance = await blyat.balanceOf(userA.address)
-			const bookId = await blyat.getBook(0);
+			const bookId = await blyat.getItem(0);
 			expect(balance.toNumber()).to.be.equal(1)
-			expect(bookId.toNumber()).to.be.equal(BookId)
+			expect(bookId.toNumber()).to.be.equal(ItemId)
 		})
 		it("should not able for user to mint", async () => {
-			const bytes = keccak256(bookingReferences[1])
-			const mintTx = blyat["mint(uint256,address,bytes32)"](BookId, userA.address, bytes, { from: userA.address })
+			const mintTx = blyat.mint(ItemId, userA.address, { from: userA.address })
 			expect(mintTx).to.be.reverted;
 		})
 		it("should burn with booking reference", async () => {
-			const bytes = keccak256(bookingReferences[0])
-			await blyat["burn(uint256,bytes32)"](BookId, bytes);
+			await blyat.burn(ItemId);
 			const balance = await blyat.balanceOf(userA.address);
 			expect(balance.toNumber()).to.be.equal(0)
 		})
 		it("should not be able for user to burn", async () => {
-			const bytes = keccak256(bookingReferences[0])
-			const burnTx = blyat["burn(uint256,bytes32)"](BookId, bytes, { from: userA.address });
+			const burnTx = blyat.burn(ItemId, { from: userA.address });
 			expect(burnTx).to.be.reverted
 		})
 		it("should be should to add a book", async () => {
-			const addTx = await blyat.addBook();
+			const addTx = await blyat["addItem()"]();
 			await addTx.wait();
-			const newBookId = 1;
-			const bytes = keccak256(bookingReferences[0])
-			await blyat["mint(uint256,address,bytes32)"](newBookId, admin.address, bytes);
-			const bookId = await blyat.getBook(1)
-			expect(bookId.toNumber()).to.be.equal(newBookId)
+			const newItemId = 1;
+			await blyat.mint(newItemId, admin.address);
+			const bookId = await blyat.getItem(1)
+			expect(bookId.toNumber()).to.be.equal(newItemId)
 		})
 		it("should be NOT should for user to add a book ", async () => {
-			const addTx = blyat.addBook({ from: userA.address });
+			const addTx = blyat["addItem()"]({ from: userA.address });
 			expect(addTx).to.be.reverted
 		})
 		it("should return the corrent token URI", async () => {

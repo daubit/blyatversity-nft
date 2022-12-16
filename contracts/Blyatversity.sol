@@ -11,9 +11,9 @@ import "./common/meta-transactions/NativeMetaTransaction.sol";
 
 /**
  *
- * TODO: Kein Product -> Produkt
+ * TODO:
  *       Opensea: 10%
- *       Lock per Product, NFT for 13 months
+ *       Lock per Item, NFT for 13 months
  *
  * */
 contract Blyatversity is
@@ -29,29 +29,29 @@ contract Blyatversity is
     address public _proxyRegistryAddress;
     string private _folderCID;
     string private _contractCID;
-    CountersUpgradeable.Counter private _productId;
+    CountersUpgradeable.Counter private _itemId;
 
-    // TokenId to ProductId
-    mapping(uint256 => uint256) private _productIds;
-    // ProductId => Max Supply
-    mapping(uint256 => uint256) private _productMaxSupply;
-    // ProductId => Total Supply
-    mapping(uint256 => uint256) private _productTotalSupply;
-    //ProductId => boolean
-    mapping(uint256 => bool) private _productPaused;
+    // TokenId to ItemId
+    mapping(uint256 => uint256) private _itemIds;
+    // ItemId => Max Supply
+    mapping(uint256 => uint256) private _itemMaxSupply;
+    // ItemId => Total Supply
+    mapping(uint256 => uint256) private _itemTotalSupply;
+    //ItemId => boolean
+    mapping(uint256 => bool) private _itemPaused;
 
     error InvalidTokenId();
-    error InvalidProductId();
+    error InvalidItemId();
     error InvalidSupply();
+    error MaxSupply();
 
-    modifier productValid(uint256 productId) {
-        if (productId <= 0 && productId > _productId.current())
-            revert InvalidProductId();
+    modifier itemValid(uint256 itemId) {
+        if (itemId <= 0 && itemId > _itemId.current()) revert InvalidItemId();
         _;
     }
 
-    modifier productPaused(uint256 productId) {
-        if (!_productPaused[productId]) revert InvalidProductId();
+    modifier itemPaused(uint256 itemId) {
+        if (!_itemPaused[itemId]) revert InvalidItemId();
         _;
     }
 
@@ -113,76 +113,65 @@ contract Blyatversity is
     }
 
     function mint(
-        uint256 productId,
+        uint256 itemId,
         address to
     )
         external
-        productPaused(productId)
-        productValid(productId)
+        itemPaused(itemId)
+        itemValid(itemId)
         onlyRole(MINTER_ROLE)
         onlyRole(DEFAULT_ADMIN_ROLE)
     {
-        uint256 _totalSupply = _productTotalSupply[productId];
-        uint256 _maxSupply = _productMaxSupply[productId];
-        if (_totalSupply >= _maxSupply) revert("MAX_AMOUNT_REACHED");
+        uint256 totalSupply = _itemTotalSupply[itemId];
+        uint256 maxSupply = _itemMaxSupply[itemId];
+        if (totalSupply >= maxSupply) revert MaxSupply();
         uint256 nextToken = _nextTokenId();
-        _productIds[nextToken] = productId;
+        _itemIds[nextToken] = itemId;
         _mint(to, 1);
-    }
-
-    function burn(
-        uint256 productId,
-        bytes32 productingRef
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) productValid(productId) {
-        uint256 id = _productingRefs[productId][productingRef];
-        if (!_exists(id)) revert InvalidTokenId();
-        _burn(id);
     }
 
     function burn(uint256 id) public onlyRole(DEFAULT_ADMIN_ROLE) {
         _burn(id);
     }
 
-    function addProduct(uint256 supply) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function addItem(uint256 supply) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (supply == 0) revert InvalidSupply();
-        _productId.increment();
-        uint256 productId = _productId.current();
-        _productMaxSupply[productId] = supply;
-        _productPaused[productId] = false;
+        _itemId.increment();
+        uint256 itemId = _itemId.current();
+        _itemMaxSupply[itemId] = supply;
+        _itemPaused[itemId] = false;
     }
 
-    function addProduct() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _productId.increment();
-        _productPaused[_productId.current()] = false;
+    function addItem() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _itemId.increment();
+        _itemPaused[_itemId.current()] = false;
     }
 
-    function getProduct(uint256 tokenId) external view returns (uint256) {
+    function getItem(uint256 tokenId) external view returns (uint256) {
         if (!_exists(tokenId)) revert InvalidTokenId();
-        return _productIds[tokenId];
+        return _itemIds[tokenId];
     }
 
-    function getProductMaxSupply(
-        uint256 productId
+    function getItemMaxSupply(uint256 itemId) external view returns (uint256) {
+        return _itemMaxSupply[itemId];
+    }
+
+    function getItemTotalSupply(
+        uint256 itemId
     ) external view returns (uint256) {
-        return _productMaxSupply[productId];
+        return _itemTotalSupply[itemId];
     }
 
-    function getProductTotalSupply(
-        uint256 productId
-    ) external view returns (uint256) {
-        return _productTotalSupply[productId];
+    function pauseItem(
+        uint256 itemId
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) itemValid(itemId) {
+        _itemPaused[itemId] = true;
     }
 
-    function pauseProduct(
-        uint256 productId
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) productValid(productId) {
-        _productPaused[productId] = true;
-    }
-
-    function unpauseProduct(
-        uint256 productId
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) productValid(productId) {
-        _productPaused[productId] = false;
+    function unpauseItem(
+        uint256 itemId
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) itemValid(itemId) {
+        _itemPaused[itemId] = false;
     }
 
     /**
@@ -193,11 +182,11 @@ contract Blyatversity is
     ) public view virtual override returns (string memory) {
         if (!_exists(tokenId)) revert URIQueryForNonexistentToken();
         string memory baseURI = _baseURI();
-        uint256 productId = _productIds[tokenId];
+        uint256 itemId = _itemIds[tokenId];
         string memory path = string(abi.encodePacked(baseURI, _folderCID));
         string memory tokenPath = string(
             abi.encodePacked(
-                abi.encodePacked(_toString(productId), "/"),
+                abi.encodePacked(_toString(itemId), "/"),
                 _toString(tokenId)
             )
         );
