@@ -2,19 +2,19 @@
   "manifestVersion": "3.2",
   "admin": {
     "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-    "txHash": "0x9b24f8617baa52a835e70ac71220e9c3c40cb58d5f67d87df9a6c792e0d50fd0"
+    "txHash": "0x6edca5ecf87b8f05f8a4f651a07c9f4fc19f9f3429659a44a8351e5e1b71e8d8"
   },
   "proxies": [
     {
       "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
-      "txHash": "0x68a989c7231836fa1a46a3cfba365a129506ed15227c7dfc5e2988b80af73168",
+      "txHash": "0xcf10de50108ec42f81634b6b0d1ac02ba181e752d436523376ab4f45a0914815",
       "kind": "transparent"
     }
   ],
   "impls": {
-    "fe01d5059ffe861f69f8d434649c75d4c312c4fa770f280a6b3d0236cd1596c1": {
+    "04f968b7897a7e6fbc60c2447a981f558a34d9dd400afc37ac6f9044bf2acc89": {
       "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      "txHash": "0xe6d436a29402aaabbfccf39ef6904aec97427fc46bd28801fca6afaadf126e82",
+      "txHash": "0x2a65594b3564350deed40535b844d0d0c6642c7be16b6cdaca007c9e2407cd95",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -89,7 +89,7 @@
             "slot": "153",
             "type": "t_address",
             "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:25"
+            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:31"
           },
           {
             "label": "_folderCID",
@@ -97,7 +97,7 @@
             "slot": "154",
             "type": "t_string_storage",
             "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:26"
+            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:32"
           },
           {
             "label": "_contractCID",
@@ -105,31 +105,47 @@
             "slot": "155",
             "type": "t_string_storage",
             "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:27"
+            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:33"
           },
           {
-            "label": "_bookId",
+            "label": "_itemId",
             "offset": 0,
             "slot": "156",
             "type": "t_struct(Counter)909_storage",
             "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:28"
+            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:34"
           },
           {
-            "label": "_bookingRefs",
+            "label": "_itemIds",
             "offset": 0,
             "slot": "157",
-            "type": "t_mapping(t_uint256,t_mapping(t_bytes32,t_uint256))",
+            "type": "t_mapping(t_uint256,t_uint256)",
             "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:31"
+            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:43"
           },
           {
-            "label": "_bookIds",
+            "label": "_itemMaxSupply",
             "offset": 0,
             "slot": "158",
             "type": "t_mapping(t_uint256,t_uint256)",
             "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:33"
+            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:45"
+          },
+          {
+            "label": "_itemTotalSupply",
+            "offset": 0,
+            "slot": "159",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "Blyatversity",
+            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:47"
+          },
+          {
+            "label": "_itemState",
+            "offset": 0,
+            "slot": "160",
+            "type": "t_mapping(t_uint256,t_enum(ItemState)2427)",
+            "contract": "Blyatversity",
+            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:49"
           }
         ],
         "types": {
@@ -153,6 +169,15 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
+          "t_enum(ItemState)2427": {
+            "label": "enum Blyatversity.ItemState",
+            "members": [
+              "Paused",
+              "Limited",
+              "Unlimited"
+            ],
+            "numberOfBytes": "1"
+          },
           "t_mapping(t_address,t_bool)": {
             "label": "mapping(address => bool)",
             "numberOfBytes": "32"
@@ -165,12 +190,8 @@
             "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_uint256)": {
-            "label": "mapping(bytes32 => uint256)",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_uint256,t_mapping(t_bytes32,t_uint256))": {
-            "label": "mapping(uint256 => mapping(bytes32 => uint256))",
+          "t_mapping(t_uint256,t_enum(ItemState)2427)": {
+            "label": "mapping(uint256 => enum Blyatversity.ItemState)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_uint256,t_uint256)": {

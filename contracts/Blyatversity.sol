@@ -31,6 +31,12 @@ contract Blyatversity is
     string private _contractCID;
     CountersUpgradeable.Counter private _itemId;
 
+    enum ItemState {
+        Paused,
+        Limited,
+        Unlimited
+    }
+
     // TokenId to ItemId
     mapping(uint256 => uint256) private _itemIds;
     // ItemId => Max Supply
@@ -38,20 +44,22 @@ contract Blyatversity is
     // ItemId => Total Supply
     mapping(uint256 => uint256) private _itemTotalSupply;
     //ItemId => boolean
-    mapping(uint256 => bool) private _itemPaused;
+    mapping(uint256 => ItemState) private _itemState;
 
     error InvalidTokenId();
     error InvalidItemId();
+    error ItemPaused();
     error InvalidSupply();
     error MaxSupply();
 
     modifier itemValid(uint256 itemId) {
         if (itemId <= 0 && itemId > _itemId.current()) revert InvalidItemId();
-        _;
-    }
-
-    modifier itemPaused(uint256 itemId) {
-        if (!_itemPaused[itemId]) revert InvalidItemId();
+        uint256 totalSupply = _itemTotalSupply[itemId];
+        uint256 maxSupply = _itemMaxSupply[itemId];
+        ItemState state = _itemState[itemId];
+        if (state == ItemState.Paused) revert ItemPaused();
+        if (state == ItemState.Limited && totalSupply >= maxSupply)
+            revert MaxSupply();
         _;
     }
 
@@ -117,20 +125,16 @@ contract Blyatversity is
         address to
     )
         external
-        itemPaused(itemId)
         itemValid(itemId)
         onlyRole(MINTER_ROLE)
         onlyRole(DEFAULT_ADMIN_ROLE)
     {
-        uint256 totalSupply = _itemTotalSupply[itemId];
-        uint256 maxSupply = _itemMaxSupply[itemId];
-        if (totalSupply >= maxSupply) revert MaxSupply();
         uint256 nextToken = _nextTokenId();
         _itemIds[nextToken] = itemId;
         _mint(to, 1);
     }
 
-    function burn(uint256 id) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function burn(uint256 id) external {
         _burn(id);
     }
 
@@ -139,12 +143,12 @@ contract Blyatversity is
         _itemId.increment();
         uint256 itemId = _itemId.current();
         _itemMaxSupply[itemId] = supply;
-        _itemPaused[itemId] = false;
+        _itemState[_itemId.current()] = ItemState.Limited;
     }
 
     function addItem() external onlyRole(DEFAULT_ADMIN_ROLE) {
         _itemId.increment();
-        _itemPaused[_itemId.current()] = false;
+        _itemState[_itemId.current()] = ItemState.Unlimited;
     }
 
     function getItem(uint256 tokenId) external view returns (uint256) {
@@ -165,13 +169,13 @@ contract Blyatversity is
     function pauseItem(
         uint256 itemId
     ) external onlyRole(DEFAULT_ADMIN_ROLE) itemValid(itemId) {
-        _itemPaused[itemId] = true;
+        _itemState[itemId] = ItemState.Paused;
     }
 
     function unpauseItem(
         uint256 itemId
     ) external onlyRole(DEFAULT_ADMIN_ROLE) itemValid(itemId) {
-        _itemPaused[itemId] = false;
+        _itemState[itemId] = ItemState.Paused;
     }
 
     /**
