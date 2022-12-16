@@ -31,37 +31,47 @@ describe("Blyatversity", function () {
 		})
 	});
 	describe("NFT", function () {
-		it("should be should to add an item", async () => {
+		it("should be should to add an unlimited item", async () => {
 			const addTx = await blyat["addItem()"]();
 			await addTx.wait();
-			await blyat.mint(1, admin.address);
-			const itemId = await blyat.getItem(0)
-			expect(itemId.toNumber()).to.be.equal(1)
 		})
-		it("should be NOT able for user to add an item", async () => {
-			const addTx = blyat["addItem()"]({ from: userA.address });
-			expect(addTx).to.be.reverted
-		})
-		it("should be able to mint", async () => {
+		it("should be able to mint unlimited", async () => {
 			await blyat.mint(1, userA.address);
 			const balance = await blyat.balanceOf(userA.address)
-			const itemId = await blyat.getItem(1);
+			const itemId = await blyat.getItem(0);
 			expect(balance.toNumber()).to.be.equal(1)
 			expect(itemId.toNumber()).to.be.equal(1)
 		})
+		it("should be should to add an limited item", async () => {
+			const addTx = await blyat["addItem(uint256)"](2);
+			await addTx.wait();
+			const maxSupply = await blyat.getItemMaxSupply(2)
+			expect(maxSupply.toNumber()).to.be.equal(2)
+		})
+		it("should be able to mint limited", async () => {
+			await blyat.mint(1, userA.address);
+			const balance = await blyat.balanceOf(userA.address)
+			const itemId = await blyat.getItem(0);
+			expect(balance.toNumber()).to.be.equal(2)
+			expect(itemId.toNumber()).to.be.equal(1)
+		})
+		it("should be NOT able for user to add an unlimited item", async () => {
+			const addTx = blyat["addItem()"]({ from: userA.address });
+			expect(addTx).to.be.reverted
+		})
 		it("should return the corrent token URI", async () => {
-			const uri = await blyat.tokenURI(1);
-			expect(uri).to.be.equal(`ipfs://${FOLDER_CID}1/1`)
+			const uri = await blyat.tokenURI(0);
+			expect(uri).to.be.equal(`ipfs://${FOLDER_CID}1/0`)
 		})
 		it("should not able for user to mint", async () => {
 			const mintTx = blyat.mint(1, userA.address, { from: userA.address })
 			expect(mintTx).to.be.reverted;
 		})
 		it("should be able to burn", async () => {
-			const burnTx = await blyat.connect(userA).burn(1);
+			const burnTx = await blyat.connect(userA).burn(0);
 			await burnTx.wait();
 			const balance = await blyat.balanceOf(userA.address)
-			expect(balance.toNumber()).to.be.equal(0);
+			expect(balance.toNumber()).to.be.equal(1);
 		})
 		it("should not be able for user to burn", async () => {
 			const burnTx = blyat.burn(1, { from: userA.address });
