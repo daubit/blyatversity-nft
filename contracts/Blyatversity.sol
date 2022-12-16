@@ -13,7 +13,6 @@ import "./common/meta-transactions/NativeMetaTransaction.sol";
  *
  * TODO:
  *       Opensea: 10%
- *       Lock per Item, NFT for 13 months
  *
  * */
 contract Blyatversity is
@@ -45,12 +44,15 @@ contract Blyatversity is
     mapping(uint256 => uint256) private _itemTotalSupply;
     //ItemId => boolean
     mapping(uint256 => ItemState) private _itemState;
+    //ItemId => Lock Period
+    mapping(uint256 => uint256) private _itemLockPeriod;
 
     error InvalidTokenId();
     error InvalidItemId();
     error ItemPaused();
     error InvalidSupply();
     error MaxSupply();
+    error ItemLocked();
 
     modifier itemValid(uint256 itemId) {
         if (itemId <= 0 && itemId > _itemId.current()) revert InvalidItemId();
@@ -80,10 +82,17 @@ contract Blyatversity is
 
     function _beforeTokenTransfers(
         address from,
-        address to,
+        address, // to,
         uint256 startTokenId,
-        uint256 quantity
-    ) internal virtual override {}
+        uint256 // quantity
+    ) internal virtual override {
+        // Ignore mints
+        if (from == address(0)) return;
+        uint256 currentTimestamp = block.timestamp;
+        uint256 itemId = _itemIds[startTokenId];
+        uint256 lockPeriod = _itemLockPeriod[itemId];
+        if (currentTimestamp < lockPeriod) revert ItemLocked();
+    }
 
     /**
      * @dev This is used instead of msg.sender as transactions won't be sent by the original token owner, but by OpenSea.
@@ -143,7 +152,7 @@ contract Blyatversity is
         _itemId.increment();
         uint256 itemId = _itemId.current();
         _itemMaxSupply[itemId] = supply;
-        _itemState[_itemId.current()] = ItemState.Limited;
+        _itemState[itemId] = ItemState.Limited;
     }
 
     function addItem() external onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -176,6 +185,13 @@ contract Blyatversity is
         uint256 itemId
     ) external onlyRole(DEFAULT_ADMIN_ROLE) itemValid(itemId) {
         _itemState[itemId] = ItemState.Paused;
+    }
+
+    function setLockPeriod(
+        uint256 itemId,
+        uint256 timePeriod
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _itemLockPeriod[itemId] = timePeriod;
     }
 
     /**
