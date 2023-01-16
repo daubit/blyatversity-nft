@@ -3,8 +3,8 @@ pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/Base64.sol";
 import "./IMetadataFactory.sol";
-import "./Base64.sol";
 import "./String.sol";
 import "hardhat/console.sol";
 
@@ -48,7 +48,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         string[] memory variants = new string[](currentAmount);
         for (uint256 attributeId; attributeId < currentAmount; attributeId++) {
             uint variantAmount = _variantCounter[attributeId].current();
-            uint randomIndex = uint16(uint(seed) % variantAmount);
+            uint randomIndex = uint16((uint(seed) % variantAmount) + 1);
             variants[attributeId] = _variants[attributeId][randomIndex];
         }
         return variants;
@@ -106,7 +106,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
             string memory attribute = _attributes[attributeId];
             _variantKind[variantId] = attribute;
         }
-        _svgs[variantId].concat(svgChunk);
+        _svgs[variantId] = _svgs[variantId].concat(svgChunk);
     }
 
     function addAttribute(
@@ -167,7 +167,6 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         string
             memory base = "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='1000' height='1000' viewBox='0 0 1000 1000'>";
         for (uint16 i; i < variants.length; i++) {
-            console.log("VARIANT: ", variants[i]);
             if (variants[i].equals("")) revert EmptyString();
             uint variantId = _indexedVariants[variants[i]];
             string memory svg = _svgs[variantId];
@@ -183,7 +182,6 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         string[] memory variants = collectVariants(seed);
         string memory attributes = generateAttributes(variants);
         string memory image = generateBase64Image(variants);
-        console.log("ENTER HERE 4!");
         string memory name = getName(variants);
         return
             Base64.encode(
