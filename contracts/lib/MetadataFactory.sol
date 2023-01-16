@@ -18,10 +18,13 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     mapping(uint256 => string) private _attributes;
     // Attribute => Variant
     mapping(string => string[]) private _variants;
+    // Variant => Attribute
+    mapping(string => string) private _variantKind;
     // Variant => svg
-    mapping(string => string) private _svg;
+    mapping(string => string) private _svgs;
 
     error NoSVG();
+    error UnequalArrays();
 
     constructor() {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -33,46 +36,57 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         _description = description;
     }
 
-    function collectData(bytes32 seed) internal view returns (string[] memory) {
+    function collectVariants(
+        bytes32 seed
+    ) internal view returns (string[] memory) {
         string[] memory variants = new string[](_attrAmount.current());
-        for (uint16 i; i < _attrAmount.current(); i++) {
-            string memory variant = getVariant(i, seed);
-            variants[i] = variant;
+        for (uint256 i; i < _attrAmount.current(); i++) {
+            string memory attribute = _attributes[i];
+            uint randomIndex = uint16(uint(seed) % _variants[attribute].length);
+            variants[i] = _variants[attribute][randomIndex];
         }
         return variants;
     }
 
-    function getVariant(
-        uint16 index,
-        bytes32 seed
-    ) internal view returns (string memory) {
-        string memory attribute = _indexedAttributes[index];
-        uint randomIndex = uint16(
-            uint(seed) % _attributes[attribute].variants.length
-        );
-        return _attributes[attribute].variants[randomIndex];
+    function addVariants(
+        uint256 attributeId,
+        string[] memory variants,
+        string[] memory svgs
+    ) external {
+        if (variants.length != svgs.length) revert UnequalArrays();
+        string memory attribute = _attributes[attributeId];
+        for (uint i; i < variants.length; i++) {
+            _variants[attribute].push(variants[i]);
+            _svgs[variants[i]] = svgs[i];
+            _variantKind[variants[i]] = attribute;
+        }
     }
 
-    function addAddtribute(
+    function addAttribute(
         string memory attribute
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _attributes[attribute] = Attribute({
-            name: attribute,
-            variants: new string[](0)
-        });
-        _indexedAttributes[_attrAmount.current()];
+        _attributes[_attrAmount.current()] = attribute;
         _attrAmount.increment();
     }
 
+    function addAttributes(
+        string[] memory attributes
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        for (uint i; i < attributes.length; i++) {
+            this.addAttribute(attributes[i]);
+        }
+    }
+
     function generateAttributes(
-        Element[] memory variants
+        string[] memory variants
     ) internal view returns (string memory) {
         string memory base = "[";
         for (uint16 i; i < variants.length; i++) {
+            string memory attribute = _variantKind[variants[i]];
             string memory value = string('{"trait_type":"')
-                .concat(variants[i].name)
+                .concat(attribute)
                 .concat('","value":"')
-                .concat(variants[i].variant)
+                .concat(variants[i])
                 .concat('"}');
             base = base.concat(value);
             if (i < _attrAmount.current() - 1) {
@@ -83,11 +97,11 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     }
 
     function getName(
-        Element[] memory variants
+        string[] memory variants
     ) internal pure returns (string memory) {
         string memory name = "";
         for (uint i; i < variants.length; i++) {
-            name.concat(variants[i].name).concat(" ");
+            name.concat(variants[i]).concat(" ");
         }
         return name;
     }
@@ -104,7 +118,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         string
             memory base = "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='800' height='800' viewBox='0 0 800 800'>";
         for (uint16 i; i < variants.length; i++) {
-            string memory svg = _svg[variants[i]];
+            string memory svg = _svgs[variants[i]];
             if (svg.equals("")) revert NoSVG();
             base = base.concat(svg);
         }
