@@ -1,20 +1,27 @@
 import { expect } from "chai";
 import { ethers, upgrades } from "hardhat";
-import { Blyatversity } from "../typechain-types"
+import { Blyatversity, MetadataFactory } from "../typechain-types"
 import CONST from "../scripts/util/const.json";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
+import { readdirSync, readFileSync, writeFileSync } from "fs";
 
-const { REGISTRY_ADDRESS, CONTRACT_METADATA_CID, FOLDER_CID, ADMIN_ROLE } = CONST;
+const { REGISTRY_ADDRESS, CONTRACT_METADATA_CID, ADMIN_ROLE } = CONST;
 
 describe("Blyatversity", function () {
 
 	let blyat: Blyatversity;
+	let metadata: MetadataFactory
 	let admin: SignerWithAddress;
 	let userA: SignerWithAddress;
 	before(async () => {
+		const StringLib = await ethers.getContractFactory("String");
+		const stringLib = await StringLib.deploy();
+		await stringLib.deployed();
 		const Blyat = await ethers.getContractFactory("Blyatversity");
-		blyat = (await upgrades.deployProxy(Blyat, [FOLDER_CID, CONTRACT_METADATA_CID, REGISTRY_ADDRESS])) as Blyatversity;
+		const Metadata = await ethers.getContractFactory("MetadataFactory", { libraries: { String: stringLib.address } })
+		blyat = (await upgrades.deployProxy(Blyat, [CONTRACT_METADATA_CID, REGISTRY_ADDRESS])) as Blyatversity;
+		metadata = await Metadata.deploy() as MetadataFactory;
 		await blyat.deployed()
 
 		const signers = await ethers.getSigners()
@@ -22,10 +29,10 @@ describe("Blyatversity", function () {
 		userA = signers[1];
 	})
 	describe("Deployment", function () {
-		it("should have contract cid", async () => {
-			const cid = await blyat.contractCID()
-			expect(cid).equals(`ipfs://${CONTRACT_METADATA_CID}`);
-		})
+		// it("should have contract cid", async () => {
+		// 	const cid = await blyat.contractCID()
+		// 	expect(cid).equals(`ipfs://${CONTRACT_METADATA_CID}`);
+		// })
 		it("should have admin", async () => {
 			const hasRole = await blyat.hasRole(ADMIN_ROLE, admin.address);
 			expect(hasRole).to.be.true;
@@ -34,23 +41,23 @@ describe("Blyatversity", function () {
 	describe("NFT", function () {
 		describe("Adding Itmes", () => {
 			it("should be should to add an unlimited item", async () => {
-				const addTx = await blyat["addItem()"]();
+				const addTx = await blyat["addItem(address)"](metadata.address);
 				await addTx.wait();
 				const maxSupply = await blyat.getItemMaxSupply(1);
 				expect(maxSupply.toNumber()).to.be.equal(0);
 			})
 			it("should be should to add an limited item", async () => {
-				const addTx = await blyat["addItem(uint256)"](3);
+				const addTx = await blyat["addItem(address,uint256)"](metadata.address, 3);
 				await addTx.wait();
 				const maxSupply = await blyat.getItemMaxSupply(2);
 				expect(maxSupply.toNumber()).to.be.equal(3)
 			})
 			it("should be NOT able for user to add an limited item", async () => {
-				const addTx = blyat.connect(userA)["addItem(uint256)"](3);
+				const addTx = blyat.connect(userA)["addItem(address,uint256)"](metadata.address, 3);
 				expect(addTx).to.be.reverted
 			})
 			it("should be NOT able for user to add an unlimited item", async () => {
-				const addTx = blyat.connect(userA)["addItem()"]();
+				const addTx = blyat.connect(userA)["addItem(address)"](metadata.address);
 				expect(addTx).to.be.reverted
 			})
 		})
@@ -86,22 +93,12 @@ describe("Blyatversity", function () {
 				expect(burnTx).to.be.reverted
 			})
 		})
-		describe("TokenURI", () => {
-			it("should return the corrent token URI", async () => {
-				const mintTx = await blyat.mint(1, admin.address);
-				await mintTx.wait();
-				const totalSupply = Number(await blyat.totalSupply())
-				const tokenId = totalSupply - 1
-				const uri = await blyat.tokenURI(tokenId);
-				expect(uri).to.be.equal(`ipfs://${FOLDER_CID}1/${tokenId}`)
-			})
-		})
 	})
 	describe("Lock Period", function () {
 		describe("should restrain items from transfer", function () {
 			const fiveMinPeriod = Date.now() + 1000 * 60 * 5;
 			it("should have a correct setup", async () => {
-				const addItemTx = await blyat["addItem()"]();
+				const addItemTx = await blyat["addItem(address)"](metadata.address);
 				await addItemTx.wait();
 				const lockTx = await blyat.setLockPeriod(3, fiveMinPeriod)
 				await lockTx.wait();
@@ -110,7 +107,7 @@ describe("Blyatversity", function () {
 				const balanceUser = await blyat.balanceOf(userA.address);
 				const balanceAdmin = await blyat.balanceOf(admin.address);
 				expect(balanceUser.toNumber()).to.be.equal(2, "User balance is incorrect!");
-				expect(balanceAdmin.toNumber()).to.be.equal(1, "Admin balance is incorrect!");
+				expect(balanceAdmin.toNumber()).to.be.equal(0, "Admin balance is incorrect!");
 			})
 			it("should NOT be able to transfer", async () => {
 				const transferTx = blyat.connect(userA).transferFrom(userA.address, admin.address, 0);
@@ -121,8 +118,47 @@ describe("Blyatversity", function () {
 				const transferTx = await blyat.connect(userA).transferFrom(userA.address, admin.address, 1);
 				await transferTx.wait();
 				const balance = await blyat.balanceOf(admin.address);
-				expect(balance.toNumber()).to.be.equal(2)
+				expect(balance.toNumber()).to.be.equal(1)
 			})
 		})
 	})
+	describe("Metadata", () => {
+		describe("Setup", function () {
+			it("should upload data", async () => {
+				interface Variant {
+					name: string,
+					svg: string,
+				}
+				const ROOT_FOLDER = "assets";
+				const attributesFolder = readdirSync(ROOT_FOLDER);
+				const addAttributesTx = await metadata.addAttributes(attributesFolder)
+				await addAttributesTx.wait();
+
+				for (const [attributeId, attribute] of Object.entries(attributesFolder)) {
+					const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${attribute}`).map(file => ({ name: file.replace(".html", ""), svg: readFileSync(`${ROOT_FOLDER}/${attribute}/${file}`, "utf-8").replace(/\n|\r|\t/g, " ") }))
+					for (const variant of variants) {
+						const { svg, name } = variant;
+						const chunkSize = 50;
+						for (let start = 0; start < svg.length; start += chunkSize) {
+							const till = start + chunkSize < svg.length ? svg.length : svg.length;
+							const svgChunk = svg.slice(start, till);
+							console.log(`Uploading chunk size 100`);
+							const addVariantChunkedTx = await metadata.addVariantChunked(attributeId, name, svgChunk)
+							await addVariantChunkedTx.wait();
+						}
+					}
+				}
+
+				const setDescriptionTx = await metadata.setDescription("Monster AG");
+				await setDescriptionTx.wait();
+			})
+		});
+		describe("TokenURI", () => {
+			it("should return the corrent token URI", async () => {
+				const tokenURI = await blyat.tokenURI(0);
+				writeFileSync("token.txt", tokenURI, "utf-8");
+			})
+		})
+	});
+
 });

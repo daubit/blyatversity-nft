@@ -1,8 +1,8 @@
 {
   "manifestVersion": "3.2",
   "admin": {
-    "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-    "txHash": "0xba17b4fd57551fa363bcd03e0910c3bc62e2c059204edf0b95e7003fe1cd7fcc"
+    "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+    "txHash": "0xb4f34be0b30af2871464f54ed1b6ada34facecb51a6ba31fa653f298d38aab94"
   },
   "proxies": [
     {
@@ -13,11 +13,6 @@
     {
       "address": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
       "txHash": "0xe7f1875d845a797587a0d488d818f06c6ba8f9e644c48799b87cf7cd307357d5",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-      "txHash": "0xb4d17b3213dd199924988db185f07de63aaf39cebe07f4c84bc01f0e10f95db6",
       "kind": "transparent"
     },
     {
@@ -88,6 +83,11 @@
     {
       "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
       "txHash": "0xc55f2da19c59754f4d84fff248ff85903e583b6615085eb47ddeecf616778baf",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      "txHash": "0x99a2ff8095477ec653f5583751cf4b2a03f4de8bb99a5a6985ffdab5b3cfe8ad",
       "kind": "transparent"
     }
   ],
@@ -279,6 +279,249 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_uint256,t_enum(ItemState)2427)": {
+            "label": "mapping(uint256 => enum Blyatversity.ItemState)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Counter)909_storage": {
+            "label": "struct CountersUpgradeable.Counter",
+            "members": [
+              {
+                "label": "_value",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)34_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "bda35f21db2d8a00c934117c3b93f8930ca477f70f9cb97142f7b480de37060f": {
+      "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      "txHash": "0xb9d9d545062030a6c3aef9bbd2496a99d2ad12cb0822a61bb442997c47edbb9f",
+      "layout": {
+        "solcVersion": "0.8.17",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)34_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:61"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:259"
+          },
+          {
+            "label": "domainSeperator",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_bytes32",
+            "contract": "EIP712Base",
+            "src": "cache\\solpp-generated-contracts\\common\\meta-transactions\\EIP712Base.sol:25"
+          },
+          {
+            "label": "nonces",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NativeMetaTransaction",
+            "src": "cache\\solpp-generated-contracts\\common\\meta-transactions\\NativeMetaTransaction.sol:22"
+          },
+          {
+            "label": "_proxyRegistryAddress",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_address",
+            "contract": "Blyatversity",
+            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:31"
+          },
+          {
+            "label": "_contractCID",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_string_storage",
+            "contract": "Blyatversity",
+            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:32"
+          },
+          {
+            "label": "_itemId",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_struct(Counter)909_storage",
+            "contract": "Blyatversity",
+            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:33"
+          },
+          {
+            "label": "_itemIds",
+            "offset": 0,
+            "slot": "156",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "Blyatversity",
+            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:42"
+          },
+          {
+            "label": "_itemMaxSupply",
+            "offset": 0,
+            "slot": "157",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "Blyatversity",
+            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:44"
+          },
+          {
+            "label": "_itemTotalSupply",
+            "offset": 0,
+            "slot": "158",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "Blyatversity",
+            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:46"
+          },
+          {
+            "label": "_itemState",
+            "offset": 0,
+            "slot": "159",
+            "type": "t_mapping(t_uint256,t_enum(ItemState)3987)",
+            "contract": "Blyatversity",
+            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:48"
+          },
+          {
+            "label": "_itemLockPeriod",
+            "offset": 0,
+            "slot": "160",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "Blyatversity",
+            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:50"
+          },
+          {
+            "label": "_metadataFactory",
+            "offset": 0,
+            "slot": "161",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "Blyatversity",
+            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:52"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_enum(ItemState)3987": {
+            "label": "enum Blyatversity.ItemState",
+            "members": [
+              "Paused",
+              "Limited",
+              "Unlimited"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_enum(ItemState)3987)": {
             "label": "mapping(uint256 => enum Blyatversity.ItemState)",
             "numberOfBytes": "32"
           },
