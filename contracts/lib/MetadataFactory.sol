@@ -16,12 +16,16 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     string private _description;
     // Id => Attribute
     mapping(uint256 => string) private _attributes;
-    // Attribute => Variant
-    mapping(string => string[]) private _variants;
-    // Variant => Attribute
-    mapping(string => string) private _variantKind;
-    // Variant => svg
-    mapping(string => string) private _svgs;
+    // AttributeId => Id => Variant
+    mapping(uint256 => mapping(uint256 => string)) private _variants;
+    // Variant => Id
+    mapping(string => Counters.Counter) private _indexedVariants;
+    // AttributeId => Variant Amount
+    mapping(uint256 => Counters.Counter) private _variantCounter;
+    // VariantId => Attribute
+    mapping(uint256 => string) private _variantKind;
+    // VariantId => svg
+    mapping(uint256 => string) private _svgs;
 
     error NoSVG();
     error UnequalArrays();
@@ -42,8 +46,9 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         string[] memory variants = new string[](_attrAmount.current());
         for (uint256 i; i < _attrAmount.current(); i++) {
             string memory attribute = _attributes[i];
-            uint randomIndex = uint16(uint(seed) % _variants[attribute].length);
-            variants[i] = _variants[attribute][randomIndex];
+            uint variantAmount = _variantCounter[i].current();
+            uint randomIndex = uint16(uint(seed) % variantAmount);
+            variants[i] = _variants[i][randomIndex];
         }
         return variants;
     }
@@ -56,10 +61,48 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         if (variants.length != svgs.length) revert UnequalArrays();
         string memory attribute = _attributes[attributeId];
         for (uint i; i < variants.length; i++) {
-            _variants[attribute].push(variants[i]);
-            _svgs[variants[i]] = svgs[i];
-            _variantKind[variants[i]] = attribute;
+            string memory variant = variants[i];
+            uint variantId = _indexedVariants[variant].current();
+            if (variantId == 0) {
+                _variantCounter[attributeId].increment();
+                variantId = _indexedVariants[variant].current();
+                _variants[attributeId][variantId] = variant;
+                _svgs[variantId] = svgs[i];
+                _variantKind[variantId] = attribute;
+            }
         }
+    }
+
+    function setVariant(
+        uint256 attributeId,
+        string memory variant,
+        string memory svg
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        uint variantId = _indexedVariants[variant].current();
+        if (variantId == 0) {
+            _variantCounter[attributeId].increment();
+            variantId = _indexedVariants[variant].current();
+            _variants[attributeId][variantId] = variant;
+        }
+        string memory attribute = _attributes[attributeId];
+        _svgs[variantId] = svg;
+        _variantKind[variantId] = attribute;
+    }
+
+    function addVariantChunked(
+        uint attributeId,
+        string memory variant,
+        string memory svgChunk
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        uint variantId = _indexedVariants[variant].current();
+        if (variantId == 0) {
+            _variantCounter[attributeId].increment();
+            variantId = _indexedVariants[variant].current();
+            _variants[attributeId][variantId] = variant;
+        }
+        string memory attribute = _attributes[attributeId];
+        _svgs[variantId].concat(svgChunk);
+        _variantKind[variantId] = attribute;
     }
 
     function addAttribute(
@@ -73,7 +116,8 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         string[] memory attributes
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         for (uint i; i < attributes.length; i++) {
-            this.addAttribute(attributes[i]);
+            _attributes[_attrAmount.current()] = attributes[i];
+            _attrAmount.increment();
         }
     }
 
@@ -82,7 +126,8 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     ) internal view returns (string memory) {
         string memory base = "[";
         for (uint16 i; i < variants.length; i++) {
-            string memory attribute = _variantKind[variants[i]];
+            uint variantId = _indexedVariants[variants[i]].current();
+            string memory attribute = _variantKind[variantId];
             string memory value = string('{"trait_type":"')
                 .concat(attribute)
                 .concat('","value":"')
@@ -116,9 +161,10 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         string[] memory variants
     ) internal view returns (string memory) {
         string
-            memory base = "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='800' height='800' viewBox='0 0 800 800'>";
+            memory base = "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='1000' height='1000' viewBox='0 0 1000 1000'>";
         for (uint16 i; i < variants.length; i++) {
-            string memory svg = _svgs[variants[i]];
+            uint variantId = _indexedVariants[variants[i]].current();
+            string memory svg = _svgs[variantId];
             if (svg.equals("")) revert NoSVG();
             base = base.concat(svg);
         }

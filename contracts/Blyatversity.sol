@@ -137,17 +137,23 @@ contract Blyatversity is
         _burn(id);
     }
 
-    function addItem(uint256 supply) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function addItem(
+        address factory,
+        uint256 supply
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (supply == 0) revert InvalidSupply();
         _itemId.increment();
         uint256 itemId = _itemId.current();
         _itemMaxSupply[itemId] = supply;
         _itemState[itemId] = ItemState.Limited;
+        _metadataFactory[itemId] = factory;
     }
 
-    function addItem() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function addItem(address factory) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _itemId.increment();
-        _itemState[_itemId.current()] = ItemState.Unlimited;
+        uint256 itemId = _itemId.current();
+        _itemState[itemId] = ItemState.Unlimited;
+        _metadataFactory[itemId] = factory;
     }
 
     function getItem(uint256 tokenId) external view returns (uint256) {
