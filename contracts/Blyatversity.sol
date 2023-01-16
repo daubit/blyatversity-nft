@@ -1,10 +1,13 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
 import "erc721a-upgradeable/contracts/ERC721AUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "./lib/IMetadataFactory.sol";
+import "./lib/String.sol";
+import "./lib/Base64.sol";
 import "./common/OpenSeaPolygonProxy.sol";
 import "./common/meta-transactions/ContentMixin.sol";
 import "./common/meta-transactions/NativeMetaTransaction.sol";
@@ -23,10 +26,10 @@ contract Blyatversity is
     NativeMetaTransaction
 {
     using CountersUpgradeable for CountersUpgradeable.Counter;
+    using String for string;
 
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     address public _proxyRegistryAddress;
-    string private _folderCID;
     string private _contractCID;
     CountersUpgradeable.Counter private _itemId;
 
@@ -46,6 +49,8 @@ contract Blyatversity is
     mapping(uint256 => ItemState) private _itemState;
     //ItemId => Lock Period
     mapping(uint256 => uint256) private _itemLockPeriod;
+    // ItemId => Metadata Contracts
+    mapping(uint256 => address) private _metadataFactory;
 
     error InvalidTokenId();
     error InvalidItemId();
@@ -66,12 +71,10 @@ contract Blyatversity is
     }
 
     function initialize(
-        string memory folderCID_,
         string memory contractCID_,
         address proxyRegistryAddress
     ) public initializer initializerERC721A {
         __ERC721A_init("Blyatversity", "Blyat");
-        _folderCID = folderCID_;
         _contractCID = contractCID_;
         _proxyRegistryAddress = proxyRegistryAddress;
 
@@ -104,16 +107,6 @@ contract Blyatversity is
         returns (address sender)
     {
         return ContextMixin.msgSender();
-    }
-
-    function _baseURI() internal pure override returns (string memory) {
-        return "ipfs://";
-    }
-
-    function setFolderCID(
-        string memory folderCID_
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _folderCID = folderCID_;
     }
 
     function setContractCID(
@@ -194,26 +187,29 @@ contract Blyatversity is
         _itemLockPeriod[itemId] = timePeriod;
     }
 
+    function generateMetadata(
+        uint256 tokenId
+    ) internal view returns (string memory) {
+        uint256 itemId = _itemIds[tokenId];
+        IMetadataFactory metadata = IMetadataFactory(_metadataFactory[itemId]);
+        return metadata.tokenURI(tokenId);
+    }
+
+    function generateTokenURI(
+        uint tokenId
+    ) internal view returns (string memory) {
+        string memory metadata = generateMetadata(tokenId);
+        return
+            string(abi.encodePacked("data:application/json;base64,", metadata));
+    }
+
     /**
      * @dev Returns the Uniform Resource Identifier (URI) for `tokenId` token.
      */
     function tokenURI(
         uint256 tokenId
     ) public view virtual override returns (string memory) {
-        if (!_exists(tokenId)) revert URIQueryForNonexistentToken();
-        string memory baseURI = _baseURI();
-        uint256 itemId = _itemIds[tokenId];
-        string memory path = string(abi.encodePacked(baseURI, _folderCID));
-        string memory tokenPath = string(
-            abi.encodePacked(
-                abi.encodePacked(_toString(itemId), "/"),
-                _toString(tokenId)
-            )
-        );
-        return
-            bytes(baseURI).length != 0
-                ? string(abi.encodePacked(path, tokenPath))
-                : "";
+        return generateTokenURI(tokenId);
     }
 
     /**
