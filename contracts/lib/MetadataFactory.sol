@@ -11,7 +11,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     using String for string;
     using Counters for Counters.Counter;
 
-    Counters.Counter private _attrAmount;
+    Counters.Counter private _attributeCounter;
 
     string private _description;
     // Id => Attribute
@@ -43,12 +43,15 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     function collectVariants(
         bytes32 seed
     ) internal view returns (string[] memory) {
-        string[] memory variants = new string[](_attrAmount.current());
-        for (uint256 i; i < _attrAmount.current(); i++) {
-            string memory attribute = _attributes[i];
-            uint variantAmount = _variantCounter[i].current();
+        string[] memory variants = new string[](_attributeCounter.current());
+        for (
+            uint256 attributeId;
+            attributeId < _attributeCounter.current();
+            attributeId++
+        ) {
+            uint variantAmount = _variantCounter[attributeId].current();
             uint randomIndex = uint16(uint(seed) % variantAmount);
-            variants[i] = _variants[i][randomIndex];
+            variants[attributeId] = _variants[attributeId][randomIndex];
         }
         return variants;
     }
@@ -83,10 +86,10 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
             _variantCounter[attributeId].increment();
             variantId = _indexedVariants[variant].current();
             _variants[attributeId][variantId] = variant;
+            string memory attribute = _attributes[attributeId];
+            _variantKind[variantId] = attribute;
         }
-        string memory attribute = _attributes[attributeId];
         _svgs[variantId] = svg;
-        _variantKind[variantId] = attribute;
     }
 
     function addVariantChunked(
@@ -99,25 +102,25 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
             _variantCounter[attributeId].increment();
             variantId = _indexedVariants[variant].current();
             _variants[attributeId][variantId] = variant;
+            string memory attribute = _attributes[attributeId];
+            _variantKind[variantId] = attribute;
         }
-        string memory attribute = _attributes[attributeId];
         _svgs[variantId].concat(svgChunk);
-        _variantKind[variantId] = attribute;
     }
 
     function addAttribute(
         string memory attribute
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _attributes[_attrAmount.current()] = attribute;
-        _attrAmount.increment();
+        _attributes[_attributeCounter.current()] = attribute;
+        _attributeCounter.increment();
     }
 
     function addAttributes(
         string[] memory attributes
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         for (uint i; i < attributes.length; i++) {
-            _attributes[_attrAmount.current()] = attributes[i];
-            _attrAmount.increment();
+            _attributes[_attributeCounter.current()] = attributes[i];
+            _attributeCounter.increment();
         }
     }
 
@@ -134,7 +137,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
                 .concat(variants[i])
                 .concat('"}');
             base = base.concat(value);
-            if (i < _attrAmount.current() - 1) {
+            if (i < _attributeCounter.current() - 1) {
                 base = base.concat(",");
             }
         }
