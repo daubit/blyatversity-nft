@@ -9,7 +9,6 @@ import "@nomicfoundation/hardhat-toolbox";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
-import "hardhat-ethernal";
 import "hardhat-contract-sizer";
 import "@nomiclabs/hardhat-solpp";
 import '@openzeppelin/hardhat-upgrades';
