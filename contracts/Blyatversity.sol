@@ -6,8 +6,6 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./lib/IMetadataFactory.sol";
-import "./lib/String.sol";
-import "./lib/Base64.sol";
 import "./common/OpenSeaPolygonProxy.sol";
 import "./common/meta-transactions/ContentMixin.sol";
 import "./common/meta-transactions/NativeMetaTransaction.sol";
@@ -26,7 +24,6 @@ contract Blyatversity is
     NativeMetaTransaction
 {
     using CountersUpgradeable for CountersUpgradeable.Counter;
-    using String for string;
 
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     address public _proxyRegistryAddress;

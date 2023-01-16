@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers, upgrades } from "hardhat";
-import { Blyatversity } from "../typechain-types/cache/solpp-generated-contracts/index"
+import { Blyatversity } from "../typechain-types"
 import CONST from "../scripts/util/const.json";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { time } from "@nomicfoundation/hardhat-network-helpers";

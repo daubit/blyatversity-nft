@@ -2,107 +2,109 @@
 pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 import "./IMetadataFactory.sol";
-import "./lib/Base64.sol";
-import "./lib/String.sol";
+import "./Base64.sol";
+import "./String.sol";
 
 contract MetadataFactory is IMetadataFactory, AccessControl {
     using String for string;
+    using Counters for Counters.Counter;
 
-    struct Variant {
-        string name;
-        string svg;
-    }
+    Counters.Counter private _attrAmount;
 
-    struct Attribute {
-        string name;
-        Variant[] variants;
-    }
+    string private _description;
+    // Id => Attribute
+    mapping(uint256 => string) private _attributes;
+    // Attribute => Variant
+    mapping(string => string[]) private _variants;
+    // Variant => svg
+    mapping(string => string) private _svg;
 
-    struct TmpData {
-        string name;
-        string variantName;
-        string svg;
-    }
+    error NoSVG();
 
     constructor() {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
-    mapping(uint16 => Attribute) private _attribs;
-    uint16 private _attribs_length = 0;
-
-    string private _description;
-
     function setDescription(
         string memory description
-    ) external onlyRole(DEFAULT_ADMINE_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _description = description;
     }
 
-    function collectData(
-        bytes32 seed
-    ) internal view returns (TmpData[] memory) {
-        TmpData[] memory r = new TmpData[](_attribs_length);
-        for (uint16 i; i < _attribs_length; i++) {
-            Variant memory v = getVariant(i, seed);
-            r[i] = TmpData({
-                name: _attribs[i].name,
-                variantName: v.name,
-                svg: v.svg
-            });
+    function collectData(bytes32 seed) internal view returns (string[] memory) {
+        string[] memory variants = new string[](_attrAmount.current());
+        for (uint16 i; i < _attrAmount.current(); i++) {
+            string memory variant = getVariant(i, seed);
+            variants[i] = variant;
         }
-        return r;
-    }
-
-    function getVariantIndex(bytes32 seed) internal view returns (uint16) {
-        return 0;
+        return variants;
     }
 
     function getVariant(
         uint16 index,
         bytes32 seed
-    ) internal view returns (Variant memory) {
-        return _attribs[index].variants[getVariantIndex(seed)];
+    ) internal view returns (string memory) {
+        string memory attribute = _indexedAttributes[index];
+        uint randomIndex = uint16(
+            uint(seed) % _attributes[attribute].variants.length
+        );
+        return _attributes[attribute].variants[randomIndex];
+    }
+
+    function addAddtribute(
+        string memory attribute
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _attributes[attribute] = Attribute({
+            name: attribute,
+            variants: new string[](0)
+        });
+        _indexedAttributes[_attrAmount.current()];
+        _attrAmount.increment();
     }
 
     function generateAttributes(
-        TmpData[] memory d
+        Element[] memory variants
     ) internal view returns (string memory) {
         string memory base = "[";
-        for (uint16 i; i < d.length; i++) {
+        for (uint16 i; i < variants.length; i++) {
             string memory value = string('{"trait_type":"')
-                .concat(d[i].name)
+                .concat(variants[i].name)
                 .concat('","value":"')
-                .concat(d[i].variantName)
+                .concat(variants[i].variant)
                 .concat('"}');
             base = base.concat(value);
-            if (i < _attribs_length - 1) {
+            if (i < _attrAmount.current() - 1) {
                 base = base.concat(",");
             }
         }
         return base.concat("]");
     }
 
-    function getName(TmpData[] memory d) internal view returns (string memory) {
-        return "Bruh";
+    function getName(
+        Element[] memory variants
+    ) internal pure returns (string memory) {
+        string memory name = "";
+        for (uint i; i < variants.length; i++) {
+            name.concat(variants[i].name).concat(" ");
+        }
+        return name;
     }
 
-    error NoSVG();
-
     function generateBase64Image(
-        TmpData[] memory d
+        string[] memory variants
     ) public view returns (string memory) {
-        return Base64.encode(bytes(generateImage(d)));
+        return Base64.encode(bytes(generateImage(variants)));
     }
 
     function generateImage(
-        TmpData[] memory d
+        string[] memory variants
     ) internal view returns (string memory) {
         string
             memory base = "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='800' height='800' viewBox='0 0 800 800'>";
-        for (uint16 i; i < d.length; i++) {
-            string memory svg = d[i].svg;
+        for (uint16 i; i < variants.length; i++) {
+            string memory svg = _svg[variants[i]];
             if (svg.equals("")) revert NoSVG();
             base = base.concat(svg);
         }
@@ -112,10 +114,10 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 
     function tokenURI(uint256 tokenId) external view returns (string memory) {
         bytes32 seed = keccak256(abi.encodePacked(tokenId));
-        TmpData[] memory d = collectData(seed);
-        string memory attributes = generateAttributes(d);
-        string memory image = generateBase64Image(d);
-        string memory name = getName(d);
+        string[] memory variants = collectVariants(seed);
+        string memory attributes = generateAttributes(variants);
+        string memory image = generateBase64Image(variants);
+        string memory name = getName(variants);
         return
             Base64.encode(
                 abi.encodePacked(

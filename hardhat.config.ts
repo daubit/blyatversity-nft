@@ -13,7 +13,7 @@ import "hardhat-ethernal";
 import "hardhat-contract-sizer";
 import "@nomiclabs/hardhat-solpp";
 import '@openzeppelin/hardhat-upgrades';
-import { mint } from "./scripts/mint";
+import { mint } from "./scripts/task";
 
 dotenv.config();
 
@@ -30,7 +30,7 @@ task(
   }
 );
 
-task("mint", "Mint Blyat Token", mint).addParam("booking", "Id of the receipt").addParam("to", "Address to mint to")
+task("mint", "Mint Blyat Token", mint).addParam("to", "Address to mint to")
 
 const MNEMONIC = process.env.MNEMONIC;
 const ALCHEMY_KEY_MAINNET = process.env.ALCHEMY_KEY_MAINNET;
