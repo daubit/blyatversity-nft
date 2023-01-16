@@ -124,7 +124,7 @@ describe("Blyatversity", function () {
 	})
 	describe("Metadata", () => {
 		describe("Setup", function () {
-			it("should upload data", async () => {
+			it("should upload data", async function () {
 				interface Variant {
 					name: string,
 					svg: string,
@@ -138,12 +138,11 @@ describe("Blyatversity", function () {
 					const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${attribute}`).map(file => ({ name: file.replace(".html", ""), svg: readFileSync(`${ROOT_FOLDER}/${attribute}/${file}`, "utf-8").replace(/\n|\r|\t/g, " ") }))
 					for (const variant of variants) {
 						const { svg, name } = variant;
-						const chunkSize = 50;
+						const chunkSize = 50000;
 						for (let start = 0; start < svg.length; start += chunkSize) {
 							const till = start + chunkSize < svg.length ? svg.length : svg.length;
 							const svgChunk = svg.slice(start, till);
-							console.log(`Uploading chunk size 100`);
-							const addVariantChunkedTx = await metadata.addVariantChunked(attributeId, name, svgChunk)
+							const addVariantChunkedTx = await metadata.addVariantChunked(attributeId, name, svgChunk, { gasLimit: 30_000_000 })
 							await addVariantChunkedTx.wait();
 						}
 					}
