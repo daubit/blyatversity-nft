@@ -138,7 +138,7 @@ describe("Blyatversity", function () {
 				for (let i = 0; i < attributesFolder.length; i++) {
 					const attribute = attributesFolder[i];
 					const attributeId = i + 1;
-					const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${attribute}`).map(file => ({ name: file.replace(".html", ""), svg: encodeURIComponent(encodeURIComponent(minify(readFileSync(`${ROOT_FOLDER}/${attribute}/${file}`, "utf-8").replace(/\n|\r|\t/g, " "), { collapseWhitespace: true, removeComments: true, minifyCSS: true, collapseInlineTagWhitespace: true }))) }))
+					const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${attribute}`).map(file => ({ name: file.replace(".html", ""), svg: encodeURIComponent(encodeURIComponent(minify(readFileSync(`${ROOT_FOLDER}/${attribute}/${file}`, "utf-8").replace(/\n|\r|\t/g, " "), { collapseWhitespace: true }))) }))
 					for (const variant of variants) {
 						const { svg, name } = variant;
 						const chunkSize = 30000;
@@ -150,7 +150,6 @@ describe("Blyatversity", function () {
 						}
 					}
 				}
-
 				const setDescriptionTx = await metadata.setDescription("Monster AG");
 				await setDescriptionTx.wait();
 			})
@@ -158,7 +157,7 @@ describe("Blyatversity", function () {
 		describe("TokenURI", () => {
 			it("should return the corrent token URI", async function () {
 				const tokenURI = await blyat.tokenURI(0);
-				writeFileSync("token.txt", tokenURI, "utf-8");
+				writeFileSync("token-0.txt", tokenURI, "utf-8");
 			})
 		})
 	});

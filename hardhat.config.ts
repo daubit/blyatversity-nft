@@ -95,6 +95,9 @@ const config: HardhatUserConfig = {
   solpp: {
     defs: { OPENSEA_POLYGON: process.env.OPENSEA_POLYGON },
   },
+  mocha: {
+    timeout: 400_000
+  }
 };
 export default config;
 
