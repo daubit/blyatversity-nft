@@ -17,16 +17,17 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     string private _description;
     // Id => Attribute
     mapping(uint256 => string) private _attributes;
-    // AttributeId => Id => Variant
-    mapping(uint256 => mapping(uint256 => string)) private _variants;
     // Variant => Id
     mapping(string => uint256) private _indexedVariants;
     // AttributeId => Variant Amount
     mapping(uint256 => Counters.Counter) private _variantCounter;
-    // VariantId => Attribute
-    mapping(uint256 => string) private _variantKind;
-    // VariantId => svg
-    mapping(uint256 => string) private _svgs;
+
+    // AttributeId => VariantId => Variant
+    mapping(uint256 => mapping(uint256 => string)) private _variants;
+    // AttributeId => VariantId => Attribute
+    mapping(uint256 => mapping(uint256 => string)) private _variantKind;
+    // AttributeId => VariantId => svg
+    mapping(uint256 => mapping(uint256 => string)) private _svgs;
 
     error ZeroValue();
     error EmptyString();
@@ -36,25 +37,35 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
+    function tokenURI(uint256 tokenId) external view returns (string memory) {
+        bytes32 seed = keccak256(abi.encodePacked(tokenId));
+        string[] memory variants = _collectVariants(seed);
+        string memory attributes = _generateAttributes(variants);
+        string memory image = _generateImage(variants);
+        string memory name = _getName(variants);
+        return
+            string(
+                abi.encodePacked(
+                    "data:application/json,%7B%22name%22%3A%22",
+                    name,
+                    "%22%2C",
+                    "%22description%22%3A%22",
+                    _description,
+                    "%22%2C",
+                    "%22animation_url%22%3A%22data%3Atext%2Fhtml%2C",
+                    image,
+                    "%22%2C",
+                    "%22attributes%22%3A",
+                    attributes,
+                    "%7D"
+                )
+            );
+    }
+
     function setDescription(
         string memory description
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _description = description;
-    }
-
-    function _collectVariants(
-        bytes32 seed
-    ) internal view returns (string[] memory) {
-        uint currentAmount = _attributeCounter.current();
-        string[] memory variants = new string[](currentAmount);
-        for (uint256 i; i < currentAmount; i++) {
-            uint attributeId = i + 1;
-            uint variantAmount = _variantCounter[attributeId].current();
-            require(variantAmount != 0, "ZeroValue");
-            uint randomIndex = uint16((uint(seed) % variantAmount) + 1);
-            variants[i] = _variants[attributeId][randomIndex];
-        }
-        return variants;
     }
 
     function addVariants(
@@ -72,8 +83,8 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
                 variantId = _variantCounter[attributeId].current();
                 _indexedVariants[variant] = variantId;
                 _variants[attributeId][variantId] = variant;
-                _svgs[variantId] = svgs[i];
-                _variantKind[variantId] = attribute;
+                _svgs[attributeId][variantId] = svgs[i];
+                _variantKind[attributeId][variantId] = attribute;
             }
         }
     }
@@ -90,9 +101,9 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
             _indexedVariants[variant] = variantId;
             _variants[attributeId][variantId] = variant;
             string memory attribute = _attributes[attributeId];
-            _variantKind[variantId] = attribute;
+            _variantKind[attributeId][variantId] = attribute;
         }
-        _svgs[variantId] = svg;
+        _svgs[attributeId][variantId] = svg;
     }
 
     function addVariantChunked(
@@ -107,9 +118,11 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
             _indexedVariants[variant] = variantId;
             _variants[attributeId][variantId] = variant;
             string memory attribute = _attributes[attributeId];
-            _variantKind[variantId] = attribute;
+            _variantKind[attributeId][variantId] = attribute;
         }
-        _svgs[variantId] = _svgs[variantId].concat(svgChunk);
+        _svgs[attributeId][variantId] = _svgs[attributeId][variantId].concat(
+            svgChunk
+        );
     }
 
     function addAttribute(
@@ -128,13 +141,29 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         }
     }
 
+    function _collectVariants(
+        bytes32 seed
+    ) internal view returns (string[] memory) {
+        uint currentAmount = _attributeCounter.current();
+        string[] memory variants = new string[](currentAmount);
+        for (uint256 i; i < currentAmount; i++) {
+            uint attributeId = i + 1;
+            uint variantAmount = _variantCounter[attributeId].current();
+            require(variantAmount != 0, "ZeroValue");
+            uint randomIndex = uint16((uint(seed) % variantAmount) + 1);
+            variants[i] = _variants[attributeId][randomIndex];
+        }
+        return variants;
+    }
+
     function _generateAttributes(
         string[] memory variants
     ) internal view returns (string memory) {
         string memory base = "%5B";
         for (uint16 i; i < variants.length; i++) {
+            uint256 attributeId = i + 1;
             uint variantId = _indexedVariants[variants[i]];
-            string memory attribute = _variantKind[variantId];
+            string memory attribute = _variantKind[attributeId][variantId];
             string memory value = string("%7B%22trait_type%22%3A%22")
                 .concat(attribute)
                 .concat("%22%2C%22value%22%3A%22")
@@ -164,39 +193,14 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         string
             memory base = "%253Csvg%2520xmlns%253D%27http%253A%252F%252Fwww.w3.org%252F2000%252Fsvg%27%2520xmlns%253Axlink%25C-9.43-1.61-1.3D%27http%253A%252F%252Fwww.w3.org%252F1999%252Fxlink%27%2520width%253D%271000%27%2520height%253D%271-6-3.13-7.66-5000%27%2520viewBox%253D%270%25200%25201000%25201000%27%253E";
         for (uint16 i; i < variants.length; i++) {
+            uint256 attributeId = i + 1;
             require(!variants[i].equals(""), "EmptyString");
             uint variantId = _indexedVariants[variants[i]];
-            string memory svg = _svgs[variantId];
+            string memory svg = _svgs[attributeId][variantId];
             require(!svg.equals(""), "EmptyString");
             base = base.concat(svg);
         }
         base = base.concat("%253C%252Fsvg%253E");
         return base;
-    }
-
-    function tokenURI(uint256 tokenId) external view returns (string memory) {
-        bytes32 seed = keccak256(abi.encodePacked(tokenId));
-        string[] memory variants = _collectVariants(seed);
-        string memory attributes = _generateAttributes(variants);
-        string memory image = _generateImage(variants);
-        console.log("HERE");
-        string memory name = _getName(variants);
-        return
-            string(
-                abi.encodePacked(
-                    "data:application/json,%7B%22name%22%3A%22",
-                    name,
-                    "%22%2C",
-                    "%22description%22%3A%22",
-                    _description,
-                    "%22%2C",
-                    "%22animation_url%22%3A%22data%3Atext%2Fhtml%2C",
-                    image,
-                    "%22%2C",
-                    "%22attributes%22%3A",
-                    attributes,
-                    "%7D"
-                )
-            );
     }
 }

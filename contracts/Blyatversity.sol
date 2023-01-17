@@ -9,6 +9,7 @@ import "./lib/IMetadataFactory.sol";
 import "./common/OpenSeaPolygonProxy.sol";
 import "./common/meta-transactions/ContentMixin.sol";
 import "./common/meta-transactions/NativeMetaTransaction.sol";
+import "hardhat/console.sol";
 
 /**
  *
@@ -190,21 +191,15 @@ contract Blyatversity is
         _itemLockPeriod[itemId] = timePeriod;
     }
 
-    function generateTokenURI(
-        uint256 tokenId
-    ) internal view returns (string memory) {
-        uint256 itemId = _itemIds[tokenId];
-        IMetadataFactory metadata = IMetadataFactory(_metadataFactory[itemId]);
-        return metadata.tokenURI(tokenId);
-    }
-
     /**
      * @dev Returns the Uniform Resource Identifier (URI) for `tokenId` token.
      */
     function tokenURI(
         uint256 tokenId
     ) public view virtual override returns (string memory) {
-        return generateTokenURI(tokenId);
+        uint256 itemId = _itemIds[tokenId];
+        IMetadataFactory metadata = IMetadataFactory(_metadataFactory[itemId]);
+        return metadata.tokenURI(tokenId);
     }
 
     /**
