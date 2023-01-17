@@ -193,7 +193,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         string[] memory variants
     ) internal view returns (string memory) {
         string
-            memory base = "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='1000' height='1000' viewBox='0 0 1000 1000'>";
+            memory base = "<svg width='1000' height='1000' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 1000 1000'>";
         uint amount = variants.length;
         for (uint16 i; i < amount; i++) {
             uint256 attributeId = i + 1;

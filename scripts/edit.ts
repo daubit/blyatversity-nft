@@ -9,9 +9,11 @@ for (const attribute of attributes) {
         const defsTag = file.match(/<defs([\s\S]*)defs>/g) ?? []
         if (defsTag.length !== 1) throw new Error(defsTag.toString())
         const styleClasses = [...new Set(defsTag[0].match(/\.[a-zA-Z]\S*[0-9]/g) ?? [])]
-        for (const styleClass of styleClasses) {
+        for (let i = 0; i < styleClasses.length; i++) {
+            const styleClass = styleClasses[i];
             const className = new RegExp(styleClass.replace(".", ""), "g");
-            const newClassName = `${attribute}-${fileName.replace(".html", "")}-1`
+            console.log({ className })
+            const newClassName = `${attribute}-${fileName.replace(".html", "")}-${i}`
             file = file.replace(className, newClassName);
             writeFileSync(`${ROOT_FOLDER}/${attribute}/${fileName}`, file);
         }
