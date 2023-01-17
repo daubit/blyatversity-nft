@@ -17,11 +17,10 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     string private _description;
     // Id => Attribute
     mapping(uint256 => string) private _attributes;
-    // Variant => Id
-    mapping(string => uint256) private _indexedVariants;
+    // AttributeId => Variant => Id
+    mapping(uint256 => mapping(string => uint256)) private _indexedVariants;
     // AttributeId => Variant Amount
     mapping(uint256 => Counters.Counter) private _variantCounter;
-
     // AttributeId => VariantId => Variant
     mapping(uint256 => mapping(uint256 => string)) private _variants;
     // AttributeId => VariantId => Attribute
@@ -77,11 +76,11 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         string memory attribute = _attributes[attributeId];
         for (uint i; i < variants.length; i++) {
             string memory variant = variants[i];
-            uint variantId = _indexedVariants[variant];
+            uint variantId = _indexedVariants[attributeId][variant];
             if (variantId == 0) {
                 _variantCounter[attributeId].increment();
                 variantId = _variantCounter[attributeId].current();
-                _indexedVariants[variant] = variantId;
+                _indexedVariants[attributeId][variant] = variantId;
                 _variants[attributeId][variantId] = variant;
                 _svgs[attributeId][variantId] = svgs[i];
                 _variantKind[attributeId][variantId] = attribute;
@@ -94,11 +93,11 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         string memory variant,
         string memory svg
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        uint variantId = _indexedVariants[variant];
+        uint variantId = _indexedVariants[attributeId][variant];
         if (variantId == 0) {
             _variantCounter[attributeId].increment();
             variantId = _variantCounter[attributeId].current();
-            _indexedVariants[variant] = variantId;
+            _indexedVariants[attributeId][variant] = variantId;
             _variants[attributeId][variantId] = variant;
             string memory attribute = _attributes[attributeId];
             _variantKind[attributeId][variantId] = attribute;
@@ -111,11 +110,11 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         string memory variant,
         string memory svgChunk
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        uint variantId = _indexedVariants[variant];
+        uint variantId = _indexedVariants[attributeId][variant];
         if (variantId == 0) {
             _variantCounter[attributeId].increment();
             variantId = _variantCounter[attributeId].current();
-            _indexedVariants[variant] = variantId;
+            _indexedVariants[attributeId][variant] = variantId;
             _variants[attributeId][variantId] = variant;
             string memory attribute = _attributes[attributeId];
             _variantKind[attributeId][variantId] = attribute;
@@ -162,7 +161,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         string memory base = "%5B";
         for (uint16 i; i < variants.length; i++) {
             uint256 attributeId = i + 1;
-            uint variantId = _indexedVariants[variants[i]];
+            uint variantId = _indexedVariants[attributeId][variants[i]];
             string memory attribute = _variantKind[attributeId][variantId];
             string memory value = string("%7B%22trait_type%22%3A%22")
                 .concat(attribute)
@@ -195,7 +194,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         for (uint16 i; i < variants.length; i++) {
             uint256 attributeId = i + 1;
             require(!variants[i].equals(""), "EmptyString");
-            uint variantId = _indexedVariants[variants[i]];
+            uint variantId = _indexedVariants[attributeId][variants[i]];
             string memory svg = _svgs[attributeId][variantId];
             require(!svg.equals(""), "EmptyString");
             base = base.concat(svg);
