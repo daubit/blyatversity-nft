@@ -138,10 +138,10 @@ describe("Blyatversity", function () {
 				for (let i = 0; i < attributesFolder.length; i++) {
 					const attribute = attributesFolder[i];
 					const attributeId = i + 1;
-					const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${attribute}`).map(file => ({ name: file.replace(".html", ""), svg: encodeURIComponent(encodeURIComponent(minify(readFileSync(`${ROOT_FOLDER}/${attribute}/${file}`, "utf-8").replace(/\n|\r|\t/g, " "), { collapseWhitespace: true }))) }))
+					const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${attribute}`).map(file => ({ name: file.replace(".html", ""), svg: minify(readFileSync(`${ROOT_FOLDER}/${attribute}/${file}`, "utf-8").replace(/\n|\r|\t/g, " "), { collapseWhitespace: true }) }))
 					for (const variant of variants) {
 						const { svg, name } = variant;
-						const chunkSize = 30000;
+						const chunkSize = 30_000;
 						for (let start = 0; start < svg.length; start += chunkSize) {
 							const till = start + chunkSize < svg.length ? start + chunkSize : svg.length;
 							const svgChunk = svg.slice(start, till);

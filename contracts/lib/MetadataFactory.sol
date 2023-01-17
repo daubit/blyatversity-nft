@@ -51,7 +51,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
                     "%22description%22%3A%22",
                     _description,
                     "%22%2C",
-                    "%22animation_url%22%3A%22data%3Atext%2Fhtml%2C",
+                    "%22animation_url%22%3A%22data%3Atext%2Fhtml%3Bbase64%2C",
                     image,
                     "%22%2C",
                     "%22attributes%22%3A",
@@ -163,11 +163,15 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
             uint256 attributeId = i + 1;
             uint variantId = _indexedVariants[attributeId][variants[i]];
             string memory attribute = _variantKind[attributeId][variantId];
-            string memory value = string("%7B%22trait_type%22%3A%22")
-                .concat(attribute)
-                .concat("%22%2C%22value%22%3A%22")
-                .concat(variants[i])
-                .concat("%22%7D");
+            string memory value = string(
+                abi.encodePacked(
+                    "%7B%22trait_type%22%3A%22",
+                    attribute,
+                    "%22%2C%22value%22%3A%22",
+                    variants[i],
+                    "%22%7D"
+                )
+            );
             base = base.concat(value);
             if (i < _attributeCounter.current() - 1) {
                 base = base.concat("%22%2C");
@@ -190,16 +194,14 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         string[] memory variants
     ) internal view returns (string memory) {
         string
-            memory base = "%253Csvg%2520xmlns%253D%27http%253A%252F%252Fwww.w3.org%252F2000%252Fsvg%27%2520xmlns%253Axlink%25C-9.43-1.61-1.3D%27http%253A%252F%252Fwww.w3.org%252F1999%252Fxlink%27%2520width%253D%271000%27%2520height%253D%271-6-3.13-7.66-5000%27%2520viewBox%253D%270%25200%25201000%25201000%27%253E";
-        for (uint16 i; i < variants.length; i++) {
+            memory base = "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='1000' height='1000' viewBox='0 0 1000 1000'>";
+        uint amount = variants.length;
+        for (uint16 i; i < amount; i++) {
             uint256 attributeId = i + 1;
-            require(!variants[i].equals(""), "EmptyString");
             uint variantId = _indexedVariants[attributeId][variants[i]];
-            string memory svg = _svgs[attributeId][variantId];
-            require(!svg.equals(""), "EmptyString");
-            base = base.concat(svg);
+            base = base.concat(_svgs[attributeId][variantId]);
         }
-        base = base.concat("%253C%252Fsvg%253E");
-        return base;
+        base = base.concat("</svg>");
+        return Base64.encode(bytes(base));
     }
 }
