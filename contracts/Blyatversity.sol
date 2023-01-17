@@ -190,20 +190,12 @@ contract Blyatversity is
         _itemLockPeriod[itemId] = timePeriod;
     }
 
-    function generateMetadata(
+    function generateTokenURI(
         uint256 tokenId
     ) internal view returns (string memory) {
         uint256 itemId = _itemIds[tokenId];
         IMetadataFactory metadata = IMetadataFactory(_metadataFactory[itemId]);
         return metadata.tokenURI(tokenId);
-    }
-
-    function generateTokenURI(
-        uint tokenId
-    ) internal view returns (string memory) {
-        string memory metadata = generateMetadata(tokenId);
-        return
-            string(abi.encodePacked("data:application/json;base64,", metadata));
     }
 
     /**

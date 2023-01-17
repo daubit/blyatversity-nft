@@ -5,6 +5,7 @@ import CONST from "../scripts/util/const.json";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
 import { readdirSync, readFileSync, writeFileSync } from "fs";
+import { minify } from "html-minifier"
 
 const { REGISTRY_ADDRESS, CONTRACT_METADATA_CID, ADMIN_ROLE } = CONST;
 
@@ -134,11 +135,13 @@ describe("Blyatversity", function () {
 				const addAttributesTx = await metadata.addAttributes(attributesFolder)
 				await addAttributesTx.wait();
 
-				for (const [attributeId, attribute] of Object.entries(attributesFolder)) {
-					const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${attribute}`).map(file => ({ name: file.replace(".html", ""), svg: readFileSync(`${ROOT_FOLDER}/${attribute}/${file}`, "utf-8").replace(/\n|\r|\t/g, " ") }))
+				for (let i = 0; i < attributesFolder.length; i++) {
+					const attribute = attributesFolder[i];
+					const attributeId = i + 1;
+					const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${attribute}`).map(file => ({ name: file.replace(".html", ""), svg: encodeURIComponent(encodeURIComponent(minify(readFileSync(`${ROOT_FOLDER}/${attribute}/${file}`, "utf-8").replace(/\n|\r|\t/g, " "), { collapseWhitespace: true, removeComments: true, minifyCSS: true, collapseInlineTagWhitespace: true }))) }))
 					for (const variant of variants) {
 						const { svg, name } = variant;
-						const chunkSize = 10000;
+						const chunkSize = 30000;
 						for (let start = 0; start < svg.length; start += chunkSize) {
 							const till = start + chunkSize < svg.length ? start + chunkSize : svg.length;
 							const svgChunk = svg.slice(start, till);
@@ -153,7 +156,7 @@ describe("Blyatversity", function () {
 			})
 		});
 		describe("TokenURI", () => {
-			it("should return the corrent token URI", async () => {
+			it("should return the corrent token URI", async function () {
 				const tokenURI = await blyat.tokenURI(0);
 				writeFileSync("token.txt", tokenURI, "utf-8");
 			})

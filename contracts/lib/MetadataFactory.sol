@@ -28,6 +28,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     // VariantId => svg
     mapping(uint256 => string) private _svgs;
 
+    error ZeroValue();
     error EmptyString();
     error UnequalArrays();
 
@@ -41,15 +42,17 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         _description = description;
     }
 
-    function collectVariants(
+    function _collectVariants(
         bytes32 seed
     ) internal view returns (string[] memory) {
         uint currentAmount = _attributeCounter.current();
         string[] memory variants = new string[](currentAmount);
-        for (uint256 attributeId; attributeId < currentAmount; attributeId++) {
+        for (uint256 i; i < currentAmount; i++) {
+            uint attributeId = i + 1;
             uint variantAmount = _variantCounter[attributeId].current();
+            require(variantAmount != 0, "ZeroValue");
             uint randomIndex = uint16((uint(seed) % variantAmount) + 1);
-            variants[attributeId] = _variants[attributeId][randomIndex];
+            variants[i] = _variants[attributeId][randomIndex];
         }
         return variants;
     }
@@ -125,79 +128,74 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         }
     }
 
-    function generateAttributes(
+    function _generateAttributes(
         string[] memory variants
     ) internal view returns (string memory) {
-        string memory base = "[";
+        string memory base = "%5B";
         for (uint16 i; i < variants.length; i++) {
             uint variantId = _indexedVariants[variants[i]];
             string memory attribute = _variantKind[variantId];
-            string memory value = string('{"trait_type":"')
+            string memory value = string("%7B%22trait_type%22%3A%22")
                 .concat(attribute)
-                .concat('","value":"')
+                .concat("%22%2C%22value%22%3A%22")
                 .concat(variants[i])
-                .concat('"}');
+                .concat("%22%7D");
             base = base.concat(value);
             if (i < _attributeCounter.current() - 1) {
-                base = base.concat(",");
+                base = base.concat("%22%2C");
             }
         }
-        return base.concat("]");
+        return base.concat("%5D");
     }
 
-    function getName(
+    function _getName(
         string[] memory variants
     ) internal pure returns (string memory) {
         string memory name = "";
         for (uint i; i < variants.length; i++) {
-            name = name.concat(variants[i]).concat(" ");
+            name = name.concat(variants[i]).concat("%20");
         }
         return name;
     }
 
-    function generateBase64Image(
-        string[] memory variants
-    ) public view returns (string memory) {
-        return Base64.encode(bytes(generateImage(variants)));
-    }
-
-    function generateImage(
+    function _generateImage(
         string[] memory variants
     ) internal view returns (string memory) {
         string
-            memory base = "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='1000' height='1000' viewBox='0 0 1000 1000'>";
+            memory base = "%253Csvg%2520xmlns%253D%27http%253A%252F%252Fwww.w3.org%252F2000%252Fsvg%27%2520xmlns%253Axlink%25C-9.43-1.61-1.3D%27http%253A%252F%252Fwww.w3.org%252F1999%252Fxlink%27%2520width%253D%271000%27%2520height%253D%271-6-3.13-7.66-5000%27%2520viewBox%253D%270%25200%25201000%25201000%27%253E";
         for (uint16 i; i < variants.length; i++) {
-            if (variants[i].equals("")) revert EmptyString();
+            require(!variants[i].equals(""), "EmptyString");
             uint variantId = _indexedVariants[variants[i]];
             string memory svg = _svgs[variantId];
-            if (svg.equals("")) revert EmptyString();
+            require(!svg.equals(""), "EmptyString");
             base = base.concat(svg);
         }
-        base = base.concat("</svg>");
+        base = base.concat("%253C%252Fsvg%253E");
         return base;
     }
 
     function tokenURI(uint256 tokenId) external view returns (string memory) {
         bytes32 seed = keccak256(abi.encodePacked(tokenId));
-        string[] memory variants = collectVariants(seed);
-        string memory attributes = generateAttributes(variants);
-        string memory image = generateBase64Image(variants);
-        string memory name = getName(variants);
+        string[] memory variants = _collectVariants(seed);
+        string memory attributes = _generateAttributes(variants);
+        string memory image = _generateImage(variants);
+        console.log("HERE");
+        string memory name = _getName(variants);
         return
-            Base64.encode(
+            string(
                 abi.encodePacked(
-                    '{"name":"',
+                    "data:application/json,%7B%22name%22%3A%22",
                     name,
-                    '",',
-                    '"description":"',
+                    "%22%2C",
+                    "%22description%22%3A%22",
                     _description,
-                    '",',
-                    '"animation_url":"data:text/html;base64,',
+                    "%22%2C",
+                    "%22animation_url%22%3A%22data%3Atext%2Fhtml%2C",
                     image,
-                    '",',
-                    '"attributes":',
+                    "%22%2C",
+                    "%22attributes%22%3A",
                     attributes,
-                    "}"
+                    "%7D"
                 )
             );
     }

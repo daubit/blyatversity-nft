@@ -29,7 +29,7 @@ task(
   }
 );
 
-task("mint", "Mint Blyat Token", mint).addParam("to", "Address to mint to")
+task("mint", "Mint Blyat Token", mint).addParam("to", "Address to mint to").addParam("id");
 
 const MNEMONIC = process.env.MNEMONIC;
 const ALCHEMY_KEY_MAINNET = process.env.ALCHEMY_KEY_MAINNET;

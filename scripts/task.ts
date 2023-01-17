@@ -7,95 +7,65 @@
 import { Storage } from "./util/storage";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 // @ts-ignore
-import { Blyatversity } from "../typechain-types";
+import { Blyatversity, MetadataFactory } from "../typechain-types";
+import { readdirSync, readFileSync, writeFileSync } from "fs";
+import { minify } from "html-minifier";
 
 interface MintArgs {
     to: string;
     id: string;
 }
 
-// interface TokenArgs {
-//     id: number;
-// }
+interface TokenArgs {
+    id: string;
+}
 
-// export async function setMetadata(
-//     args: TokenArgs,
-//     hre: HardhatRuntimeEnvironment
-// ) {
-//     const network = await hre.ethers.provider.getNetwork();
-//     const storage = new Storage("addresses.json");
-//     const { Blyatversity: blyatversityAddress, stringLib: stringLibAddress } =
-//         storage.fetch(network.chainId);
-//     const OnChain = await hre.ethers.getContractFactory("Blyatversity", {
-//         libraries: { String: stringLibAddress },
-//     });
-//     const onChain = OnChain.attach(blyatversityAddress) as Blyatversity;
-//     const { id: tokenId } = args;
-//     const setNameTx = await onChain.setName(tokenId, "Landscape");
-//     await setNameTx.wait();
-//     const setDescriptionTx = await onChain.setDescription(
-//         tokenId,
-//         "This is the evening landscape template"
-//     );
-//     await setDescriptionTx.wait();
-//     const addAttributesTx = await onChain.addAttributes(tokenId, [
-//         "sky",
-//         "clouds",
-//         "sun",
-//         "back",
-//         "middle",
-//         "fore",
-//         "evening",
-//         "window"
-//     ]);
-//     await addAttributesTx.wait();
-// }
 
-// export async function setup(args: MintArgs, hre: HardhatRuntimeEnvironment) {
-//     const network = await hre.ethers.provider.getNetwork();
-//     const storage = new Storage("addresses.json");
-//     const { onChain: hackBoiAddress, stringLib: stringLibAddress } =
-//         storage.fetch(network.chainId);
-//     const OnChain = await hre.ethers.getContractFactory("OnChain", {
-//         libraries: { String: stringLibAddress },
-//     });
-//     const onChain = OnChain.attach(hackBoiAddress) as OnChain;
-//     const svgDir = readdirSync("assets/svg");
-//     const htmlDir = readdirSync("assets/html");
-//     const jsDir = readdirSync("assets/js");
+export async function setup(args: MintArgs, hre: HardhatRuntimeEnvironment) {
+    const network = await hre.ethers.provider.getNetwork();
+    const storage = new Storage("addresses.json");
+    const { blyat: blyatAddress, stringLib: stringLibAddress } =
+        storage.fetch(network.chainId);
+    const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
+        libraries: { String: stringLibAddress },
+    });
+    const metadata = Metadata.attach(blyatAddress) as MetadataFactory;
+    interface Variant {
+        name: string,
+        svg: string,
+    }
+    const ROOT_FOLDER = "assets";
+    const attributesFolder = readdirSync(ROOT_FOLDER);
+    const addAttributesTx = await metadata.addAttributes(attributesFolder)
+    await addAttributesTx.wait();
 
-//     const keys = svgDir
-//         .map((file) => file.replace(".svg", ""))
-//         .concat(htmlDir.map((file) => file.replace(".html", "")))
-//         .concat(jsDir.map((file) => file.replace(".html", "")));
+    for (const [attributeId, attribute] of Object.entries(attributesFolder)) {
+        const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${attribute}`).map(file => ({ name: file.replace(".html", ""), svg: encodeURIComponent(encodeURIComponent(minify(readFileSync(`${ROOT_FOLDER}/${attribute}/${file}`, "utf-8").replace(/\n|\r|\t/g, " "), { collapseWhitespace: true, removeComments: true, minifyCSS: true, collapseInlineTagWhitespace: true }))) }))
+        for (const variant of variants) {
+            const { svg, name } = variant;
+            const chunkSize = 20000;
+            for (let start = 0; start < svg.length; start += chunkSize) {
+                const till = start + chunkSize < svg.length ? start + chunkSize : svg.length;
+                const svgChunk = svg.slice(start, till);
+                const addVariantChunkedTx = await metadata.addVariantChunked(attributeId, name, svgChunk, { gasLimit: 30_000_000 })
+                await addVariantChunkedTx.wait();
+            }
+        }
+    }
 
-//     const values = svgDir
-//         .map((file) => readFileSync(`assets/svg/${file}`, "utf-8"))
-//         .map((component) => component.replace(/\n|\r|\t/g, " "))
-//         .concat(
-//             htmlDir
-//                 .map((file) => readFileSync(`assets/html/${file}`, "utf-8"))
-//                 .map((style) => style.replace(/\n|\r|\t/g, " "))
-//         ).concat(
-//             jsDir
-//                 .map((file) => readFileSync(`assets/js/${file}`, "utf-8"))
-//                 .map((style) => style.replace(/\n|\r|\t/g, " "))
-//         );
-//     const addElementsTx = await onChain.addElements(keys, values);
-//     await addElementsTx.wait();
-// }
+    const setDescriptionTx = await metadata.setDescription("Monster AG");
+    await setDescriptionTx.wait();
+}
 
 export async function mint(args: MintArgs, hre: HardhatRuntimeEnvironment) {
     const network = await hre.ethers.provider.getNetwork();
     const storage = new Storage("addresses.json");
-    const { onChain: hackBoiAddress, stringLib: stringLibAddress } =
+    const { blyat: blyatAddress, } =
         storage.fetch(network.chainId);
     const { to, id: itemId } = args;
-    const OnChain = await hre.ethers.getContractFactory("OnChain", {
-        libraries: { String: stringLibAddress },
-    });
-    const onChain = OnChain.attach(hackBoiAddress) as Blyatversity;
-    const mintTx = await onChain.mint(to, itemId);
+    const Blyatversity = await hre.ethers.getContractFactory("Blyatversity");
+    const blyat = Blyatversity.attach(blyatAddress) as Blyatversity;
+    const mintTx = await blyat.mint(itemId, to);
     await mintTx.wait();
     console.log(
         `https://${network.chainId === 80001 ? "mumbai." : ""}polygonscan.com/tx/${mintTx.hash
@@ -103,19 +73,19 @@ export async function mint(args: MintArgs, hre: HardhatRuntimeEnvironment) {
     );
 }
 
-// export async function tokenURI(
-//     args: TokenArgs,
-//     hre: HardhatRuntimeEnvironment
-// ) {
-//     const network = await hre.ethers.provider.getNetwork();
-//     const storage = new Storage("addresses.json");
-//     const { onChain: hackBoiAddress, stringLib: stringLibAddress } =
-//         storage.fetch(network.chainId);
-//     const { id: tokenId } = args;
-//     const OnChain = await hre.ethers.getContractFactory("OnChain", {
-//         libraries: { String: stringLibAddress },
-//     });
-//     const onChain = OnChain.attach(hackBoiAddress) as OnChain;
-//     const tokenURI = await onChain.tokenURI(tokenId);
-//     writeFileSync("token.txt", tokenURI, "utf-8");
-// }
+export async function tokenURI(
+    args: TokenArgs,
+    hre: HardhatRuntimeEnvironment
+) {
+    const network = await hre.ethers.provider.getNetwork();
+    const storage = new Storage("addresses.json");
+    const { blyat: blyatAddress, stringLib: stringLibAddress } =
+        storage.fetch(network.chainId);
+    const { id: tokenId } = args;
+    const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
+        libraries: { String: stringLibAddress },
+    });
+    const metadata = Metadata.attach(blyatAddress) as MetadataFactory;
+    const tokenURI = await metadata.tokenURI(tokenId);
+    writeFileSync("token.txt", tokenURI, "utf-8");
+}

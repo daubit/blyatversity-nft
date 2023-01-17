@@ -4,18 +4,17 @@
 //
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
-import hardhat, { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 import { AddressStorage, Storage } from "../util/storage";
 import { verify } from "../util/utils";
-import { REGISTRY_ADDRESS } from "../util/const.json"
+import { REGISTRY_ADDRESS, CONTRACT_METADATA_CID } from "../util/const.json"
+import { Blyatversity } from "../../typechain-types";
 
 async function main() {
   const network = await ethers.provider.getNetwork();
-  const { provider } = ethers;
-  const chainId = (await provider.getNetwork()).chainId;
   const storage = new Storage("addresses.json");
   const addresses: AddressStorage = storage.fetch(network.chainId);
-  const { onChain: hackBoiAddress, stringLib: stringLibAddress } = addresses
+  const { blyat: blyatAddress, stringLib: stringLibAddress, metadata: metadataAddress } = addresses
   // We get the contract to deploy
   if (!stringLibAddress) {
     const StringLib = await ethers.getContractFactory("String");
@@ -25,14 +24,24 @@ async function main() {
     console.log("Library deployed!")
   }
   if (!addresses.stringLib) throw new Error("Cannot find String Library!")
-  if (!hackBoiAddress) {
-    const Blyatversity = await ethers.getContractFactory("Blyatversity", { libraries: { String: addresses.stringLib } });
-    const blyatversity = await Blyatversity.deploy(REGISTRY_ADDRESS);
+  if (!blyatAddress) {
+    const Blyatversity = await ethers.getContractFactory("Blyatversity");
+    const blyatversity = (await upgrades.deployProxy(Blyatversity, [CONTRACT_METADATA_CID, REGISTRY_ADDRESS])) as Blyatversity;
     await blyatversity.deployed();
-    addresses.onChain = blyatversity.address;
+    addresses.blyat = blyatversity.address;
     console.log("Blyatversity deployed to:", blyatversity.address);
     console.log("Waiting for verification...");
-    await verify(hardhat, blyatversity.address, chainId, [REGISTRY_ADDRESS]);
+    // await verify(hardhat, blyatversity.address, chainId, [CONTRACT_METADATA_CID, REGISTRY_ADDRESS]);
+    if (!metadataAddress) {
+      const Metadata = await ethers.getContractFactory("MetadataFactory", { libraries: { String: addresses.stringLib } })
+      const metadata = await Metadata.deploy();
+      await metadata.deployed();
+      addresses.metadata = metadata.address;
+      console.log("Metadata deployed!");
+      const addTx = await blyatversity["addItem(address)"](metadata.address)
+      await addTx.wait();
+      console.log("Metadata added!")
+    }
   }
   storage.save(network.chainId, addresses);
 }
