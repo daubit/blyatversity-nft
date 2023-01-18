@@ -21,7 +21,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     // AttributeId => Variant Amount
     mapping(uint256 => Counters.Counter) private _variantCounter;
     // AttributeId => VariantId => Variant
-    mapping(uint256 => mapping(uint256 => string)) private _variants;
+    mapping(uint256 => mapping(uint256 => string)) private _variantName;
     // AttributeId => VariantId => Attribute
     mapping(uint256 => mapping(uint256 => string)) private _variantKind;
     // AttributeId => VariantId => svg
@@ -81,7 +81,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
                 _variantCounter[attributeId].increment();
                 variantId = _variantCounter[attributeId].current();
                 _indexedVariants[attributeId][variant] = variantId;
-                _variants[attributeId][variantId] = variant;
+                _variantName[attributeId][variantId] = variant;
                 _svgs[attributeId][variantId] = svgs[i];
                 _variantKind[attributeId][variantId] = attribute;
             }
@@ -98,7 +98,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
             _variantCounter[attributeId].increment();
             variantId = _variantCounter[attributeId].current();
             _indexedVariants[attributeId][variant] = variantId;
-            _variants[attributeId][variantId] = variant;
+            _variantName[attributeId][variantId] = variant;
             _variantKind[attributeId][variantId] = _attributes[attributeId];
         }
         _svgs[attributeId][variantId] = svg;
@@ -114,7 +114,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
             _variantCounter[attributeId].increment();
             variantId = _variantCounter[attributeId].current();
             _indexedVariants[attributeId][variant] = variantId;
-            _variants[attributeId][variantId] = variant;
+            _variantName[attributeId][variantId] = variant;
             _variantKind[attributeId][variantId] = _attributes[attributeId];
         }
         _svgs[attributeId][variantId] = _svgs[attributeId][variantId].concat(
@@ -151,7 +151,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
             uint256 attributeId = i + 1;
             uint256 variantAmount = _variantCounter[attributeId].current();
             uint256 randomIndex = uint16((uint256(seed) % variantAmount) + 1);
-            variants[i] = _variants[attributeId][randomIndex];
+            variants[i] = _variantName[attributeId][randomIndex];
         }
         return variants;
     }
@@ -161,7 +161,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         view
         returns (bytes memory)
     {
-        bytes memory base = "%5B";
+        bytes memory base;
         for (uint16 i; i < variants.length; i++) {
             uint256 attributeId = i + 1;
             uint256 variantId = _indexedVariants[attributeId][variants[i]];
@@ -186,7 +186,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
                 );
             }
         }
-        return abi.encodePacked(base, "%5D");
+        return abi.encodePacked("%5B", base, "%5D");
     }
 
     function _getName(string[] memory variants)
@@ -194,7 +194,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         pure
         returns (bytes memory)
     {
-        bytes memory name = "";
+        bytes memory name;
         for (uint256 i; i < variants.length; i++) {
             name = abi.encodePacked(name, variants[i], "%20");
         }
@@ -206,15 +206,35 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         view
         returns (bytes memory)
     {
-        bytes
-            memory base = "PHN2ZyB3aWR0aD0nMTAwMCcgaGVpZ2h0PScxMDAwJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbG5zOnhsaW5rPSdodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rJyB2aWV3Qm94PScwIDAgMTAwMCAxMDAwJz4g"; //"<svg width='1000' height='1000' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 1000 1000'>";
+        bytes memory base;
         uint256 amount = variants.length;
-        for (uint16 i; i < amount; i++) {
-            uint256 attributeId = i + 1;
-            uint256 variantId = _indexedVariants[attributeId][variants[i]];
-            base = abi.encodePacked(base, _svgs[attributeId][variantId]);
+        uint32 i = 0;
+        while (i < amount) {
+            if ((amount - i) % 5 == 0) {
+                base = abi.encodePacked(
+                    base,
+                    _svgs[i + 1][_indexedVariants[i + 1][variants[i + 0]]],
+                    _svgs[i + 2][_indexedVariants[i + 2][variants[i + 1]]],
+                    _svgs[i + 3][_indexedVariants[i + 3][variants[i + 2]]],
+                    _svgs[i + 4][_indexedVariants[i + 4][variants[i + 3]]],
+                    _svgs[i + 5][_indexedVariants[i + 5][variants[i + 4]]]
+                );
+                i += 5;
+            } else {
+                base = abi.encodePacked(
+                    base,
+                    _svgs[i + 1][_indexedVariants[i + 1][variants[i]]]
+                );
+                i++;
+            }
         }
-        base = abi.encodePacked(base, "PC9zdmc+"); //base.concat("</svg>");
+        base = abi.encodePacked(
+            "PHN2ZyB3aWR0aD0nMTAwMCcgaGVpZ2h0PScxMDAwJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbG5zOnhsaW5rPSdodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rJyB2aWV3Qm94PScwIDAgMTAwMCAxMDAwJz4g",
+            base,
+            "PC9zdmc+"
+        );
+        // "<svg width='1000' height='1000' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 1000 1000'>"
+        //base.concat("</svg>");
         return base;
     }
 }

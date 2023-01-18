@@ -187,7 +187,7 @@ describe("Blyatversity", function () {
 		});
 		describe("TokenURI", () => {
 			it("should return the corrent token URI", async function () {
-				const tokenURI = await blyat.tokenURI(0);
+				const tokenURI = await metadata.tokenURI(0);
 				writeFileSync("dist/token-0.txt", tokenURI, "utf-8");
 			});
 		});
