@@ -51,19 +51,20 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
                     "%22description%22%3A%22",
                     _description,
                     "%22%2C",
-                    "%22animation_url%22%3A%22data%3Atext%2Fhtml%3Bbase64%2C",
-                    image,
-                    "%22%2C",
                     "%22attributes%22%3A",
                     attributes,
-                    "%7D"
+                    "%2C",
+                    "%22animation_url%22%3A%22data%3Atext%2Fhtml%3Bbase64%2C",
+                    image,
+                    "%22%7D"
                 )
             );
     }
 
-    function setDescription(
-        string memory description
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setDescription(string memory description)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         _description = description;
     }
 
@@ -74,9 +75,9 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     ) external {
         if (variants.length != svgs.length) revert UnequalArrays();
         string memory attribute = _attributes[attributeId];
-        for (uint i; i < variants.length; i++) {
+        for (uint256 i; i < variants.length; i++) {
             string memory variant = variants[i];
-            uint variantId = _indexedVariants[attributeId][variant];
+            uint256 variantId = _indexedVariants[attributeId][variant];
             if (variantId == 0) {
                 _variantCounter[attributeId].increment();
                 variantId = _variantCounter[attributeId].current();
@@ -93,7 +94,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         string memory variant,
         string memory svg
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        uint variantId = _indexedVariants[attributeId][variant];
+        uint256 variantId = _indexedVariants[attributeId][variant];
         if (variantId == 0) {
             _variantCounter[attributeId].increment();
             variantId = _variantCounter[attributeId].current();
@@ -106,11 +107,11 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     }
 
     function addVariantChunked(
-        uint attributeId,
+        uint256 attributeId,
         string memory variant,
         string memory svgChunk
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        uint variantId = _indexedVariants[attributeId][variant];
+        uint256 variantId = _indexedVariants[attributeId][variant];
         if (variantId == 0) {
             _variantCounter[attributeId].increment();
             variantId = _variantCounter[attributeId].current();
@@ -124,43 +125,49 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         );
     }
 
-    function addAttribute(
-        string memory attribute
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function addAttribute(string memory attribute)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         _attributeCounter.increment();
         _attributes[_attributeCounter.current()] = attribute;
     }
 
-    function addAttributes(
-        string[] memory attributes
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        for (uint i; i < attributes.length; i++) {
+    function addAttributes(string[] memory attributes)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        for (uint256 i; i < attributes.length; i++) {
             _attributeCounter.increment();
             _attributes[_attributeCounter.current()] = attributes[i];
         }
     }
 
-    function _collectVariants(
-        bytes32 seed
-    ) internal view returns (string[] memory) {
-        uint currentAmount = _attributeCounter.current();
+    function _collectVariants(bytes32 seed)
+        internal
+        view
+        returns (string[] memory)
+    {
+        uint256 currentAmount = _attributeCounter.current();
         string[] memory variants = new string[](currentAmount);
         for (uint256 i; i < currentAmount; i++) {
-            uint attributeId = i + 1;
-            uint variantAmount = _variantCounter[attributeId].current();
-            uint randomIndex = uint16((uint(seed) % variantAmount) + 1);
+            uint256 attributeId = i + 1;
+            uint256 variantAmount = _variantCounter[attributeId].current();
+            uint256 randomIndex = uint16((uint256(seed) % variantAmount) + 1);
             variants[i] = _variants[attributeId][randomIndex];
         }
         return variants;
     }
 
-    function _generateAttributes(
-        string[] memory variants
-    ) internal view returns (string memory) {
+    function _generateAttributes(string[] memory variants)
+        internal
+        view
+        returns (string memory)
+    {
         string memory base = "%5B";
         for (uint16 i; i < variants.length; i++) {
             uint256 attributeId = i + 1;
-            uint variantId = _indexedVariants[attributeId][variants[i]];
+            uint256 variantId = _indexedVariants[attributeId][variants[i]];
             string memory attribute = _variantKind[attributeId][variantId];
             string memory value = string(
                 abi.encodePacked(
@@ -179,25 +186,29 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         return base.concat("%5D");
     }
 
-    function _getName(
-        string[] memory variants
-    ) internal pure returns (string memory) {
+    function _getName(string[] memory variants)
+        internal
+        pure
+        returns (string memory)
+    {
         string memory name = "";
-        for (uint i; i < variants.length; i++) {
+        for (uint256 i; i < variants.length; i++) {
             name = name.concat(variants[i]).concat("%20");
         }
         return name;
     }
 
-    function _generateImage(
-        string[] memory variants
-    ) internal view returns (string memory) {
+    function _generateImage(string[] memory variants)
+        internal
+        view
+        returns (string memory)
+    {
         string
             memory base = "<svg width='1000' height='1000' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 1000 1000'>";
-        uint amount = variants.length;
+        uint256 amount = variants.length;
         for (uint16 i; i < amount; i++) {
             uint256 attributeId = i + 1;
-            uint variantId = _indexedVariants[attributeId][variants[i]];
+            uint256 variantId = _indexedVariants[attributeId][variants[i]];
             base = base.concat(_svgs[attributeId][variantId]);
         }
         base = base.concat("</svg>");

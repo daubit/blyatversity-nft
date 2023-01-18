@@ -11,7 +11,7 @@ import "hardhat-gas-reporter";
 import "solidity-coverage";
 import "hardhat-contract-sizer";
 import "@nomiclabs/hardhat-solpp";
-import '@openzeppelin/hardhat-upgrades';
+import "@openzeppelin/hardhat-upgrades";
 import { mint } from "./scripts/task";
 
 dotenv.config();
@@ -29,7 +29,9 @@ task(
   }
 );
 
-task("mint", "Mint Blyat Token", mint).addParam("to", "Address to mint to").addParam("id");
+task("mint", "Mint Blyat Token", mint)
+  .addParam("to", "Address to mint to")
+  .addParam("id");
 
 const MNEMONIC = process.env.MNEMONIC;
 const ALCHEMY_KEY_MAINNET = process.env.ALCHEMY_KEY_MAINNET;
@@ -47,7 +49,7 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200,
+        runs: 2000,
       },
     },
   },
@@ -96,8 +98,7 @@ const config: HardhatUserConfig = {
     defs: { OPENSEA_POLYGON: process.env.OPENSEA_POLYGON },
   },
   mocha: {
-    timeout: 400_000
-  }
+    timeout: 400_000,
+  },
 };
 export default config;
-
