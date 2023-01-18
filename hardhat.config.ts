@@ -11,23 +11,19 @@ import "hardhat-gas-reporter";
 import "solidity-coverage";
 import "hardhat-contract-sizer";
 import "@nomiclabs/hardhat-solpp";
-import '@openzeppelin/hardhat-upgrades';
+import "@openzeppelin/hardhat-upgrades";
 import { mint } from "./scripts/task";
 
 dotenv.config();
 
-task(
-  "accounts",
-  "Prints the list of accounts",
-  async (_args, hre: HardhatRuntimeEnvironment) => {
-    const accounts = await hre.ethers.getSigners();
+task("accounts", "Prints the list of accounts", async (_args, hre: HardhatRuntimeEnvironment) => {
+	const accounts = await hre.ethers.getSigners();
 
-    for (const account of accounts) {
-      console.log(account.address);
-      console.log(await account.getBalance());
-    }
-  }
-);
+	for (const account of accounts) {
+		console.log(account.address);
+		console.log(await account.getBalance());
+	}
+});
 
 task("mint", "Mint Blyat Token", mint).addParam("to", "Address to mint to").addParam("id");
 
@@ -42,62 +38,61 @@ const evmosDevNodeUrl = `https://eth.bd.evmos.dev:8545`;
 // Go to https://hardhat.org/config/ to learn more
 
 const config: HardhatUserConfig = {
-  solidity: {
-    version: "0.8.17",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200,
-      },
-    },
-  },
+	solidity: {
+		version: "0.8.17",
+		settings: {
+			optimizer: {
+				enabled: true,
+				runs: 10000,
+			},
+		},
+	},
 
-  networks: {
-    mumbai: { url: mumbaiNodeUrl, accounts: { mnemonic: MNEMONIC } },
-    polygon: { url: polygonNodeUrl, accounts: { mnemonic: MNEMONIC } },
-    evmos: {
-      url: evmosNodeUrl,
-      accounts: { mnemonic: MNEMONIC },
-    },
-    evmosdev: {
-      url: evmosDevNodeUrl,
-      accounts: {
-        mnemonic: MNEMONIC,
-      },
-    },
-    evmoslocal: {
-      url: "http://localhost:8080",
-      accounts: {
-        mnemonic: MNEMONIC,
-      },
-    },
-  },
-  gasReporter: {
-    enabled: process.env.REPORT_GAS !== undefined,
-    currency: "USD",
-  },
-  etherscan: {
-    apiKey: {
-      polygon: process.env.POLYSCAN_KEY!,
-      polygonMumbai: process.env.POLYSCAN_KEY!,
-    },
-  },
-  // @ts-ignore
-  ethernal: {
-    email: process.env.ETHERNAL_EMAIL,
-    password: process.env.ETHERNAL_PASSWORD,
-    uploadAst: true,
-    resetOnStart: "localhost",
-    workspace: "localhost",
-    disabled: true,
-  },
-  ethernalAstUpload: true,
-  solpp: {
-    defs: { OPENSEA_POLYGON: process.env.OPENSEA_POLYGON },
-  },
-  mocha: {
-    timeout: 400_000
-  }
+	networks: {
+		mumbai: { url: mumbaiNodeUrl, accounts: { mnemonic: MNEMONIC } },
+		polygon: { url: polygonNodeUrl, accounts: { mnemonic: MNEMONIC } },
+		evmos: {
+			url: evmosNodeUrl,
+			accounts: { mnemonic: MNEMONIC },
+		},
+		evmosdev: {
+			url: evmosDevNodeUrl,
+			accounts: {
+				mnemonic: MNEMONIC,
+			},
+		},
+		evmoslocal: {
+			url: "http://localhost:8080",
+			accounts: {
+				mnemonic: MNEMONIC,
+			},
+		},
+	},
+	gasReporter: {
+		enabled: process.env.REPORT_GAS !== undefined,
+		currency: "USD",
+	},
+	etherscan: {
+		apiKey: {
+			polygon: process.env.POLYSCAN_KEY!,
+			polygonMumbai: process.env.POLYSCAN_KEY!,
+		},
+	},
+	// @ts-ignore
+	ethernal: {
+		email: process.env.ETHERNAL_EMAIL,
+		password: process.env.ETHERNAL_PASSWORD,
+		uploadAst: true,
+		resetOnStart: "localhost",
+		workspace: "localhost",
+		disabled: true,
+	},
+	ethernalAstUpload: true,
+	solpp: {
+		defs: { OPENSEA_POLYGON: process.env.OPENSEA_POLYGON },
+	},
+	mocha: {
+		timeout: 400_000,
+	},
 };
 export default config;
-
