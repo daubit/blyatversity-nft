@@ -3,7 +3,6 @@ pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/utils/Base64.sol";
 import "./IMetadataFactory.sol";
 import "./String.sol";
 import "hardhat/console.sol";
@@ -204,14 +203,14 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         returns (string memory)
     {
         string
-            memory base = "<svg width='1000' height='1000' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 1000 1000'>";
+            memory base = "PHN2ZyB3aWR0aD0nMTAwMCcgaGVpZ2h0PScxMDAwJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbG5zOnhsaW5rPSdodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rJyB2aWV3Qm94PScwIDAgMTAwMCAxMDAwJz4g"; //"<svg width='1000' height='1000' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 1000 1000'>";
         uint256 amount = variants.length;
         for (uint16 i; i < amount; i++) {
             uint256 attributeId = i + 1;
             uint256 variantId = _indexedVariants[attributeId][variants[i]];
             base = base.concat(_svgs[attributeId][variantId]);
         }
-        base = base.concat("</svg>");
-        return Base64.encode(bytes(base));
+        base = base.concat("PC9zdmc+"); //base.concat("</svg>");
+        return base;
     }
 }

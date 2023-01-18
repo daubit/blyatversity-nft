@@ -63,6 +63,7 @@
     "@openzeppelin/contracts-upgradeable": "^4.8.0",
     "@openzeppelin/hardhat-upgrades": "^1.21.0",
     "erc721a": "^4.2.3",
-    "erc721a-upgradeable": "^4.2.3"
+    "erc721a-upgradeable": "^4.2.3",
+    "js-base64": "^3.7.4"
   }
 }
