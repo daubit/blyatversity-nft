@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readdir, readdirSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "fs";
 import { parse } from "node-html-parser"
 
 const PATH_TABLE = ",-.0123456789ACHLQSTVZachlmqstvz"
