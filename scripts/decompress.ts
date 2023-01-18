@@ -30,21 +30,25 @@ function main(layers: any) {
     // variable for the namespace 
     const svgns = "http://www.w3.org/2000/svg";
     for (const layer of layers) {
-        const { tagName, children } = layer;
-        const group = document.createElementNS(svgns, tagName);
-        for (const child of children) {
-            const element = document.createElementNS(svgns, child.tagName);
-            if (child.tagName === "style") {
-                element.textContent = child.content
+        const { groups } = layer;
+        for (const group of groups) {
+            for (const children of group) {
+                const groupTag = document.createElementNS(svgns, "g");
+                for (const child of children) {
+                    const element = document.createElementNS(svgns, child.tagName);
+                    if (child.tagName === "style") {
+                        element.textContent = child.content
+                    }
+                    if (child.attributes.d) { child.attributes.d = decompressPath(child.attributes.d) }
+                    if (child.attributes.points) { child.attributes.points = decompressPoints(child.attributes.points) }
+                    for (const attribute in child.attributes) {
+                        element.setAttribute(attribute, child.attributes[attribute])
+                    }
+                    groupTag.appendChild(element)
+                }
+                const svg = document.getElementsByTagName("svg")[0]
+                svg.appendChild(groupTag)
             }
-            if (child.attributes.d) { child.attributes.d = decompressPath(child.attributes.d) }
-            if (child.attributes.points) { child.attributes.points = decompressPoints(child.attributes.points) }
-            for (const attribute in child.attributes) {
-                element.setAttribute(attribute, child.attributes[attribute])
-            }
-            group.appendChild(element)
         }
-        const svg = document.getElementsByTagName("svg")[0]
-        svg.appendChild(group)
     }
 }

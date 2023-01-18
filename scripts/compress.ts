@@ -66,7 +66,7 @@ function main() {
             const groups = parse(file).childNodes.filter(n => n.nodeType !== 3);
             const result = []
             for (const group of groups) {
-                result.push(collectChildren(group.childNodes))
+                result.push(collectChildren(group.childNodes.filter(n => n.nodeType !== 3)))
             }
             const cFile = JSON.stringify({ groups: result }, null, 2)
             if (!existsSync(`tmp/${ROOT_FOLDER}/${attribute}`)) {

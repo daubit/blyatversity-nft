@@ -2,15 +2,9 @@
   "groups": [
     [
       {
-        "attributes": {}
-      },
-      {
         "attributes": {},
         "tagName": "style",
         "content": "\r\n    .Mo-2-Co-0,\r\n    .Mo-2-Co-1 {\r\n      opacity: 0.5;\r\n    }\r\n\r\n    .Mo-2-Co-0,\r\n    .Mo-2-Co-2,\r\n    .Mo-2-Co-3 {\r\n      fill: #e57d00;\r\n    }\r\n\r\n    .Mo-2-Co-4 {\r\n      fill: #ea5aff;\r\n    }\r\n\r\n    .Mo-2-Co-5,\r\n    .Mo-2-Co-1,\r\n    .Mo-2-Co-6 {\r\n      fill: #fff;\r\n    }\r\n\r\n    .Mo-2-Co-5,\r\n    .Mo-2-Co-7 {\r\n      opacity: 0.3;\r\n    }\r\n\r\n    .Mo-2-Co-8 {\r\n      fill: #40ffff;\r\n    }\r\n\r\n    .Mo-2-Co-00 {\r\n      fill: #ffc5c5;\r\n    }\r\n\r\n    .Mo-2-Co-01 {\r\n      fill: #00e75b;\r\n    }\r\n\r\n    .Mo-2-Co-6,\r\n    .Mo-2-Co-3 {\r\n      opacity: 0.2;\r\n    }\r\n  "
-      },
-      {
-        "attributes": {}
       },
       {
         "attributes": {
@@ -20,53 +14,32 @@
         "tagName": "path"
       },
       {
-        "attributes": {}
-      },
-      {
         "attributes": {
           "class": "Mo-2-Co-8",
           "d": "Ñ1!@+\n$*ä\u0012H\u0004\bÀ(p\u0010b\"Á\u0011 !DRâ9A\u0019aX\u0014H8HQ\u0011\u00000°G`P%°DHH1) 0H\f"
         },
         "tagName": "path"
-      },
-      {
-        "attributes": {}
       }
     ],
     [
-      {
-        "attributes": {}
-      },
       {
         "attributes": {
           "class": "Mo-2-Co-01",
           "points": "f1\u0005H\u001a@fA§\u00059\u0018\u0006Y\u00150R¡t\u0006:\u0016\u0005%\u001b0[1\u0005*\u0018 V1»\u0005I\u0016PS¡\u0005Z\u0012`Uq*\u0005b\u001a0XAV;\u0005£\u0012`W%\u0005»\u001a\u0005\u0012@bq:\u0005²\u0019 b\u0006$\u001b@b\u00067\u0015cax\u0006+\u0015 dq\u0005\u0015@eQ\u0005\u0019°fQ[\u0005k\u0019°f\u0005g\u001aph1³\u0005h\u0017\u0006\u0017°V1\u0006£\u0014 U¡\u0006\u0016`U!¤\u0006\u0012T¹\u0006s\u0005K\u0013PfQh\u0005K\u0019`f1\u0005H\u001a@"
         },
         "tagName": "polygon"
-      },
-      {
-        "attributes": {}
       }
     ],
     [
-      {
-        "attributes": {}
-      },
       {
         "attributes": {
           "class": "Mo-2-Co-00",
           "d": "ÑA( 9Ö#\u0016á*\u0004H8Pq\ra@À©bRBE§\tF$ $\u0018@\u0001*\u0004\u0010Ê\u0013¨J(\u000e%,\u0012\u0002\u0014FXH¡\u0018\u0005 `Â:ÀTl\t\u0014%\b8H±,ÀYDÀ¬KX\bq!`@`\u0014âJ@D¤\u0001#\u0005X`\u0014K@\f%°\u0007\u0010Î\u0006\t\u0006\u0001Ä\u0012\b\u0002\bl\u0001\b\"J \nQ ¡0À\u0018Â1\u0002A\fà(CX\u0010&\u0018(\u0011Ò\u0005\t\t\b%\u001c\f\u0013\u0012\u0012 F(\b\r!8ÄÄ\u0000\u0011]\u0010ÂBsl¸D3\u0011\u0014D\t\u0016\"0$H QA1\u0001\u0011X\u0013\t\b` L0DV\u0005b+\u0002$¤$(P\u0010K@H à`` K(\bA!\u0000 `\u0015AC\th\u0001$\u0010\u0005\u0012È&\u0001\"3\u0004¥\u0001*\u0002!¬\f\u0011\u0012K\u0001\u0012#,$(À\u0011\"1ÂR'®³\b\nÄÃÜ\"\u001a\u0000¡00 \u0010ÂH\b11\u0000\"D£\u0000\u0011V\u0003å\u0001N% %\u0011\u0002¨FHHa\u0015 °¤GX\b$\u0012\n\u0013§\t\u0016\"°&\u0012\u0013\bg\nÄC\u0005\u00029ÂB\u000b\nb\"8J%\u0004\u0012T\u0011\u001d\u0001\"D\u0001\u00021\u0002a @J(\b1,¡8P\u0011\"Zª"
         },
         "tagName": "path"
-      },
-      {
-        "attributes": {}
       }
     ],
     [
-      {
-        "attributes": {}
-      },
       {
         "attributes": {
           "class": "Mo-2-Co-4",
@@ -75,32 +48,20 @@
         "tagName": "path"
       },
       {
-        "attributes": {}
-      },
-      {
         "attributes": {
           "class": "Mo-2-Co-4",
           "d": "Ña0À1\"Ü%\u0011\u0011\u0019\u00018P'\u0012Î\u0013\b\bPI`\n$\u0010*\u0010È\u0004\bê\n4\u0000¢JÂ!\b\u0012R\u0002e\u0002\u0004£\u0002:Ä6\u0000Â\u001aÂQ,\t\u0010Ì\u0014Ê\u0002DBÔ"
         },
         "tagName": "path"
-      },
-      {
-        "attributes": {}
       }
     ],
     [
-      {
-        "attributes": {}
-      },
       {
         "attributes": {
           "class": "Mo-2-Co-3",
           "points": "[ad\u0004º\u0018°Zq\u0005$\u0014@Z\u0005+\u0013`b!y\u0005&\u001aP[ad\u0004º\u0018°"
         },
         "tagName": "polygon"
-      },
-      {
-        "attributes": {}
       },
       {
         "attributes": {
@@ -110,17 +71,11 @@
         "tagName": "polygon"
       },
       {
-        "attributes": {}
-      },
-      {
         "attributes": {
           "class": "Mo-2-Co-2",
           "points": "[d\u0005$\u0012Zq£\u0005(\u0017PZ\u0005+\u0019pb1·\u0005(\u0014@[d\u0005$\u0012"
         },
         "tagName": "polygon"
-      },
-      {
-        "attributes": {}
       },
       {
         "attributes": {
@@ -130,17 +85,11 @@
         "tagName": "polygon"
       },
       {
-        "attributes": {}
-      },
-      {
         "attributes": {
           "class": "Mo-2-Co-2",
           "points": "c!\u0005&\u0014@b±:\u0005'\u001ac±$\u0005*\u0017@eA6\u00054\u00120e\u00058\u0017@f10TQ°fPSS\u0006Z\u0012 R¡\u0006G\u0013RqF\u00062\u00180RaD"
         },
         "tagName": "polygon"
-      },
-      {
-        "attributes": {}
       },
       {
         "attributes": {
@@ -150,37 +99,22 @@
         "tagName": "polygon"
       },
       {
-        "attributes": {}
-      },
-      {
         "attributes": {
           "class": "Mo-2-Co-3",
           "points": "Xv\u0005B\u0005\u0012pT!c\u00067\u0013@Ta0dQ¶\u0005R\u0014pe!+\u0005f\u0013°e13\u0005\u0015f\u0005g\u001aphaT\u0005g\u001aPj1·\u0005[\u0012h8\u0005I\u0017°g¡\u0005F\u001bh¡(\u00056\u001b gQ\u0005*\u0018 faE\u00059\u0019peQ8\u0005)\u0012°b¡X\u0005&\u0018PXqt\u00059\u0013PXv\u0005B\u0005\u0017`T "
         },
         "tagName": "polyline"
-      },
-      {
-        "attributes": {}
       }
     ],
     [
-      {
-        "attributes": {}
-      },
       {
         "attributes": {
           "points": "e¡*\u0005r\u001bdA+\u0005\u0014 [°[aC\u0005£\u00170d1Y\u0005u\u0017@e1¤\u0004\u0018pc1u\u0004s\u0016`[!S\u0004u\u0017°cq4\u0004\u0016pe1+\u0004¸\u0014Pf1\u0005S\u001b\u0006k\u001bXV\u0006k\u0017Z¡i\u0006b\u001bpbq\u0006E\u0015@c\u0006$\u00160eqF\u0005\u00160f\u0005g\u001ape¡*\u0005r\u001b"
         },
         "tagName": "polygon"
-      },
-      {
-        "attributes": {}
       }
     ],
     [
-      {
-        "attributes": {}
-      },
       {
         "attributes": {
           "class": "Mo-2-Co-1",
@@ -190,9 +124,6 @@
           "ry": "5.15"
         },
         "tagName": "ellipse"
-      },
-      {
-        "attributes": {}
       },
       {
         "attributes": {
@@ -205,9 +136,6 @@
         "tagName": "ellipse"
       },
       {
-        "attributes": {}
-      },
-      {
         "attributes": {
           "class": "Mo-2-Co-5",
           "cx": "430.63",
@@ -216,9 +144,6 @@
           "ry": "7.53"
         },
         "tagName": "ellipse"
-      },
-      {
-        "attributes": {}
       },
       {
         "attributes": {
@@ -231,9 +156,6 @@
         "tagName": "ellipse"
       },
       {
-        "attributes": {}
-      },
-      {
         "attributes": {
           "class": "Mo-2-Co-1",
           "cx": "363.82",
@@ -242,23 +164,14 @@
           "ry": "8.1"
         },
         "tagName": "ellipse"
-      },
-      {
-        "attributes": {}
       }
     ],
     [
-      {
-        "attributes": {}
-      },
       {
         "attributes": {
           "d": "ÑÈA 1H!¦ê\u0011J!¤\u0004 °\u001cD8\bA\u001d` Ä£D\u0002D¥âa\u0000B\t,\t\b#\u0004 `¤KPD4\u0012L\u0013ª\t\u0006& $\u0018Q-AXÀ\u0014J8HA\u001d  Äµ\u0012S] \f\u0012qÂ)Âa%AH\u0015\tD\nDrÂ\u001b\u0002\"\u0004âb\u0000Q\fÁ@P J8D5\u0000â\u001aÀQ!P$E0\u0014\"$\u0006\u0012L!\t\u0012\u0002Q,àH\u0014ë¨"
         },
         "tagName": "path"
-      },
-      {
-        "attributes": {}
       },
       {
         "attributes": {
@@ -267,16 +180,10 @@
         "tagName": "path"
       },
       {
-        "attributes": {}
-      },
-      {
         "attributes": {
           "d": "Ñ\u0018À8Ì\"ÜC0\u0018% )\u0013\u0018\u00020KHH\u0018à)D¢Z´\u0005\"9ÄÅ*\u00045\u0011Ê\u0013\t\t\u0018$¨%  ÂZ\u0002c\t\u0004\u0001¢B2À±\u0015\u0001`À\u0011\"AÂÁ\u0014À ¡\u0011 0°\f\b\u0013\f\"°\u0004\u0018 \u0010H8\b0à`\u0011\"bF\tF®¡, p©\tÄ¤\u0004Y\u0002Á\u0019HHQ,*\u0011Ð\u0014i\t\u0012!¨&\u0012\u00120FP\u0010\"%\u0013\u000e\u0005\t\u0011\u0002,HH\u0014$\u00050@\u0010L8\b\",\b\u0011\u0010\u0002\bë\u0002cL\u0002Ds\u0004¢\u001a\u0000Aä\nÄ\u0000\u0011È\u0012$E-@"
         },
         "tagName": "path"
-      },
-      {
-        "attributes": {}
       },
       {
         "attributes": {
@@ -285,16 +192,10 @@
         "tagName": "path"
       },
       {
-        "attributes": {}
-      },
-      {
         "attributes": {
           "d": "Ñ¡  8È&\\`PLX\bq\u0011A Är\u0000\u0011J\u0012\u0012\u001cF`T#\u001c\"S\u0002¡\u00188pbBBD\bf\n¦\u0010È\u0003\bÁX\u0010a\u0002B\b¬\u0001\u0018#((\u0011L\u0003\u0001r\u0001\u0002QÀ±\r H\bQ. "
         },
         "tagName": "path"
-      },
-      {
-        "attributes": {}
       },
       {
         "attributes": {
@@ -303,16 +204,10 @@
         "tagName": "path"
       },
       {
-        "attributes": {}
-      },
-      {
         "attributes": {
           "d": "Ñ\u0019`0Ø\".á0P¤K(H!¤$(\u0018E H¡\u001d\u0002R\u0002&\u0000BÂA,\u0005\u0010Ö\u0012g\u0001R\u0005\"P\u0016\"+\u0011N\u0002\u001cK0N# \"!DEE8@È\u0012\u0002a-!\u0011L\u0015\t\u000b\u0010Ò\u0016\bè\u0001ÄC\u00042À`\t\u0006\u0001\b$\u0000Â \ba\u0019  q0\u0006\u0011\u0010\u0002\bê\u0001Ä\u00001@¡\r!\u0012X\u0002\u001cD\t\u0004\u0000¤\u0011\u0012$\u0001\u0004Dâa\u0002\"BBÂ(á Äb\u0000â:A\u001d\u0000Hp P CH\f\"\u0005\u0002a@A,Á!DC\u0004ÂYÂEG\u00026\ti\u0003\u0004p HP\u0018# \u0004P`\u0014CPP!\u0007\u0011\u0010\u0012\fC(\u0012!°$8P\u0018GP\u0010\"\"A@C\tH\t\b! \u0005(`\u0010*@a-!D´\u0002\"D\u0001\f$ \u0007\u0011\u000e\u0013§\u0002\u0005bRÁ\u0014$8\u0010I`P%\u0004\u0012\u0012\u0010F0J&,$Hp\u0010D \u0014F@`\u0018F \b#ÂZQ(P F\u0001\b#\u000b\u0011\u0005\u00024\u0001b#\u0000Eg\u0011@T\bÈ\t\u0004@L$\u001c\u0005\u0012\r`8@\u0010â*B%\u0004`P\u0010\u001a@V\b\u0001\u0014$\u0010\":Är\u0004J( I\u0012N\u0013A0¬JPH$\u0018$(P\u0010F\nB\u0000âYÂCL\u0002D5\u0004¦\u0010Ì\u0003\bj\t\u0004\u0004I(L$ \"R\u0002\u001c  \u0010\u001aÂ\"¤\u0012\u0012\t\u0001#°*\u000b\u0004¤bZ\u0002R\t\n&$& P¤G@DI(DÃABA!A PI H\",'\u0013\u0010\u0013\bÇ\tÄ2\u0005\"RÀA-AH\r!\u0004d\"C\u0002C\t\tÄdK\u0002Á\u0015\u00010@ÂXJ&\u001c+\u0011N#¬$H\u0010J0Jq!\u00000 ÂZÀ\u0010'H \u0011\u0002\u001aB\b\u0001P\"¨\"XHXF@\b$0\u00040°(\u0001P% G0\f¡-\u00008p\u0011BbÀ\u001c\u0006 p\u0011B\"@r\t\b\u0001\" \n\u0011H\u0002\fFX\u0012&\u001c\u0005(  L0\fq\u001da\u0011\u0000A\u0011A\u0011Q\u0018â1\u0000a,à  I(\n%\u0010(\u0011\u0014\u0003\tJ\nµ\u0000Yq%@0`°G8\u0010!°$8  FPH\u0018\u00048 b#\u0000T\bª\tÆ#\u0010%\u0011P\u0003\tÄu\u0001b*) !De\u0005\"c\u0000Bì\t\n#¤\u0005@°B#\u0000f\b\tCbc\u0002¡0\"\u0004\u0010Ì\u0002 IXV&\u0000\u0010Ð\u0012K(\nA$2Äu\u0000¨\u0011\u0014I\u0001\u0004\u0011J$°% q\u001cÁ)ÄÄL NÁ\fÁ@P¨S\u0002Dê\tS\u0004@R#,&\u0011N\u0016\bÈ\n\u0004P\"9\u0002Ah\tH!%(â\"s\b¨\u0002\u0004F\u0004\u0011È\u0002 D8J¡, 0ÄdÈ\u0010Ø\u0003\u0014I`H$J\u0004Ã\u0012\u0002\fb\u0019\u0002r¥\u0001\u0004BFP\n\"\"Y\u0000a(Á è&0P\u0010Ë\u0013\tr I(p\u0015(N# \u0007\u0018â1\u0000Q\u0019a(P\u001cG(P!\b\u0011Ò\u0015\t\u0001°bRÀq\u0011a)D6\u0000Â\u001b\u0002c\bÄ\b°LXH$¬$\u0018PH(Hq X°¢\u0019BEi\tL\"&0pb)Ul\u000b\u0004Ä\t\u0012Â±1\u0001YDÀ,KXX! \t\u0011\u0016\u0012$I \ba(á)\u0004s\u0000¦\u0011Ö\u0012\fLX\nQ\u0011aH`\u0019B!\u0000Ce\u0001Ô%\u0014\u00058À\u0010¢QÀ\b©\u0001\u0014$°\nX\u0011b)ë¢\rBHHÈ¸À,EPJ%\u0018\u00048°EX\b±\u0014'\u0011\u0002ê\nDF\u0001\u0002K\u0002¡\r` ÄV\u0004I(\f\"HH\u000e$\u0000Â1@q\r@(é\u0002\u0004ÀG \u0016$¨%\u0012\u0016\u0002\u0014CXP\"\u0000\u0012H\u0012J\u0001Äe\u0004¬\u0013\u0017]\u0005+\u0012\u0013\b¸J%\b\u0011P\u0013ë\u0001\u0006\"\u0010&\u0001\u0012!\u0007\t\u0004T\u0001BQQ\u001c\u0004(JXR\"%\u0010Ð\u0015\t\b\nDÂ\"BB¥¨"
         },
         "tagName": "path"
-      },
-      {
-        "attributes": {}
       }
     ]
   ]

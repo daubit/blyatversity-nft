@@ -2,15 +2,9 @@
   "groups": [
     [
       {
-        "attributes": {}
-      },
-      {
         "attributes": {},
         "tagName": "style",
         "content": "\r\n    .Sate-Su-0 {\r\n      fill: #fff200;\r\n      stroke: #000;\r\n      stroke-miterlimit: 10;\r\n      stroke-width: 4px;\r\n    }\r\n  "
-      },
-      {
-        "attributes": {}
       },
       {
         "attributes": {
@@ -20,9 +14,6 @@
           "r": "51.68"
         },
         "tagName": "circle"
-      },
-      {
-        "attributes": {}
       }
     ]
   ]
