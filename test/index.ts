@@ -185,11 +185,11 @@ describe("Blyatversity", function () {
 				await setDescriptionTx.wait();
 			});
 		});
-		//describe("TokenURI", () => {
-		//	it("should return the corrent token URI", async function () {
-		//		const tokenURI = await blyat.tokenURI(0);
-		//		writeFileSync("dist/token-0.txt", tokenURI, "utf-8");
-		//	});
-		//});
+		describe("TokenURI", () => {
+			it("should return the corrent token URI", async function () {
+				const tokenURI = await blyat.tokenURI(0);
+				writeFileSync("dist/token-0.txt", tokenURI, "utf-8");
+			});
+		});
 	});
 });
