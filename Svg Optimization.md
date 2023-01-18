@@ -19,8 +19,8 @@ The following commands are available for path data:
 - Z = closepath
 
 Character Set:
-m/M, l/L, h/H, v/V, c/C, s/S, q/Q, t/t, a/A, z/Z, '.', ',', '-', ' ', 0-9
-=> 10 (Numbers) + 20 (CMD) + 4 (SPECIAL CHARACTERS) = 34
+m, l/L, h/H, v/V, c/C, s/S, q/Q, t/t, a/A, Z, '.', ',', '-', ' ', 0-9
+=> 10 (Numbers) + 18 (CMD) + 4 (SPECIAL CHARACTERS) = 32
 
 Polygon:
 => Float points
