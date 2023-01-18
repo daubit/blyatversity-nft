@@ -38,9 +38,9 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     function tokenURI(uint256 tokenId) external view returns (string memory) {
         bytes32 seed = keccak256(abi.encodePacked(tokenId));
         string[] memory variants = _collectVariants(seed);
-        string memory attributes = _generateAttributes(variants);
-        string memory image = _generateImage(variants);
-        string memory name = _getName(variants);
+        bytes memory attributes = _generateAttributes(variants);
+        bytes memory image = _generateImage(variants);
+        bytes memory name = _getName(variants);
         return
             string(
                 abi.encodePacked(
@@ -99,8 +99,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
             variantId = _variantCounter[attributeId].current();
             _indexedVariants[attributeId][variant] = variantId;
             _variants[attributeId][variantId] = variant;
-            string memory attribute = _attributes[attributeId];
-            _variantKind[attributeId][variantId] = attribute;
+            _variantKind[attributeId][variantId] = _attributes[attributeId];
         }
         _svgs[attributeId][variantId] = svg;
     }
@@ -116,8 +115,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
             variantId = _variantCounter[attributeId].current();
             _indexedVariants[attributeId][variant] = variantId;
             _variants[attributeId][variantId] = variant;
-            string memory attribute = _attributes[attributeId];
-            _variantKind[attributeId][variantId] = attribute;
+            _variantKind[attributeId][variantId] = _attributes[attributeId];
         }
         _svgs[attributeId][variantId] = _svgs[attributeId][variantId].concat(
             svgChunk
@@ -161,38 +159,44 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     function _generateAttributes(string[] memory variants)
         internal
         view
-        returns (string memory)
+        returns (bytes memory)
     {
-        string memory base = "%5B";
+        bytes memory base = "%5B";
         for (uint16 i; i < variants.length; i++) {
             uint256 attributeId = i + 1;
             uint256 variantId = _indexedVariants[attributeId][variants[i]];
-            string memory attribute = _variantKind[attributeId][variantId];
-            string memory value = string(
-                abi.encodePacked(
+            if (i < _attributeCounter.current() - 1) {
+                base = abi.encodePacked(
+                    base,
                     "%7B%22trait_type%22%3A%22",
-                    attribute,
+                    _variantKind[attributeId][variantId],
+                    "%22%2C%22value%22%3A%22",
+                    variants[i],
+                    "%22%7D",
+                    "%22%2C"
+                );
+            } else {
+                base = abi.encodePacked(
+                    base,
+                    "%7B%22trait_type%22%3A%22",
+                    _variantKind[attributeId][variantId],
                     "%22%2C%22value%22%3A%22",
                     variants[i],
                     "%22%7D"
-                )
-            );
-            base = base.concat(value);
-            if (i < _attributeCounter.current() - 1) {
-                base = base.concat("%22%2C");
+                );
             }
         }
-        return base.concat("%5D");
+        return abi.encodePacked(base, "%5D");
     }
 
     function _getName(string[] memory variants)
         internal
         pure
-        returns (string memory)
+        returns (bytes memory)
     {
-        string memory name = "";
+        bytes memory name = "";
         for (uint256 i; i < variants.length; i++) {
-            name = name.concat(variants[i]).concat("%20");
+            name = abi.encodePacked(name, variants[i], "%20");
         }
         return name;
     }
@@ -200,17 +204,17 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     function _generateImage(string[] memory variants)
         internal
         view
-        returns (string memory)
+        returns (bytes memory)
     {
-        string
+        bytes
             memory base = "PHN2ZyB3aWR0aD0nMTAwMCcgaGVpZ2h0PScxMDAwJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbG5zOnhsaW5rPSdodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rJyB2aWV3Qm94PScwIDAgMTAwMCAxMDAwJz4g"; //"<svg width='1000' height='1000' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 1000 1000'>";
         uint256 amount = variants.length;
         for (uint16 i; i < amount; i++) {
             uint256 attributeId = i + 1;
             uint256 variantId = _indexedVariants[attributeId][variants[i]];
-            base = base.concat(_svgs[attributeId][variantId]);
+            base = abi.encodePacked(base, _svgs[attributeId][variantId]);
         }
-        base = base.concat("PC9zdmc+"); //base.concat("</svg>");
+        base = abi.encodePacked(base, "PC9zdmc+"); //base.concat("</svg>");
         return base;
     }
 }

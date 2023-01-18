@@ -156,7 +156,7 @@ describe("Blyatversity", function () {
 					}));
 
 					for (const variant of variants) {
-						writeFileSync(`${variant.name}.txt`, variant.svg, "utf-8");
+						//writeFileSync(`${variant.name}.txt`, variant.svg, "utf-8");
 
 						const { svg, name } = variant;
 						const chunkSize = 30_000;
