@@ -12,8 +12,7 @@ for (const attribute of attributes) {
         for (let i = 0; i < styleClasses.length; i++) {
             const styleClass = styleClasses[i];
             const className = new RegExp(styleClass.replace(".", ""), "g");
-            console.log({ className })
-            const newClassName = `${attribute}-${fileName.replace(".html", "")}-${i}`
+            const newClassName = `${attribute.slice(0, 2) + attribute.slice(attribute.length - 2, attribute.length)}-${fileName.replace(".html", "").slice(0, 2)}-${i}`
             file = file.replace(className, newClassName);
             writeFileSync(`${ROOT_FOLDER}/${attribute}/${fileName}`, file);
         }
