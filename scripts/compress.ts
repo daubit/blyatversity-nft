@@ -30,6 +30,32 @@ export function compressPoints(data: string) {
     return result;
 }
 
+function collectChildren(elements: any) {
+    const result = []
+    for (const element of elements) {
+        const compElement = collect(element);
+        result.push(compElement);
+    }
+    return result;
+}
+
+function collect(element: any) {
+    const attributes = (element as any).attributes as { class?: string, d?: string, points?: string } ?? {};
+    const compElement: any = {};
+    compElement.attributes = JSON.parse(JSON.stringify(attributes));
+    if (attributes.d) {
+        compElement.attributes.d = compressPath(attributes.d)
+    }
+    if (attributes.points) {
+        compElement.attributes.points = compressPoints(attributes.points);
+    }
+    compElement.tagName = (element as any).rawTagName
+    if (compElement.tagName === "style") {
+        compElement.content = element.textContent
+    }
+    return compElement;
+}
+
 function main() {
     const ROOT_FOLDER = "assets";
     const attributes = readdirSync(ROOT_FOLDER);
@@ -37,26 +63,12 @@ function main() {
         const files = readdirSync(`${ROOT_FOLDER}/${attribute}`);
         for (const fileName of files) {
             const file = readFileSync(`${ROOT_FOLDER}/${attribute}/${fileName}`, "utf-8");
-            const groupTag = parse(file).childNodes[0]
-            const elements = groupTag.childNodes.filter((n) => n.nodeType !== 3)
+            const groups = parse(file).childNodes.filter(n => n.nodeType !== 3);
             const result = []
-            for (const element of elements) {
-                const attributes = (element as any).attributes as { class?: string, d?: string, points?: string };
-                const compElement: any = {};
-                compElement.attributes = JSON.parse(JSON.stringify(attributes));
-                if (attributes.d) {
-                    compElement.attributes.d = compressPath(attributes.d)
-                }
-                if (attributes.points) {
-                    compElement.attributes.points = compressPoints(attributes.points);
-                }
-                compElement.tagName = (element as any).rawTagName
-                if (compElement.tagName === "style") {
-                    compElement.content = element.textContent
-                }
-                result.push(compElement);
+            for (const group of groups) {
+                result.push(collectChildren(group.childNodes))
             }
-            const cFile = JSON.stringify({ tagName: "g", children: result }, null, 2)
+            const cFile = JSON.stringify({ groups: result }, null, 2)
             if (!existsSync(`tmp/${ROOT_FOLDER}/${attribute}`)) {
                 mkdirSync(`tmp/${ROOT_FOLDER}/${attribute}`)
             }
