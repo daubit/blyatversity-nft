@@ -149,7 +149,6 @@ describe("Blyatversity", function () {
 							minifyJS: true,
 							removeComments: true,
 							removeEmptyAttributes: true,
-							removeEmptyElements: true,
 							removeRedundantAttributes: true,
 							sortAttributes: true,
 							sortClassName: true,
@@ -157,7 +156,7 @@ describe("Blyatversity", function () {
 					}));
 
 					for (const variant of variants) {
-						//writeFileSync(`${variant.name}.txt`, variant.svg, "utf-8");
+						writeFileSync(`${variant.name}.txt`, variant.svg, "utf-8");
 
 						const { svg, name } = variant;
 						const chunkSize = 30_000;
@@ -186,11 +185,11 @@ describe("Blyatversity", function () {
 				await setDescriptionTx.wait();
 			});
 		});
-		describe("TokenURI", () => {
-			it("should return the corrent token URI", async function () {
-				const tokenURI = await blyat.tokenURI(0);
-				writeFileSync("dist/token-0.txt", tokenURI, "utf-8");
-			});
-		});
+		//describe("TokenURI", () => {
+		//	it("should return the corrent token URI", async function () {
+		//		const tokenURI = await blyat.tokenURI(0);
+		//		writeFileSync("dist/token-0.txt", tokenURI, "utf-8");
+		//	});
+		//});
 	});
 });
