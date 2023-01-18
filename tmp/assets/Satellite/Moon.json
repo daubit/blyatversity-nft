@@ -1,0 +1,17 @@
+{
+  "tagName": "g",
+  "children": [
+    {
+      "attributes": {},
+      "tagName": "style",
+      "content": "\r\n    .Sate-Mo-0 {\r\n      fill: #d9d0ff;\r\n      stroke: #000;\r\n      stroke-miterlimit: 10;\r\n      stroke-width: 4px;\r\n    }\r\n  "
+    },
+    {
+      "attributes": {
+        "class": "Sate-Mo-0",
+        "points": "sP¢pr!S\n:\u0015`jq¹\nc\u001apjª\n¢\u001ar¡K\u000b\"\u0014`v\u000b\"\u0015 w±6\n£\u0018u±X\n¨\u0019Ps¡pªa\u0007$\u0014\n\u0014`rQ«\nc\u001a s¡©\nE\u0012°wQª\nC\u001b\u0007f\u0012¢±\u0007I\u0014¢(\u00079\u0015\n)\u0017"
+      },
+      "tagName": "polygon"
+    }
+  ]
+}

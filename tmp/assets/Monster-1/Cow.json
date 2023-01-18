@@ -1,0 +1,24 @@
+{
+  "tagName": "g",
+  "children": [
+    {
+      "attributes": {},
+      "tagName": "style",
+      "content": "\r\n    .Mo-2-Co-0,\r\n    .Mo-2-Co-1 {\r\n      opacity: 0.5;\r\n    }\r\n\r\n    .Mo-2-Co-0,\r\n    .Mo-2-Co-2,\r\n    .Mo-2-Co-3 {\r\n      fill: #e57d00;\r\n    }\r\n\r\n    .Mo-2-Co-4 {\r\n      fill: #ea5aff;\r\n    }\r\n\r\n    .Mo-2-Co-5,\r\n    .Mo-2-Co-1,\r\n    .Mo-2-Co-6 {\r\n      fill: #fff;\r\n    }\r\n\r\n    .Mo-2-Co-5,\r\n    .Mo-2-Co-7 {\r\n      opacity: 0.3;\r\n    }\r\n\r\n    .Mo-2-Co-8 {\r\n      fill: #40ffff;\r\n    }\r\n\r\n    .Mo-2-Co-00 {\r\n      fill: #ffc5c5;\r\n    }\r\n\r\n    .Mo-2-Co-01 {\r\n      fill: #00e75b;\r\n    }\r\n\r\n    .Mo-2-Co-6,\r\n    .Mo-2-Co-3 {\r\n      opacity: 0.2;\r\n    }\r\n  "
+    },
+    {
+      "attributes": {
+        "class": "Mo-2-Co-8",
+        "d": "ÑÐÁ\u0019 +\u0010%\u001eä\u0018`0EX\u0014%\u0010\u00058°FP\nÁ1a( \u0010DPP%\u0010\u0005\u0011\n\u0015*\u0001D¢RDs\u0004ÂaÂ%¤&\u0011\u0013j\u0012Ø\u0013 (¨K(\u0014!¬$\u0018À$H@L%\u0018\f\u0012V\u0016\t\u0003\u0004U\u0011j"
+      },
+      "tagName": "path"
+    },
+    {
+      "attributes": {
+        "class": "Mo-2-Co-8",
+        "d": "Ñ1!@+\n$*ä\u0012H\u0004\bÀ(p\u0010b\"Á\u0011 !DRâ9A\u0019aX\u0014H8HQ\u0011\u00000°G`P%°DHH1) 0H\f"
+      },
+      "tagName": "path"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "tagName": "g",
+  "children": [
+    {
+      "attributes": {},
+      "tagName": "style",
+      "content": "\r\n    .Sate-Su-0 {\r\n      fill: #fff200;\r\n      stroke: #000;\r\n      stroke-miterlimit: 10;\r\n      stroke-width: 4px;\r\n    }\r\n  "
+    },
+    {
+      "attributes": {
+        "class": "Sate-Su-0",
+        "cx": "500.32",
+        "cy": "141.48",
+        "r": "51.68"
+      },
+      "tagName": "circle"
+    }
+  ]
+}
