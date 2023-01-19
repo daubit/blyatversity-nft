@@ -164,7 +164,6 @@ describe("Blyatversity", function () {
 							const till = start + chunkSize < svg.length ? start + chunkSize : svg.length;
 							let svgChunk = svg.slice(start, till);
 							while (svgChunk.length % 3 !== 0) {
-								console.log(`Add padding ${svgChunk.length % 4} to ${variant.name}-${start}`);
 								svgChunk += " ";
 							}
 							//writeFileSync(`${variant.name}-${start}.base64.txt`, encode(svgChunk), "utf-8");
