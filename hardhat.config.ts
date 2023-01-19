@@ -13,6 +13,7 @@ import "hardhat-contract-sizer";
 import "@nomiclabs/hardhat-solpp";
 import "@openzeppelin/hardhat-upgrades";
 import { mint, tokenURI, upload } from "./scripts/task";
+import { benchmarkTokenURI } from "./scripts/test";
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ task("accounts", "Prints the list of accounts", async (_args, hre: HardhatRuntim
 task("mint", "Mint Blyat Token", mint).addParam("to", "Address to mint to").addParam("id");
 task("upload", "Upload Metadata", upload)
 task("tokenURI", "Display tokenURI", tokenURI).addParam("id")
+task("benchMark", benchmarkTokenURI).addParam("id").addParam("amount")
 
 const MNEMONIC = process.env.MNEMONIC;
 const ALCHEMY_KEY_MAINNET = process.env.ALCHEMY_KEY_MAINNET;

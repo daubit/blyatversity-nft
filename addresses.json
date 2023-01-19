@@ -1,4 +1,9 @@
 {
+  "31337": {
+    "stringLib": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    "blyat": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+    "metadata": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
+  },
   "80001": {
     "stringLib": "0x5AB84FC81E18fe87B44Aa627864C972947993Ee3",
     "blyat": "0x56f93a9b87FdaFAA2395c22DabD8d992823ce5b0",
