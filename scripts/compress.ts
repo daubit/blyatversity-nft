@@ -42,15 +42,15 @@ function collectChildren(elements: any) {
 function collect(element: any) {
     const attributes = (element as any).attributes as { class?: string, d?: string, points?: string } ?? {};
     const compElement: any = {};
-    compElement.attributes = JSON.parse(JSON.stringify(attributes));
+    compElement.a = JSON.parse(JSON.stringify(attributes));
     if (attributes.d) {
-        compElement.attributes.d = compressPath(attributes.d)
+        compElement.a.d = compressPath(attributes.d)
     }
     if (attributes.points) {
-        compElement.attributes.points = compressPoints(attributes.points);
+        compElement.a.points = compressPoints(attributes.points);
     }
-    compElement.tagName = (element as any).rawTagName
-    if (compElement.tagName === "style") {
+    compElement.t = (element as any).rawTagName
+    if (compElement.t === "style") {
         compElement.content = element.textContent
     }
     return compElement;
