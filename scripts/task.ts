@@ -35,8 +35,8 @@ export async function upload(args: MintArgs, hre: HardhatRuntimeEnvironment) {
 	}
 	const ROOT_FOLDER = "assets";
 	const attributesFolder = readdirSync(ROOT_FOLDER);
-	// const addAttributesTx = await metadata.addAttributes(attributesFolder);
-	// await addAttributesTx.wait();
+	const addAttributesTx = await metadata.addAttributes(attributesFolder);
+	await addAttributesTx.wait();
 	console.log("Added attributes!")
 	for (let i = 0; i < attributesFolder.length; i++) {
 		const attribute = attributesFolder[i];

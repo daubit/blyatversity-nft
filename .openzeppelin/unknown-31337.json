@@ -454,7 +454,7 @@
             "label": "_itemState",
             "offset": 0,
             "slot": "159",
-            "type": "t_mapping(t_uint256,t_enum(ItemState)3988)",
+            "type": "t_mapping(t_uint256,t_enum(ItemState)2427)",
             "contract": "Blyatversity",
             "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:49"
           },
@@ -496,7 +496,7 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_enum(ItemState)3988": {
+          "t_enum(ItemState)2427": {
             "label": "enum Blyatversity.ItemState",
             "members": [
               "Paused",
@@ -521,7 +521,7 @@
             "label": "mapping(uint256 => address)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_enum(ItemState)3988)": {
+          "t_mapping(t_uint256,t_enum(ItemState)2427)": {
             "label": "mapping(uint256 => enum Blyatversity.ItemState)",
             "numberOfBytes": "32"
           },
