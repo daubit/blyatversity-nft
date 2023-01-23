@@ -4,9 +4,8 @@ import { Blyatversity, MetadataFactory } from "../typechain-types";
 import CONST from "../scripts/util/const.json";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
-import { readdirSync, readFileSync, writeFileSync } from "fs";
-import { minify } from "html-minifier";
-import { encode } from "js-base64";
+import { writeFileSync } from "fs";
+import uploadAttribs from "../scripts/util/upload-attribs";
 
 const { REGISTRY_ADDRESS, CONTRACT_METADATA_CID, ADMIN_ROLE } = CONST;
 
@@ -128,60 +127,8 @@ describe("Blyatversity", function () {
 	describe("Metadata", () => {
 		describe("Setup", function () {
 			it("should upload data", async function () {
-				interface Variant {
-					name: string;
-					svg: string;
-				}
 				const ROOT_FOLDER = "assets";
-				const attributesFolder = readdirSync(ROOT_FOLDER);
-				const addAttributesTx = await metadata.addAttributes(attributesFolder);
-				await addAttributesTx.wait();
-
-				for (let i = 0; i < attributesFolder.length; i++) {
-					const attribute = attributesFolder[i];
-					const attributeId = i + 1;
-					const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${attribute}`).map((file) => ({
-						name: file.replace(".html", ""),
-						svg: minify(readFileSync(`${ROOT_FOLDER}/${attribute}/${file}`, "utf-8"), {
-							collapseWhitespace: true,
-							collapseBooleanAttributes: true,
-							minifyCSS: true,
-							minifyJS: true,
-							removeComments: true,
-							removeEmptyAttributes: true,
-							removeRedundantAttributes: true,
-							sortAttributes: true,
-							sortClassName: true,
-						}),
-					}));
-
-					for (const variant of variants) {
-						//writeFileSync(`${variant.name}.txt`, variant.svg, "utf-8");
-
-						const { svg, name } = variant;
-						const chunkSize = 30_000;
-						for (let start = 0; start < svg.length; start += chunkSize) {
-							const till = start + chunkSize < svg.length ? start + chunkSize : svg.length;
-							let svgChunk = svg.slice(start, till);
-							while (svgChunk.length % 3 !== 0) {
-								svgChunk += " ";
-							}
-							//writeFileSync(`${variant.name}-${start}.base64.txt`, encode(svgChunk), "utf-8");
-							//writeFileSync(`${variant.name}-${start}.txt`, svgChunk, "utf-8");
-							const addVariantChunkedTx = await metadata.addVariantChunked(
-								attributeId,
-								name,
-								encode(svgChunk),
-								{
-									gasLimit: 30_000_000,
-								}
-							);
-							await addVariantChunkedTx.wait();
-						}
-					}
-				}
-				const setDescriptionTx = await metadata.setDescription("Monster AG");
-				await setDescriptionTx.wait();
+				await uploadAttribs(ROOT_FOLDER, metadata);
 			});
 		});
 		describe("TokenURI", () => {

@@ -11,6 +11,7 @@ import { Blyatversity, MetadataFactory } from "../typechain-types";
 import { readdirSync, readFileSync, writeFileSync } from "fs";
 import { minify } from "html-minifier";
 import { encode } from "js-base64";
+import uploadAttribs from "./util/upload-attribs";
 
 interface MintArgs {
 	to: string;
@@ -29,56 +30,9 @@ export async function upload(args: MintArgs, hre: HardhatRuntimeEnvironment) {
 		libraries: { String: stringLibAddress },
 	});
 	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
-	interface Variant {
-		name: string;
-		svg: string;
-	}
 	const ROOT_FOLDER = "assets";
-	const attributesFolder = readdirSync(ROOT_FOLDER);
-	const addAttributesTx = await metadata.addAttributes(attributesFolder);
-	await addAttributesTx.wait();
-	console.log("Added attributes!")
-	for (let i = 0; i < attributesFolder.length; i++) {
-		const attribute = attributesFolder[i];
-		const attributeId = i + 1;
-		const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${attribute}`).map((file) => ({
-			name: file.replace(".html", ""),
-			svg: minify(readFileSync(`${ROOT_FOLDER}/${attribute}/${file}`, "utf-8"), {
-				collapseWhitespace: true,
-				collapseBooleanAttributes: true,
-				minifyCSS: true,
-				minifyJS: true,
-				removeComments: true,
-				removeEmptyAttributes: true,
-				removeRedundantAttributes: true,
-				sortAttributes: true,
-				sortClassName: true,
-			}),
-		}));
-
-		for (const variant of variants) {
-			const { svg, name } = variant;
-			const chunkSize = 30_000;
-			for (let start = 0; start < svg.length; start += chunkSize) {
-				const till = start + chunkSize < svg.length ? start + chunkSize : svg.length;
-				let svgChunk = svg.slice(start, till);
-				while (svgChunk.length % 3 !== 0) {
-					svgChunk += " ";
-				}
-				const addVariantChunkedTx = await metadata.addVariantChunked(
-					attributeId,
-					name,
-					encode(svgChunk)
-				);
-				await addVariantChunkedTx.wait();
-			}
-		}
-	}
-	const setDescriptionTx = await metadata.setDescription("Monster AG");
-	await setDescriptionTx.wait();
+	await uploadAttribs(ROOT_FOLDER, metadata);
 }
-
-
 
 export async function mint(args: MintArgs, hre: HardhatRuntimeEnvironment) {
 	const network = await hre.ethers.provider.getNetwork();
