@@ -1,3 +1,4 @@
+import { BigNumber } from "ethers";
 import { PathLike, readdirSync, readFileSync, writeFileSync } from "fs";
 import { minify } from "html-minifier";
 import { encode } from "js-base64";
@@ -38,23 +39,19 @@ export default async function uploadAttribs(ROOT_FOLDER: PathLike, metadata: Met
 			const { svg, name } = variant;
 			const chunkSize = 30_000;
 			for (let start = 0; start < svg.length; start += chunkSize) {
-				console.log(`Adding attribute ${attributesFolder[i]} chunk ${start}`);
+				console.log(`Adding attribute ${attributesFolder[i]} variant ${name} chunk ${start}`);
 
 				const till = start + chunkSize < svg.length ? start + chunkSize : svg.length;
 				let svgChunk = svg.slice(start, till);
-				while (svgChunk.length % 3 !== 0) {
+				while (encode(svgChunk, false).endsWith("=")) {
 					svgChunk += " ";
 				}
-				// writeFileSync(
-				// 	`dist/${variant.name}-${start}.base64.txt`,
-				// 	encodeURIComponent(encodeURIComponent(encode(svgChunk))),
-				// 	"utf-8"
-				// );
 
 				const addVariantChunkedTx = await metadata.addVariantChunked(
 					attributeId,
 					name,
-					encodeURIComponent(encodeURIComponent(encode(svgChunk)))
+					encodeURIComponent(encode(svgChunk, false)),
+					{ gasLimit: BigNumber.from(30_000_000) }
 				);
 				await addVariantChunkedTx.wait();
 				console.log(`Added attribute ${attributesFolder[i]} chunk ${start}`);
