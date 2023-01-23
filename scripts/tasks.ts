@@ -17,6 +17,11 @@ interface MintArgs {
 	id: string;
 }
 
+interface UploadArgs {
+	start: number;
+	end: number;
+}
+
 interface TokenArgs {
 	id: string;
 }
@@ -49,20 +54,21 @@ export async function setDescription(args: any, hre: HardhatRuntimeEnvironment) 
 	console.log("Set description!")
 }
 
-export async function reset(args: any, hre: HardhatRuntimeEnvironment) {
+export async function reset(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
 	const { stringLib: stringLibAddress, metadata: metadataAddress } = storage.fetch(network.chainId);
 	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
 		libraries: { String: stringLibAddress },
 	});
+	const { start, end } = args;
 	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
 	interface Variant {
 		name: string;
 		svg: string;
 	}
 	const ROOT_FOLDER = "assets";
-	const attributesFolder = readdirSync(ROOT_FOLDER);
+	const attributesFolder = readdirSync(ROOT_FOLDER).slice(start, end);
 	for (let i = 0; i < attributesFolder.length; i++) {
 		const attribute = attributesFolder[i];
 		const attributeId = i + 1;
@@ -79,24 +85,26 @@ export async function reset(args: any, hre: HardhatRuntimeEnvironment) {
 			);
 			await setVariantTx.wait();
 		}
+		console.log(`Resetting ${attribute}`)
 	}
 
 }
 
-export async function upload(args: MintArgs, hre: HardhatRuntimeEnvironment) {
+export async function upload(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
 	const { stringLib: stringLibAddress, metadata: metadataAddress } = storage.fetch(network.chainId);
 	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
 		libraries: { String: stringLibAddress },
 	});
+	const { start, end } = args;
 	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
 	interface Variant {
 		name: string;
 		svg: string;
 	}
 	const ROOT_FOLDER = "assets";
-	const attributesFolder = readdirSync(ROOT_FOLDER);
+	const attributesFolder = readdirSync(ROOT_FOLDER).slice(start, end);
 	for (let i = 0; i < attributesFolder.length; i++) {
 		const attribute = attributesFolder[i];
 		const attributeId = i + 1;
@@ -114,7 +122,6 @@ export async function upload(args: MintArgs, hre: HardhatRuntimeEnvironment) {
 				sortClassName: true,
 			}),
 		}));
-
 		for (const variant of variants) {
 			const { svg, name } = variant;
 			const chunkSize = 30_000;
@@ -132,6 +139,7 @@ export async function upload(args: MintArgs, hre: HardhatRuntimeEnvironment) {
 				await addVariantChunkedTx.wait();
 			}
 		}
+		console.log(`Uploaded ${attribute}`)
 	}
 
 }
