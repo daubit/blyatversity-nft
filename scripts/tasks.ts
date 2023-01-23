@@ -144,8 +144,6 @@ export async function upload(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 
 }
 
-
-
 export async function mint(args: MintArgs, hre: HardhatRuntimeEnvironment) {
 	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");

@@ -333,7 +333,11 @@
     },
     "9eb233dfcfc0623eacc152d217e6a04610c799fae881e473d426aa363f8e256e": {
       "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+<<<<<<< HEAD
       "txHash": "0x38150d17cada287c1a5f7485242b14d879a169f382471c80fb022123bb386890",
+=======
+      "txHash": "0xfd8cc503b6e66c48de67b30db4d5b30003fffc6d7a906e50d1ab367270a26173",
+>>>>>>> origin/akrahl/dev
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -454,7 +458,7 @@
             "label": "_itemState",
             "offset": 0,
             "slot": "159",
-            "type": "t_mapping(t_uint256,t_enum(ItemState)2427)",
+            "type": "t_mapping(t_uint256,t_enum(ItemState)3988)",
             "contract": "Blyatversity",
             "src": "contracts\\Blyatversity.sol:47"
           },
@@ -496,7 +500,7 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_enum(ItemState)2427": {
+          "t_enum(ItemState)3988": {
             "label": "enum Blyatversity.ItemState",
             "members": [
               "Paused",
@@ -521,7 +525,7 @@
             "label": "mapping(uint256 => address)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_enum(ItemState)2427)": {
+          "t_mapping(t_uint256,t_enum(ItemState)3988)": {
             "label": "mapping(uint256 => enum Blyatversity.ItemState)",
             "numberOfBytes": "32"
           },

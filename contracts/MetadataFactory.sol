@@ -64,7 +64,11 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		_description = description;
 	}
 
-	function addVariants(uint256 attributeId, string[] memory variants, string[] memory svgs) external {
+	function addVariants(
+		uint256 attributeId,
+		string[] memory variants,
+		string[] memory svgs
+	) external {
 		if (variants.length != svgs.length) revert UnequalArrays();
 		string memory attribute = _attributes[attributeId];
 		for (uint256 i; i < variants.length; i++) {
