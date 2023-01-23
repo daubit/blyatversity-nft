@@ -1,4 +1,5 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
+// @ts-ignore
 import { MetadataFactory } from "../typechain-types";
 import { Storage } from "./util/storage";
 

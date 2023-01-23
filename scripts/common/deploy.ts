@@ -16,6 +16,7 @@ async function main() {
   const addresses: AddressStorage = storage.fetch(network.chainId);
   const { blyat: blyatAddress, stringLib: stringLibAddress, metadata: metadataAddress } = addresses
   // We get the contract to deploy
+  let blyatversity: Blyatversity;
   if (!stringLibAddress) {
     const StringLib = await ethers.getContractFactory("String");
     const stringLib = await StringLib.deploy();
@@ -26,22 +27,25 @@ async function main() {
   if (!addresses.stringLib) throw new Error("Cannot find String Library!")
   if (!blyatAddress) {
     const Blyatversity = await ethers.getContractFactory("Blyatversity");
-    const blyatversity = (await upgrades.deployProxy(Blyatversity, [CONTRACT_METADATA_CID, REGISTRY_ADDRESS])) as Blyatversity;
+    blyatversity = (await upgrades.deployProxy(Blyatversity, [CONTRACT_METADATA_CID, REGISTRY_ADDRESS])) as Blyatversity;
     await blyatversity.deployed();
     addresses.blyat = blyatversity.address;
     console.log("Blyatversity deployed to:", blyatversity.address);
     console.log("Waiting for verification...");
     // await verify(hardhat, blyatversity.address, chainId, [CONTRACT_METADATA_CID, REGISTRY_ADDRESS]);
-    if (!metadataAddress) {
-      const Metadata = await ethers.getContractFactory("MetadataFactory", { libraries: { String: addresses.stringLib } })
-      const metadata = await Metadata.deploy();
-      await metadata.deployed();
-      addresses.metadata = metadata.address;
-      console.log("Metadata deployed!");
-      const addTx = await blyatversity["addItem(address)"](metadata.address)
-      await addTx.wait();
-      console.log("Metadata added!")
-    }
+  } else {
+    const Blyatversity = await ethers.getContractFactory("Blyatversity");
+    blyatversity = Blyatversity.attach(blyatAddress) as Blyatversity
+  }
+  if (!metadataAddress) {
+    const Metadata = await ethers.getContractFactory("MetadataFactory", { libraries: { String: addresses.stringLib } })
+    const metadata = await Metadata.deploy();
+    await metadata.deployed();
+    addresses.metadata = metadata.address;
+    console.log("Metadata deployed!");
+    const addTx = await blyatversity["addItem(address)"](metadata.address)
+    await addTx.wait();
+    console.log("Metadata added!")
   }
   storage.save(network.chainId, addresses);
 }

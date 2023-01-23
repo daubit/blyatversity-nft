@@ -21,6 +21,68 @@ interface TokenArgs {
 	id: string;
 }
 
+export async function addAttributes(args: any, hre: HardhatRuntimeEnvironment) {
+	const network = await hre.ethers.provider.getNetwork();
+	const storage = new Storage("addresses.json");
+	const { stringLib: stringLibAddress, metadata: metadataAddress } = storage.fetch(network.chainId);
+	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
+		libraries: { String: stringLibAddress },
+	});
+	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
+	const ROOT_FOLDER = "assets";
+	const attributesFolder = readdirSync(ROOT_FOLDER);
+	const addAttributesTx = await metadata.addAttributes(attributesFolder);
+	await addAttributesTx.wait();
+	console.log("Added attributes!")
+}
+
+export async function setDescription(args: any, hre: HardhatRuntimeEnvironment) {
+	const network = await hre.ethers.provider.getNetwork();
+	const storage = new Storage("addresses.json");
+	const { stringLib: stringLibAddress, metadata: metadataAddress } = storage.fetch(network.chainId);
+	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
+		libraries: { String: stringLibAddress },
+	});
+	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
+	const setDescriptionTx = await metadata.setDescription("Monster AG");
+	await setDescriptionTx.wait();
+	console.log("Set description!")
+}
+
+export async function reset(args: any, hre: HardhatRuntimeEnvironment) {
+	const network = await hre.ethers.provider.getNetwork();
+	const storage = new Storage("addresses.json");
+	const { stringLib: stringLibAddress, metadata: metadataAddress } = storage.fetch(network.chainId);
+	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
+		libraries: { String: stringLibAddress },
+	});
+	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
+	interface Variant {
+		name: string;
+		svg: string;
+	}
+	const ROOT_FOLDER = "assets";
+	const attributesFolder = readdirSync(ROOT_FOLDER);
+	for (let i = 0; i < attributesFolder.length; i++) {
+		const attribute = attributesFolder[i];
+		const attributeId = i + 1;
+		const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${attribute}`).map((file) => ({
+			name: file.replace(".html", ""),
+			svg: "",
+		}));
+		for (const variant of variants) {
+			const { svg, name } = variant;
+			const setVariantTx = await metadata.setVariant(
+				attributeId,
+				name,
+				svg
+			);
+			await setVariantTx.wait();
+		}
+	}
+
+}
+
 export async function upload(args: MintArgs, hre: HardhatRuntimeEnvironment) {
 	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
@@ -35,9 +97,6 @@ export async function upload(args: MintArgs, hre: HardhatRuntimeEnvironment) {
 	}
 	const ROOT_FOLDER = "assets";
 	const attributesFolder = readdirSync(ROOT_FOLDER);
-	const addAttributesTx = await metadata.addAttributes(attributesFolder);
-	await addAttributesTx.wait();
-	console.log("Added attributes!")
 	for (let i = 0; i < attributesFolder.length; i++) {
 		const attribute = attributesFolder[i];
 		const attributeId = i + 1;
@@ -74,8 +133,7 @@ export async function upload(args: MintArgs, hre: HardhatRuntimeEnvironment) {
 			}
 		}
 	}
-	const setDescriptionTx = await metadata.setDescription("Monster AG");
-	await setDescriptionTx.wait();
+
 }
 
 
