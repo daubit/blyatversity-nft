@@ -10,9 +10,8 @@ import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
 import "hardhat-contract-sizer";
-import "@nomiclabs/hardhat-solpp";
 import "@openzeppelin/hardhat-upgrades";
-import { mint, tokenURI, upload } from "./scripts/task";
+import { addAttributes, mint, reset, setDescription, tokenURI, upload } from "./scripts/tasks";
 import { benchmarkTokenURI } from "./scripts/test";
 
 dotenv.config();
@@ -27,7 +26,10 @@ task("accounts", "Prints the list of accounts", async (_args, hre: HardhatRuntim
 });
 
 task("mint", "Mint Blyat Token", mint).addParam("to", "Address to mint to").addParam("id");
-task("upload", "Upload Metadata", upload)
+task("setDescription", setDescription)
+task("addAttributes", addAttributes)
+task("upload", "Upload variants", upload)
+task("reset", "Reset metadata", reset)
 task("tokenURI", "Display tokenURI", tokenURI).addParam("id")
 task("benchMark", benchmarkTokenURI).addParam("id").addParam("amount")
 
@@ -81,19 +83,6 @@ const config: HardhatUserConfig = {
 			polygon: process.env.POLYSCAN_KEY!,
 			polygonMumbai: process.env.POLYSCAN_KEY!,
 		},
-	},
-	// @ts-ignore
-	ethernal: {
-		email: process.env.ETHERNAL_EMAIL,
-		password: process.env.ETHERNAL_PASSWORD,
-		uploadAst: true,
-		resetOnStart: "localhost",
-		workspace: "localhost",
-		disabled: true,
-	},
-	ethernalAstUpload: true,
-	solpp: {
-		defs: { OPENSEA_POLYGON: process.env.OPENSEA_POLYGON },
 	},
 	mocha: {
 		timeout: 400_000,
