@@ -45,11 +45,11 @@ export default async function uploadAttribs(ROOT_FOLDER: PathLike, metadata: Met
 				while (svgChunk.length % 3 !== 0) {
 					svgChunk += " ";
 				}
-				writeFileSync(
-					`dist/${variant.name}-${start}.base64.txt`,
-					encodeURIComponent(encodeURIComponent(encode(svgChunk))),
-					"utf-8"
-				);
+				// writeFileSync(
+				// 	`dist/${variant.name}-${start}.base64.txt`,
+				// 	encodeURIComponent(encodeURIComponent(encode(svgChunk))),
+				// 	"utf-8"
+				// );
 
 				const addVariantChunkedTx = await metadata.addVariantChunked(
 					attributeId,
