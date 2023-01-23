@@ -28,8 +28,8 @@ task("accounts", "Prints the list of accounts", async (_args, hre: HardhatRuntim
 task("mint", "Mint Blyat Token", mint).addParam("to", "Address to mint to").addParam("id");
 task("setDescription", setDescription)
 task("addAttributes", addAttributes)
-task("upload", "Upload variants", upload)
-task("reset", "Reset metadata", reset)
+task("upload", "Upload variants", upload).addParam("start").addParam("end")
+task("reset", "Reset metadata", reset).addParam("start").addParam("end")
 task("tokenURI", "Display tokenURI", tokenURI).addParam("id")
 task("benchMark", benchmarkTokenURI).addParam("id").addParam("amount")
 

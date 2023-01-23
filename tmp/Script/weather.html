@@ -1,0 +1,10 @@
+<script type="text/javascript">
+	fetch("http://www.geoplugin.net/json.gp")
+		.then((result) =>
+			result.json().then((r) => {
+				console.log(r);
+				console.log(`You live in ${r.geoplugin_city}`);
+			})
+		)
+		.catch(() => console.log("Somebody is protected..."));
+</script>
