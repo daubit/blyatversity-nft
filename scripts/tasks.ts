@@ -134,7 +134,7 @@ export async function upload(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 				const addVariantChunkedTx = await metadata.addVariantChunked(
 					attributeId,
 					name,
-					encode(svgChunk)
+					encodeURIComponent(encodeURIComponent(encode(svgChunk)))
 				);
 				await addVariantChunkedTx.wait();
 			}
