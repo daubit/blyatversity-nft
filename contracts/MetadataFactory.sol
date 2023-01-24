@@ -146,6 +146,10 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		for (uint16 i; i < variants.length; i++) {
 			uint256 attributeId = i + 1;
 			uint256 variantId = _indexedVariants[attributeId][variants[i]];
+			string memory variantType = _variantKind[attributeId][variantId];
+			if (bytes(variantType)[0] == "_") {
+				continue;
+			}
 			if (i < _attributeCounter.current() - 1) {
 				base = abi.encodePacked(
 					base,

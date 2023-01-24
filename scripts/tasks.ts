@@ -15,7 +15,7 @@ import { BigNumber } from "ethers";
 
 interface MintArgs {
 	to: string;
-	id: string;
+	seasonid: string;
 }
 
 interface UploadArgs {
@@ -39,7 +39,7 @@ export async function addAttributes(args: any, hre: HardhatRuntimeEnvironment) {
 	const attributesFolder = readdirSync(ROOT_FOLDER);
 	const addAttributesTx = await metadata.addAttributes(attributesFolder);
 	await addAttributesTx.wait();
-	console.log("Added attributes!")
+	console.log("Added attributes!");
 }
 
 export async function setDescription(args: any, hre: HardhatRuntimeEnvironment) {
@@ -52,7 +52,7 @@ export async function setDescription(args: any, hre: HardhatRuntimeEnvironment) 
 	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
 	const setDescriptionTx = await metadata.setDescription("Monster AG");
 	await setDescriptionTx.wait();
-	console.log("Set description!")
+	console.log("Set description!");
 }
 
 export async function reset(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
@@ -79,14 +79,10 @@ export async function reset(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 		}));
 		for (const variant of variants) {
 			const { svg, name } = variant;
-			const setVariantTx = await metadata.setVariant(
-				attributeId,
-				name,
-				svg
-			);
+			const setVariantTx = await metadata.setVariant(attributeId, name, svg);
 			await setVariantTx.wait();
 		}
-		console.log(`Resetting ${attribute}`)
+		console.log(`Resetting ${attribute}`);
 	}
 }
 
@@ -122,7 +118,7 @@ export async function upload(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 				removeRedundantAttributes: true,
 				sortAttributes: true,
 				sortClassName: true,
-				caseSensitive: true
+				caseSensitive: true,
 			}),
 		}));
 
@@ -141,7 +137,7 @@ export async function upload(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 				const addVariantChunkedTx = await metadata.addVariantChunked(
 					attributeId,
 					name,
-					encodeURIComponent(encode(svgChunk, false)),
+					encodeURIComponent(encode(svgChunk, false))
 					// { gasLimit: BigNumber.from(30_000_000) }
 				);
 				await addVariantChunkedTx.wait();
@@ -150,17 +146,16 @@ export async function upload(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 		}
 		console.log(`Added attribute ${attributesFolder[i]}`);
 	}
-
 }
 
 export async function mint(args: MintArgs, hre: HardhatRuntimeEnvironment) {
 	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
 	const { blyat: blyatAddress } = storage.fetch(network.chainId);
-	const { to, id: itemId } = args;
+	const { to, seasonid: itemId } = args;
 	const Blyatversity = await hre.ethers.getContractFactory("Blyatversity");
 	const blyat = Blyatversity.attach(blyatAddress) as Blyatversity;
-	const mintTx = await blyat.mint(itemId, to);
+	const mintTx = await blyat.mint(BigNumber.from(itemId), to);
 	await mintTx.wait();
 	console.log(`https://${network.chainId === 80001 ? "mumbai." : ""}polygonscan.com/tx/${mintTx.hash}`);
 }
