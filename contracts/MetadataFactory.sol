@@ -131,8 +131,6 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		for (uint256 i; i < currentAmount; i++) {
 			uint256 attributeId = i + 1;
 			uint256 variantAmount = _variantCounter[attributeId].current();
-			console.log("Amount: ", variantAmount);
-			console.log("Id", attributeId);
 			uint256 randomIndex = uint16((uint256(seed) % variantAmount) + 1);
 			variants[i] = _variantName[attributeId][randomIndex];
 		}
