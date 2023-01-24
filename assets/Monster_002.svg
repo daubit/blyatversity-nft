@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Monster" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 1000">
+  <defs>
+    <style>
+      .cls-1 {
+        stroke-width: 24px;
+      }
+
+      .cls-1, .cls-2 {
+        fill: #fff;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        stroke: #000;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-2 {
+        stroke-width: 15px;
+      }
+
+      .cls-3 {
+        fill: url(#Unbenannter_Verlauf_6);
+        stroke-width: 7px;
+      }
+    </style>
+    <linearGradient id="Unbenannter_Verlauf_6" data-name="Unbenannter Verlauf 6" x1="38" y1="1432.86" x2="31.77" y2="1275.44" gradientTransform="translate(202.52 2078.98) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f7ff7f"/>
+      <stop offset=".13" stop-color="#f9cc90"/>
+      <stop offset=".27" stop-color="#fba1a0"/>
+      <stop offset=".39" stop-color="#fd83aa"/>
+      <stop offset=".49" stop-color="#fe70b1"/>
+      <stop offset=".56" stop-color="#ff6ab4"/>
+    </linearGradient>
+  </defs>
+  <g id="Monster_002_SimpleShape" data-name="Monster 002 SimpleShape">
+    <path id="Monster_002_SimpleShape_05" data-name="Monster 002 SimpleShape 05" class="cls-3" d="m239.04,647.8c-.54.52,12.32-8.07,12.32-8.07,0,0-12.01,8.05-12.54,8.37-3.16-4.51-14.22-17.63,6.3-34.98-7.95,19.48,3.47,24.51,6.74,26.29,11.79-7.77,18.51-8.16,21.37-8.67,1.48-6.8-4.11-12.51-8.64-11.06,4.21-2.01,9.22,3.33,10.04,5.82,2.06-4.94-.58-17.52-10.25-20.05,9.19.66,11.6,11.18,12.24,14.47,2.12-5.04,3.14-5.13,3.06-16,4.36,8.99-4.35,21.12-5.06,26.64,4.31-.55,15.68.26,19.95,7.88,16.13-18.35,3.67-30.23,3.67-30.23,0,0,40.16,14.18,4.31,39.89-9.11,5.08-7.97-9.66-7.97-9.66,0,0-1.12,15.1,7.11,11.75,19.3-18.78,33.71-1.66,43.14.28-12.83-5.18-12.81,13.39-38.91,14.29-12.64,34.89-13.78,69.07-15.05,76.48-15.35,89.21-258.94,80.26-113.2-44.78,91.86-27.43,107.23,31.97,110.15,55.4-2.93-23.42-18.09-82.51-109.85-55.81-.05.01,49.82-42.31,73.39-56.34"/>
+    <ellipse id="Monster_002_SimpleShape_04" data-name="Monster 002 SimpleShape 04" class="cls-2" cx="264.47" cy="665.9" rx="3.21" ry="3.4"/>
+    <ellipse id="Monster_002_SimpleShape_03" data-name="Monster 002 SimpleShape 03" class="cls-2" cx="241.14" cy="664.78" rx="2.92" ry="3.1"/>
+    <ellipse id="Monster_002_SimpleShape_02" data-name="Monster 002 SimpleShape 02" class="cls-1" cx="222.09" cy="750.52" rx="8.04" ry="12.64"/>
+    <ellipse id="Monster_002_SimpleShape_01" data-name="Monster 002 SimpleShape 01" class="cls-1" cx="179.78" cy="750.52" rx="7.38" ry="11.86"/>
+  </g>
+</svg>

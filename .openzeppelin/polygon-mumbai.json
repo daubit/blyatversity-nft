@@ -59,6 +59,11 @@
       "address": "0x8b9e97e7B845e4172d4e71EFf25419F2eD8d9774",
       "txHash": "0x6a53db7ff069e5c5a72cd659dc35fec8ab6ceee16be8455f4ed68213097e8297",
       "kind": "transparent"
+    },
+    {
+      "address": "0x8B17A0561711adaC747C86Bc457D35a71A479905",
+      "txHash": "0x3c42f603412fa45b7de3b06b88be7d83085c913a11c2fa13f5d9f708f73ee491",
+      "kind": "transparent"
     }
   ],
   "impls": {

@@ -11,6 +11,7 @@ import { Blyatversity, MetadataFactory } from "../typechain-types";
 import { readdirSync, readFileSync, writeFileSync } from "fs";
 import { minify } from "html-minifier";
 import { encode } from "js-base64";
+import { BigNumber } from "ethers";
 
 interface MintArgs {
 	to: string;
@@ -87,7 +88,6 @@ export async function reset(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 		}
 		console.log(`Resetting ${attribute}`)
 	}
-
 }
 
 export async function upload(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
@@ -106,6 +106,8 @@ export async function upload(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 	const ROOT_FOLDER = "assets";
 	const attributesFolder = readdirSync(ROOT_FOLDER).slice(start, end);
 	for (let i = 0; i < attributesFolder.length; i++) {
+		console.log(`Adding attribute ${attributesFolder[i]}`);
+
 		const attribute = attributesFolder[i];
 		const attributeId = i + 1;
 		const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${attribute}`).map((file) => ({
@@ -120,26 +122,33 @@ export async function upload(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 				removeRedundantAttributes: true,
 				sortAttributes: true,
 				sortClassName: true,
+				caseSensitive: true
 			}),
 		}));
+
 		for (const variant of variants) {
 			const { svg, name } = variant;
 			const chunkSize = 30_000;
 			for (let start = 0; start < svg.length; start += chunkSize) {
+				console.log(`Adding attribute ${attributesFolder[i]} variant ${name} chunk ${start}`);
+
 				const till = start + chunkSize < svg.length ? start + chunkSize : svg.length;
 				let svgChunk = svg.slice(start, till);
-				while (svgChunk.length % 3 !== 0) {
+				while (encode(svgChunk, false).endsWith("=")) {
 					svgChunk += " ";
 				}
+
 				const addVariantChunkedTx = await metadata.addVariantChunked(
 					attributeId,
 					name,
-					encodeURIComponent(encodeURIComponent(encode(svgChunk)))
+					encodeURIComponent(encode(svgChunk, false)),
+					// { gasLimit: BigNumber.from(30_000_000) }
 				);
 				await addVariantChunkedTx.wait();
+				console.log(`Added attribute ${attributesFolder[i]} chunk ${start}`);
 			}
 		}
-		console.log(`Uploaded ${attribute}`)
+		console.log(`Added attribute ${attributesFolder[i]}`);
 	}
 
 }
