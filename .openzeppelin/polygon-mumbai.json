@@ -1,318 +1,20 @@
 {
   "manifestVersion": "3.2",
   "admin": {
-    "address": "0x96E63CCA2d88a1d937f1d0eD8A8880516BFdb059",
-    "txHash": "0x200b2c0f9c78d5a2c49acece5f30d66064423df45c5aa050fc77eaf32835ed3c"
+    "address": "0x3D6881a13760065cF993D2870C417E2C62dFC291",
+    "txHash": "0x6b5b5f07cc6b0313a64bf5d6e3a60952ea71016ec51c79cba2c9d7a146d63b63"
   },
   "proxies": [
     {
-      "address": "0x4888537155e7A1F201Eb000b385f86Bef5082f40",
-      "txHash": "0x4780151ae489580d76ea548c8d565b7cd720d3003b74a6168892baeeb1da0408",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x6C529D2A5C581123EBe612F05F9EA0A0AAFd489d",
-      "txHash": "0x87316519c5b7ddb13884e8beb5bedc3a4cbc9c2c1f764543ac415f70b12357cf",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x56f93a9b87FdaFAA2395c22DabD8d992823ce5b0",
-      "txHash": "0x8fb53e441eb9ba5f8cadcfd4378b37348037d2e82008f3f2b122b6766b3806b3",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x3a3Fc615A1Ded52e7616686817DFAee81e88C67c",
-      "txHash": "0xa508a5a6b3d6839f35adfeb6b2432975b422f95787a2fc3798299ba552e491ee",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x8C372D6afD01833874811251E3724b28Ce702fAA",
-      "txHash": "0xaf73d23a836ab90997f5b2f6815eed6952d187dd27a260a2c6b64768a41f8400",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xa6cbc524050B557BA0548731352b35698C256501",
-      "txHash": "0x1ddd584e31ae6aeaa665826c0c861c5ce79e0fabbada0c1ccf7872f599c4e6ad",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x448A18E649AD219862Ea615D2B3D94D4D7EF017e",
-      "txHash": "0x345f2c9dac827d4d53592c33c05c938b5cb09fb16db510ddd09a9163fa0a5350",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x8eE115DEeDDa0ca47a9602202161ea0585A62c37",
-      "txHash": "0x9e1f95e0c0170bd1606ba68d130ffff89c4cb7aea7d6483f01ce33c4dad80cee",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x906B63c58BC43D048Cf382BaaB7697cFCA9D4Aba",
-      "txHash": "0x151a432d6362308605af3da2c6885a93609bc1d1d48aa90a232da0e484768bb9",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xb5dc2343Ff3b68A86f97547ed22D8772fC662b2b",
-      "txHash": "0x7e4d81da94a3d1beed6487a4c44f1cd02107b22c4fa6aa5d0007e7e6e918c99c",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x8b9e97e7B845e4172d4e71EFf25419F2eD8d9774",
-      "txHash": "0x6a53db7ff069e5c5a72cd659dc35fec8ab6ceee16be8455f4ed68213097e8297",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x8B17A0561711adaC747C86Bc457D35a71A479905",
-      "txHash": "0x3c42f603412fa45b7de3b06b88be7d83085c913a11c2fa13f5d9f708f73ee491",
+      "address": "0xA8411E132b88541EC092eB0926ceBa33Acde428c",
+      "txHash": "0x540cdeca3b0207d24e5dee2927601e93201e3f1bef38e9e4431342287dc39fd9",
       "kind": "transparent"
     }
   ],
   "impls": {
-    "d4ec49548cd4ae751db3645ddca5e75f04e8c5c1fc06357ea1cb9065a1e8f857": {
-      "address": "0x9a2c1351d1FaFbEa46dED704D394135C6BEeDEAD",
-      "txHash": "0x22777674999b4fdc0615096d88310c07e9884b899c13695cbe97b8d592952bde",
-      "layout": {
-        "solcVersion": "0.8.17",
-        "storage": [
-          {
-            "label": "_initialized",
-            "offset": 0,
-            "slot": "0",
-            "type": "t_uint8",
-            "contract": "Initializable",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:62",
-            "retypedFrom": "bool"
-          },
-          {
-            "label": "_initializing",
-            "offset": 1,
-            "slot": "0",
-            "type": "t_bool",
-            "contract": "Initializable",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:67"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "1",
-            "type": "t_array(t_uint256)50_storage",
-            "contract": "ContextUpgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "51",
-            "type": "t_array(t_uint256)50_storage",
-            "contract": "ERC165Upgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
-          },
-          {
-            "label": "_roles",
-            "offset": 0,
-            "slot": "101",
-            "type": "t_mapping(t_bytes32,t_struct(RoleData)34_storage)",
-            "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:61"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "102",
-            "type": "t_array(t_uint256)49_storage",
-            "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:259"
-          },
-          {
-            "label": "domainSeperator",
-            "offset": 0,
-            "slot": "151",
-            "type": "t_bytes32",
-            "contract": "EIP712Base",
-            "src": "cache\\solpp-generated-contracts\\common\\meta-transactions\\EIP712Base.sol:25"
-          },
-          {
-            "label": "nonces",
-            "offset": 0,
-            "slot": "152",
-            "type": "t_mapping(t_address,t_uint256)",
-            "contract": "NativeMetaTransaction",
-            "src": "cache\\solpp-generated-contracts\\common\\meta-transactions\\NativeMetaTransaction.sol:22"
-          },
-          {
-            "label": "_proxyRegistryAddress",
-            "offset": 0,
-            "slot": "153",
-            "type": "t_address",
-            "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:31"
-          },
-          {
-            "label": "_contractCID",
-            "offset": 0,
-            "slot": "154",
-            "type": "t_string_storage",
-            "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:32"
-          },
-          {
-            "label": "_itemId",
-            "offset": 0,
-            "slot": "155",
-            "type": "t_struct(Counter)909_storage",
-            "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:33"
-          },
-          {
-            "label": "_itemIds",
-            "offset": 0,
-            "slot": "156",
-            "type": "t_mapping(t_uint256,t_uint256)",
-            "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:42"
-          },
-          {
-            "label": "_itemMaxSupply",
-            "offset": 0,
-            "slot": "157",
-            "type": "t_mapping(t_uint256,t_uint256)",
-            "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:44"
-          },
-          {
-            "label": "_itemTotalSupply",
-            "offset": 0,
-            "slot": "158",
-            "type": "t_mapping(t_uint256,t_uint256)",
-            "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:46"
-          },
-          {
-            "label": "_itemState",
-            "offset": 0,
-            "slot": "159",
-            "type": "t_mapping(t_uint256,t_enum(ItemState)4034)",
-            "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:48"
-          },
-          {
-            "label": "_itemLockPeriod",
-            "offset": 0,
-            "slot": "160",
-            "type": "t_mapping(t_uint256,t_uint256)",
-            "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:50"
-          },
-          {
-            "label": "_metadataFactory",
-            "offset": 0,
-            "slot": "161",
-            "type": "t_mapping(t_uint256,t_address)",
-            "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:52"
-          }
-        ],
-        "types": {
-          "t_address": {
-            "label": "address",
-            "numberOfBytes": "20"
-          },
-          "t_array(t_uint256)49_storage": {
-            "label": "uint256[49]",
-            "numberOfBytes": "1568"
-          },
-          "t_array(t_uint256)50_storage": {
-            "label": "uint256[50]",
-            "numberOfBytes": "1600"
-          },
-          "t_bool": {
-            "label": "bool",
-            "numberOfBytes": "1"
-          },
-          "t_bytes32": {
-            "label": "bytes32",
-            "numberOfBytes": "32"
-          },
-          "t_enum(ItemState)4034": {
-            "label": "enum Blyatversity.ItemState",
-            "members": [
-              "Paused",
-              "Limited",
-              "Unlimited"
-            ],
-            "numberOfBytes": "1"
-          },
-          "t_mapping(t_address,t_bool)": {
-            "label": "mapping(address => bool)",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_address,t_uint256)": {
-            "label": "mapping(address => uint256)",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
-            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_uint256,t_address)": {
-            "label": "mapping(uint256 => address)",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_uint256,t_enum(ItemState)4034)": {
-            "label": "mapping(uint256 => enum Blyatversity.ItemState)",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_uint256,t_uint256)": {
-            "label": "mapping(uint256 => uint256)",
-            "numberOfBytes": "32"
-          },
-          "t_string_storage": {
-            "label": "string",
-            "numberOfBytes": "32"
-          },
-          "t_struct(Counter)909_storage": {
-            "label": "struct CountersUpgradeable.Counter",
-            "members": [
-              {
-                "label": "_value",
-                "type": "t_uint256",
-                "offset": 0,
-                "slot": "0"
-              }
-            ],
-            "numberOfBytes": "32"
-          },
-          "t_struct(RoleData)34_storage": {
-            "label": "struct AccessControlUpgradeable.RoleData",
-            "members": [
-              {
-                "label": "members",
-                "type": "t_mapping(t_address,t_bool)",
-                "offset": 0,
-                "slot": "0"
-              },
-              {
-                "label": "adminRole",
-                "type": "t_bytes32",
-                "offset": 0,
-                "slot": "1"
-              }
-            ],
-            "numberOfBytes": "64"
-          },
-          "t_uint256": {
-            "label": "uint256",
-            "numberOfBytes": "32"
-          },
-          "t_uint8": {
-            "label": "uint8",
-            "numberOfBytes": "1"
-          }
-        }
-      }
-    },
     "9eb233dfcfc0623eacc152d217e6a04610c799fae881e473d426aa363f8e256e": {
-      "address": "0x1DBE2c95891F3f9E68D31ECB7496C31F8cC58C1d",
-      "txHash": "0xb648c3c1c4d64c240602cbedd7ede2a433c8a48669d5c92327d341891512b017",
+      "address": "0xf7b14dc2841e7Aa9Dd1F5040Bf7E20300504a307",
+      "txHash": "0xab0a241bccab1751742e79eee137af61a5eb7463451ecec9188b5d516c343217",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -371,7 +73,7 @@
             "slot": "151",
             "type": "t_bytes32",
             "contract": "EIP712Base",
-            "src": "cache\\solpp-generated-contracts\\common\\meta-transactions\\EIP712Base.sol:25"
+            "src": "contracts\\common\\meta-transactions\\EIP712Base.sol:23"
           },
           {
             "label": "nonces",
@@ -379,7 +81,7 @@
             "slot": "152",
             "type": "t_mapping(t_address,t_uint256)",
             "contract": "NativeMetaTransaction",
-            "src": "cache\\solpp-generated-contracts\\common\\meta-transactions\\NativeMetaTransaction.sol:22"
+            "src": "contracts\\common\\meta-transactions\\NativeMetaTransaction.sol:20"
           },
           {
             "label": "_proxyRegistryAddress",
@@ -387,7 +89,7 @@
             "slot": "153",
             "type": "t_address",
             "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:32"
+            "src": "contracts\\Blyatversity.sol:30"
           },
           {
             "label": "_contractCID",
@@ -395,7 +97,7 @@
             "slot": "154",
             "type": "t_string_storage",
             "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:33"
+            "src": "contracts\\Blyatversity.sol:31"
           },
           {
             "label": "_itemId",
@@ -403,7 +105,7 @@
             "slot": "155",
             "type": "t_struct(Counter)909_storage",
             "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:34"
+            "src": "contracts\\Blyatversity.sol:32"
           },
           {
             "label": "_itemIds",
@@ -411,7 +113,7 @@
             "slot": "156",
             "type": "t_mapping(t_uint256,t_uint256)",
             "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:43"
+            "src": "contracts\\Blyatversity.sol:41"
           },
           {
             "label": "_itemMaxSupply",
@@ -419,7 +121,7 @@
             "slot": "157",
             "type": "t_mapping(t_uint256,t_uint256)",
             "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:45"
+            "src": "contracts\\Blyatversity.sol:43"
           },
           {
             "label": "_itemTotalSupply",
@@ -427,7 +129,7 @@
             "slot": "158",
             "type": "t_mapping(t_uint256,t_uint256)",
             "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:47"
+            "src": "contracts\\Blyatversity.sol:45"
           },
           {
             "label": "_itemState",
@@ -435,7 +137,7 @@
             "slot": "159",
             "type": "t_mapping(t_uint256,t_enum(ItemState)3988)",
             "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:49"
+            "src": "contracts\\Blyatversity.sol:47"
           },
           {
             "label": "_itemLockPeriod",
@@ -443,7 +145,7 @@
             "slot": "160",
             "type": "t_mapping(t_uint256,t_uint256)",
             "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:51"
+            "src": "contracts\\Blyatversity.sol:49"
           },
           {
             "label": "_metadataFactory",
@@ -451,7 +153,7 @@
             "slot": "161",
             "type": "t_mapping(t_uint256,t_address)",
             "contract": "Blyatversity",
-            "src": "cache\\solpp-generated-contracts\\Blyatversity.sol:53"
+            "src": "contracts\\Blyatversity.sol:51"
           }
         ],
         "types": {
