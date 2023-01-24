@@ -64,11 +64,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		_description = description;
 	}
 
-	function addVariants(
-		uint256 attributeId,
-		string[] memory variants,
-		string[] memory svgs
-	) external {
+	function addVariants(uint256 attributeId, string[] memory variants, string[] memory svgs) external {
 		if (variants.length != svgs.length) revert UnequalArrays();
 		string memory attribute = _attributes[attributeId];
 		for (uint256 i; i < variants.length; i++) {
@@ -135,6 +131,8 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		for (uint256 i; i < currentAmount; i++) {
 			uint256 attributeId = i + 1;
 			uint256 variantAmount = _variantCounter[attributeId].current();
+			console.log("Amount: ", variantAmount);
+			console.log("Id", attributeId);
 			uint256 randomIndex = uint16((uint256(seed) % variantAmount) + 1);
 			variants[i] = _variantName[attributeId][randomIndex];
 		}

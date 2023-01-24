@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, writeFileSync } from "fs";
 import parse from "node-html-parser";
 
 const ROOT_FOLDER = "assets";
-const attributes = readdirSync(ROOT_FOLDER).filter(attribute => attribute !== "_styles");
+const attributes = readdirSync(ROOT_FOLDER).filter(attribute => attribute !== "_Style");
 let styles = "";
 for (const attribute of attributes) {
     const files = readdirSync(`${ROOT_FOLDER}/${attribute}`)
@@ -19,4 +19,4 @@ for (const attribute of attributes) {
         writeFileSync(`${ROOT_FOLDER}/${attribute}/${fileName.replace(".svg", ".html")}`, html.toString());
     }
 }
-writeFileSync(`${ROOT_FOLDER}/_styles/default.html`, styles);
+writeFileSync(`${ROOT_FOLDER}/_Style/default.html`, styles);
