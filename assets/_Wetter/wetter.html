@@ -1,0 +1,11 @@
+<script type="application/javascript">
+	const date = new Date();
+
+	const sonne = document.getElementById("Sonne");
+	const mond = document.getElementById("Mond");
+
+	if (date.getHours() < 7 || date.getHours() > 20) {
+		sonne.style.display = "none";
+		mond.style.display = "contents";
+	}
+</script>

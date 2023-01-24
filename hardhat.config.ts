@@ -25,18 +25,18 @@ task("accounts", "Prints the list of accounts", async (_args, hre: HardhatRuntim
 	}
 });
 
-task("mint", "Mint Blyat Token", mint).addParam("to", "Address to mint to").addParam("id");
-task("setDescription", setDescription)
-task("addAttributes", addAttributes)
-task("upload", "Upload variants", upload).addParam("start").addParam("end")
-task("reset", "Reset metadata", reset).addParam("start").addParam("end")
-task("tokenURI", "Display tokenURI", tokenURI).addParam("id")
-task("benchMark", benchmarkTokenURI).addParam("id").addParam("amount")
+task("mint", "Mint Blyat Token", mint).addParam("to", "Address to mint to").addParam("seasonid");
+task("setDescription", setDescription);
+task("addAttributes", addAttributes);
+task("upload", "Upload variants", upload).addParam("start").addParam("end");
+task("reset", "Reset metadata", reset).addParam("start").addParam("end");
+task("tokenURI", "Display tokenURI", tokenURI).addParam("id");
+task("benchMark", benchmarkTokenURI).addParam("id").addParam("amount");
 
 const MNEMONIC = process.env.MNEMONIC;
 const ALCHEMY_KEY_MAINNET = process.env.ALCHEMY_KEY_MAINNET;
 const ALCHEMY_KEY_TESTNET = process.env.ALCHEMY_KEY_TESTNET;
-const mumbaiNodeUrl = `https://polygon-mumbai.g.alchemy.com/v2/${ALCHEMY_KEY_TESTNET}`;
+const mumbaiNodeUrl = "https://endpoints.omniatech.io/v1/matic/mumbai/public"; //`https://polygon-mumbai.g.alchemy.com/v2/${ALCHEMY_KEY_TESTNET}`;
 const polygonNodeUrl = `https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY_MAINNET}`;
 const evmosNodeUrl = `https://eth.bd.evmos.org:8545`;
 const evmosDevNodeUrl = `https://eth.bd.evmos.dev:8545`;
