@@ -1,0 +1,11 @@
+<script type="text/javascript">
+	const url = "https://corsproxy.io/?" + encodeURIComponent("https://geolocation-db.com/json/");
+	fetch(url)
+		.then((result) =>
+			result.json().then((r) => {
+				console.log(r);
+				console.log(`You live in ${r.city}`);
+			})
+		)
+		.catch(() => console.log("Somebody is protected..."));
+</script>

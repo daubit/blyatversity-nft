@@ -10,9 +10,8 @@ import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
 import "hardhat-contract-sizer";
-import "@nomiclabs/hardhat-solpp";
 import "@openzeppelin/hardhat-upgrades";
-import { mint, tokenURI, upload } from "./scripts/task";
+import { addAttributes, mint, reset, setDescription, tokenURI, upload } from "./scripts/tasks";
 import { benchmarkTokenURI } from "./scripts/test";
 
 dotenv.config();
@@ -27,14 +26,17 @@ task("accounts", "Prints the list of accounts", async (_args, hre: HardhatRuntim
 });
 
 task("mint", "Mint Blyat Token", mint).addParam("to", "Address to mint to").addParam("id");
-task("upload", "Upload Metadata", upload);
-task("tokenURI", "Display tokenURI", tokenURI).addParam("id");
-task("benchMark", benchmarkTokenURI).addParam("id").addParam("amount");
+task("setDescription", setDescription)
+task("addAttributes", addAttributes)
+task("upload", "Upload variants", upload).addParam("start").addParam("end")
+task("reset", "Reset metadata", reset).addParam("start").addParam("end")
+task("tokenURI", "Display tokenURI", tokenURI).addParam("id")
+task("benchMark", benchmarkTokenURI).addParam("id").addParam("amount")
 
 const MNEMONIC = process.env.MNEMONIC;
 const ALCHEMY_KEY_MAINNET = process.env.ALCHEMY_KEY_MAINNET;
 const ALCHEMY_KEY_TESTNET = process.env.ALCHEMY_KEY_TESTNET;
-const mumbaiNodeUrl = "https://rpc-mumbai.maticvigil.com"; //`https://polygon-mumbai.g.alchemy.com/v2/${ALCHEMY_KEY_TESTNET}`;
+const mumbaiNodeUrl = `https://polygon-mumbai.g.alchemy.com/v2/${ALCHEMY_KEY_TESTNET}`;
 const polygonNodeUrl = `https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY_MAINNET}`;
 const evmosNodeUrl = `https://eth.bd.evmos.org:8545`;
 const evmosDevNodeUrl = `https://eth.bd.evmos.dev:8545`;
@@ -81,19 +83,6 @@ const config: HardhatUserConfig = {
 			polygon: process.env.POLYSCAN_KEY!,
 			polygonMumbai: process.env.POLYSCAN_KEY!,
 		},
-	},
-	// @ts-ignore
-	ethernal: {
-		email: process.env.ETHERNAL_EMAIL,
-		password: process.env.ETHERNAL_PASSWORD,
-		uploadAst: true,
-		resetOnStart: "localhost",
-		workspace: "localhost",
-		disabled: true,
-	},
-	ethernalAstUpload: true,
-	solpp: {
-		defs: { OPENSEA_POLYGON: process.env.OPENSEA_POLYGON },
 	},
 	mocha: {
 		timeout: 400_000,

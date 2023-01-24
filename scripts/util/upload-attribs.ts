@@ -32,6 +32,7 @@ export default async function uploadAttribs(ROOT_FOLDER: PathLike, metadata: Met
 				removeRedundantAttributes: true,
 				sortAttributes: true,
 				sortClassName: true,
+				caseSensitive: true
 			}),
 		}));
 
