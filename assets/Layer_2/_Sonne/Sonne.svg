@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg id="Background" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 1000">
+
+<g id="Background"  >
   <defs>
     <style>
       .cls-1 {
@@ -19,4 +19,4 @@
     </radialGradient>
   </defs>
   <circle id="Sonne" class="cls-1" cx="486.82" cy="172.48" r="147.47"/>
-</svg>
+</g>

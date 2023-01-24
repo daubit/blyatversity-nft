@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg id="Monster" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 1000">
+
+<g id="Monster"  >
   <defs>
     <style>
       .cls-1 {
@@ -81,4 +81,4 @@
       <path id="Heart" class="cls-1" d="m552.51,513.79c-13.49-18.88-37.43,6.14-14.82,20.28,6.29,3.93,10.12,5.61,12.75,9.73,3.1-3.95,7.61-4.8,12.55-7.51,23.72-13.01,7.98-41.77-10.47-22.5"/>
     </g>
   </g>
-</svg>
+</g>

@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg id="Monster" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 1000">
+
+<g id="Monster"  >
   <defs>
     <style>
       .cls-1 {
@@ -39,4 +39,4 @@
       <ellipse id="Monster_001_Simpleshape_01" data-name="Monster 001 Simpleshape 01" class="cls-3" cx="335.8" cy="302.28" rx="10.3" ry="11.15" transform="translate(-55.25 75.98) rotate(-11.94)"/>
     </g>
   </g>
-</svg>
+</g>

@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg id="Monster" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 1000">
+
+<g id="Monster"  >
   <defs>
     <style>
       .cls-1 {
@@ -28,4 +28,4 @@
       <path id="Monster_008b_Simpleshape_01" data-name="Monster 008b Simpleshape 01" class="cls-3" d="m651.44,352.74c-15.81-2.94-23.99,4.36-29.07,10.15-13.15,14.95.77,33.49,11.31,33.98,22.74,1.08,64.3,11.1,80.59,39.04,5.28,9.07,20.71,3.74,23.29-2.16,10.08-23.14,3.89-34.59-6.43-44.37-15.51-14.7-58.67-32.74-79.69-36.65h0Z"/>
     </g>
   </g>
-</svg>
+</g>
