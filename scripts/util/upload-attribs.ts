@@ -10,16 +10,16 @@ export interface Variant {
 }
 
 export default async function uploadAttribs(ROOT_FOLDER: PathLike, metadata: MetadataFactory) {
-	const layers = readdirSync(ROOT_FOLDER)
+	const layers = readdirSync(ROOT_FOLDER);
 	let attributeId = 0;
 	for (const layer of layers) {
-		const attributesFolder = readdirSync(`${ROOT_FOLDER}/${layer}`)
-		//console.log("Adding attributes folder");
+		const attributesFolder = readdirSync(`${ROOT_FOLDER}/${layer}`);
+		console.log("Adding attributes folder");
 		const addAttributesTx = await metadata.addAttributes(attributesFolder);
 		await addAttributesTx.wait();
-		//console.log("Added attributes folder");
+		console.log("Added attributes folder");
 		for (let i = 0; i < attributesFolder.length; i++) {
-			//console.log(`Adding attribute ${attributesFolder[i]}`);
+			console.log(`Adding attribute ${attributesFolder[i]}`);
 
 			const attribute = attributesFolder[i];
 			attributeId++;
@@ -35,7 +35,7 @@ export default async function uploadAttribs(ROOT_FOLDER: PathLike, metadata: Met
 					removeRedundantAttributes: true,
 					sortAttributes: true,
 					sortClassName: true,
-					caseSensitive: true
+					caseSensitive: true,
 				}),
 			}));
 
@@ -43,7 +43,7 @@ export default async function uploadAttribs(ROOT_FOLDER: PathLike, metadata: Met
 				const { svg, name } = variant;
 				const chunkSize = 30_000;
 				for (let start = 0; start < svg.length; start += chunkSize) {
-					// console.log(`Adding attribute ${attributesFolder[i]} variant ${name} chunk ${start}`);
+					console.log(`Adding attribute ${attributesFolder[i]} variant ${name} chunk ${start}`);
 
 					const till = start + chunkSize < svg.length ? start + chunkSize : svg.length;
 					let svgChunk = svg.slice(start, till);
@@ -53,19 +53,19 @@ export default async function uploadAttribs(ROOT_FOLDER: PathLike, metadata: Met
 					const addVariantChunkedTx = await metadata.addVariantChunked(
 						attributeId,
 						name,
-						encodeURIComponent(encode(svgChunk, false)),
-						{ gasLimit: BigNumber.from(30_000_000) }
+						encodeURIComponent(encode(svgChunk, false))
+						//{ gasLimit: BigNumber.from(20_000_000) }
 					);
 					await addVariantChunkedTx.wait();
-					// console.log(`Added attribute ${attributeId}, ${attributesFolder[i]} chunk ${start}`);
+					console.log(`Added attribute ${attributeId}, ${attributesFolder[i]} chunk ${start}`);
 				}
 			}
-			//console.log(`Added attribute ${attributesFolder[i]}`);
+			console.log(`Added attribute ${attributesFolder[i]}`);
 		}
 	}
 
-	//console.log(`Setting Description`);
+	console.log(`Setting Description`);
 	const setDescriptionTx = await metadata.setDescription("Monster AG");
 	await setDescriptionTx.wait();
-	//console.log(`Set Description`);
+	console.log(`Set Description`);
 }

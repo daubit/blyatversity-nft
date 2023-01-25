@@ -53,7 +53,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 					"%22attributes%22%3A",
 					attributes,
 					"%2C",
-					"%22animation_url%22%3A%22data%3Atext%2Fhtml%3Bbase64%2C",
+					"%22animation_url%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Bbase64%2C",
 					image,
 					"%22%7D"
 				)
@@ -64,7 +64,11 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		_description = description;
 	}
 
-	function addVariants(uint256 attributeId, string[] memory variants, string[] memory svgs) external {
+	function addVariants(
+		uint256 attributeId,
+		string[] memory variants,
+		string[] memory svgs
+	) external {
 		if (variants.length != svgs.length) revert UnequalArrays();
 		string memory attribute = _attributes[attributeId];
 		for (uint256 i; i < variants.length; i++) {
@@ -147,14 +151,26 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 				continue;
 			}
 			if (i < _attributeCounter.current() - 1) {
-				base = abi.encodePacked(
-					base,
-					"%7B%22trait_type%22%3A%22",
-					_variantKind[attributeId][variantId],
-					"%22%2C%22value%22%3A%22",
-					variants[i],
-					"%22%7D%2C"
-				);
+				// assumes that there will ALWAYS be an element with _ at the end otherwise reverts
+				if (bytes(_variantKind[i + 2][_indexedVariants[i + 2][variants[i + 1]]])[0] == "_") {
+					base = abi.encodePacked(
+						base,
+						"%7B%22trait_type%22%3A%22",
+						_variantKind[attributeId][variantId],
+						"%22%2C%22value%22%3A%22",
+						variants[i],
+						"%22%7D"
+					);
+				} else {
+					base = abi.encodePacked(
+						base,
+						"%7B%22trait_type%22%3A%22",
+						_variantKind[attributeId][variantId],
+						"%22%2C%22value%22%3A%22",
+						variants[i],
+						"%22%7D%2C"
+					);
+				}
 			} else {
 				base = abi.encodePacked(
 					base,
