@@ -10,58 +10,62 @@ export interface Variant {
 }
 
 export default async function uploadAttribs(ROOT_FOLDER: PathLike, metadata: MetadataFactory) {
-	const attributesFolder = readdirSync(ROOT_FOLDER);
-	console.log("Adding attributes folder");
-	const addAttributesTx = await metadata.addAttributes(attributesFolder);
-	await addAttributesTx.wait();
-	console.log("Added attributes folder");
-	for (let i = 0; i < attributesFolder.length; i++) {
-		console.log(`Adding attribute ${attributesFolder[i]}`);
+	const layers = readdirSync(ROOT_FOLDER)
+	let attributeId = 0;
+	for (const layer of layers) {
+		const attributesFolder = readdirSync(`${ROOT_FOLDER}/${layer}`)
+		//console.log("Adding attributes folder");
+		const addAttributesTx = await metadata.addAttributes(attributesFolder);
+		await addAttributesTx.wait();
+		//console.log("Added attributes folder");
+		for (let i = 0; i < attributesFolder.length; i++) {
+			//console.log(`Adding attribute ${attributesFolder[i]}`);
 
-		const attribute = attributesFolder[i];
-		const attributeId = i + 1;
-		const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${attribute}`).map((file) => ({
-			name: file.replace(".html", ""),
-			svg: minify(readFileSync(`${ROOT_FOLDER}/${attribute}/${file}`, "utf-8"), {
-				collapseWhitespace: true,
-				collapseBooleanAttributes: true,
-				minifyCSS: true,
-				minifyJS: true,
-				removeComments: true,
-				removeEmptyAttributes: true,
-				removeRedundantAttributes: true,
-				sortAttributes: true,
-				sortClassName: true,
-				caseSensitive: true
-			}),
-		}));
+			const attribute = attributesFolder[i];
+			attributeId++;
+			const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${layer}/${attribute}`).map((file) => ({
+				name: file.replace(".html", ""),
+				svg: minify(readFileSync(`${ROOT_FOLDER}/${layer}/${attribute}/${file}`, "utf-8"), {
+					collapseWhitespace: true,
+					collapseBooleanAttributes: true,
+					minifyCSS: true,
+					minifyJS: true,
+					removeComments: true,
+					removeEmptyAttributes: true,
+					removeRedundantAttributes: true,
+					sortAttributes: true,
+					sortClassName: true,
+					caseSensitive: true
+				}),
+			}));
 
-		for (const variant of variants) {
-			const { svg, name } = variant;
-			const chunkSize = 30_000;
-			for (let start = 0; start < svg.length; start += chunkSize) {
-				console.log(`Adding attribute ${attributesFolder[i]} variant ${name} chunk ${start}`);
+			for (const variant of variants) {
+				const { svg, name } = variant;
+				const chunkSize = 30_000;
+				for (let start = 0; start < svg.length; start += chunkSize) {
+					// console.log(`Adding attribute ${attributesFolder[i]} variant ${name} chunk ${start}`);
 
-				const till = start + chunkSize < svg.length ? start + chunkSize : svg.length;
-				let svgChunk = svg.slice(start, till);
-				while (encode(svgChunk, false).endsWith("=")) {
-					svgChunk += " ";
+					const till = start + chunkSize < svg.length ? start + chunkSize : svg.length;
+					let svgChunk = svg.slice(start, till);
+					while (encode(svgChunk, false).endsWith("=")) {
+						svgChunk += " ";
+					}
+					const addVariantChunkedTx = await metadata.addVariantChunked(
+						attributeId,
+						name,
+						encodeURIComponent(encode(svgChunk, false)),
+						{ gasLimit: BigNumber.from(30_000_000) }
+					);
+					await addVariantChunkedTx.wait();
+					// console.log(`Added attribute ${attributeId}, ${attributesFolder[i]} chunk ${start}`);
 				}
-
-				const addVariantChunkedTx = await metadata.addVariantChunked(
-					attributeId,
-					name,
-					encodeURIComponent(encode(svgChunk, false)),
-					{ gasLimit: BigNumber.from(30_000_000) }
-				);
-				await addVariantChunkedTx.wait();
-				console.log(`Added attribute ${attributesFolder[i]} chunk ${start}`);
 			}
+			//console.log(`Added attribute ${attributesFolder[i]}`);
 		}
-		console.log(`Added attribute ${attributesFolder[i]}`);
 	}
-	console.log(`Setting Description`);
+
+	//console.log(`Setting Description`);
 	const setDescriptionTx = await metadata.setDescription("Monster AG");
 	await setDescriptionTx.wait();
-	console.log(`Set Description`);
+	//console.log(`Set Description`);
 }
