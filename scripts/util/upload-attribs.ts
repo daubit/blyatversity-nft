@@ -27,14 +27,29 @@ export async function uploadDescription(metadata: MetadataFactory, description: 
 	//console.log(`Set Description`);
 }
 
-export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: PathLike) {
-	const layers = readdirSync(ROOT_FOLDER)
+
+interface Options {
+	layer: number;
+	start: number;
+	end: number;
+}
+
+export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: PathLike, options?: Options) {
+	const layerId = options?.layer ?? 0;
+	let layers = readdirSync(ROOT_FOLDER)
+	if (layerId > 0) {
+		const chosenLayer = layers.find(layer => layer.includes(layerId.toString()))
+		layers = chosenLayer ? [chosenLayer] : layers;
+	}
 	let attributeId = 0;
 	for (const layer of layers) {
-		const attributesFolder = readdirSync(`${ROOT_FOLDER}/${layer}`)
-		for (let i = 0; i < attributesFolder.length; i++) {
-			//console.log(`Adding attribute ${attributesFolder[i]}`);
-			const attribute = attributesFolder[i];
+		let attributeFolders = readdirSync(`${ROOT_FOLDER}/${layer}`);
+		if (layerId) {
+			attributeFolders = attributeFolders.slice(options?.start, options?.end)
+		}
+		for (let i = 0; i < attributeFolders.length; i++) {
+			//console.log(`Adding attribute ${attributeFolders[i]}`);
+			const attribute = attributeFolders[i];
 			attributeId++;
 			const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${layer}/${attribute}`).map((file) => ({
 				name: file.replace(".html", ""),
@@ -51,12 +66,11 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 					caseSensitive: true
 				}),
 			}));
-
 			for (const variant of variants) {
 				const { svg, name } = variant;
 				const chunkSize = 30_000;
 				for (let start = 0; start < svg.length; start += chunkSize) {
-					// console.log(`Adding attribute ${attributesFolder[i]} variant ${name} chunk ${start}`);
+					// console.log(`Adding attribute ${attributeFolders[i]} variant ${name} chunk ${start}`);
 
 					const till = start + chunkSize < svg.length ? start + chunkSize : svg.length;
 					let svgChunk = svg.slice(start, till);
@@ -70,16 +84,16 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 						{ gasLimit: BigNumber.from(30_000_000) }
 					);
 					await addVariantChunkedTx.wait();
-					// console.log(`Added attribute ${attributeId}, ${attributesFolder[i]} chunk ${start}`);
+					// console.log(`Added attribute ${attributeId}, ${attributeFolders[i]} chunk ${start}`);
 				}
 			}
-			//console.log(`Added attribute ${attributesFolder[i]}`);
+			// console.log(`Added attribute ${attributeFolders[i]}`);
 		}
 	}
 }
 
 export default async function uploadAll(metadata: MetadataFactory, ROOT_FOLDER: PathLike) {
-	uploadAttributes(metadata, ROOT_FOLDER);
-	uploadVariants(metadata, ROOT_FOLDER);
-	uploadDescription(metadata, "Monster AG");
+	await uploadAttributes(metadata, ROOT_FOLDER);
+	await uploadVariants(metadata, ROOT_FOLDER);
+	await uploadDescription(metadata, "Monster AG");
 }
