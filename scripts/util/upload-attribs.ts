@@ -2,25 +2,38 @@ import { BigNumber } from "ethers";
 import { PathLike, readdirSync, readFileSync, writeFileSync } from "fs";
 import { minify } from "html-minifier";
 import { encode } from "js-base64";
-import { MetadataFactory } from "../../typechain-types";
+import { MetadataFactory, MetadataFactory__factory } from "../../typechain-types";
 
 export interface Variant {
 	name: string;
 	svg: string;
 }
 
-export default async function uploadAttribs(ROOT_FOLDER: PathLike, metadata: MetadataFactory) {
+export async function uploadAttributes(metadata: MetadataFactory, ROOT_FOLDER: PathLike) {
+	//console.log("Adding attributes folder");
+	const layers = readdirSync(ROOT_FOLDER)
+	for (const layer of layers) {
+		const attributes = readdirSync(`${ROOT_FOLDER}/${layer}`)
+		const addAttributesTx = await metadata.addAttributes(attributes);
+		await addAttributesTx.wait();
+	}
+	//console.log("Added attributes folder");
+}
+
+export async function uploadDescription(metadata: MetadataFactory, description: string) {
+	//console.log(`Setting Description`);
+	const setDescriptionTx = await metadata.setDescription(description);
+	await setDescriptionTx.wait();
+	//console.log(`Set Description`);
+}
+
+export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: PathLike) {
 	const layers = readdirSync(ROOT_FOLDER)
 	let attributeId = 0;
 	for (const layer of layers) {
 		const attributesFolder = readdirSync(`${ROOT_FOLDER}/${layer}`)
-		//console.log("Adding attributes folder");
-		const addAttributesTx = await metadata.addAttributes(attributesFolder);
-		await addAttributesTx.wait();
-		//console.log("Added attributes folder");
 		for (let i = 0; i < attributesFolder.length; i++) {
 			//console.log(`Adding attribute ${attributesFolder[i]}`);
-
 			const attribute = attributesFolder[i];
 			attributeId++;
 			const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${layer}/${attribute}`).map((file) => ({
@@ -63,9 +76,10 @@ export default async function uploadAttribs(ROOT_FOLDER: PathLike, metadata: Met
 			//console.log(`Added attribute ${attributesFolder[i]}`);
 		}
 	}
+}
 
-	//console.log(`Setting Description`);
-	const setDescriptionTx = await metadata.setDescription("Monster AG");
-	await setDescriptionTx.wait();
-	//console.log(`Set Description`);
+export default async function uploadAll(metadata: MetadataFactory, ROOT_FOLDER: PathLike) {
+	uploadAttributes(metadata, ROOT_FOLDER);
+	uploadVariants(metadata, ROOT_FOLDER);
+	uploadDescription(metadata, "Monster AG");
 }
