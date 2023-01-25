@@ -66,5 +66,14 @@
 	const data = d[date.getWeekNumber()];
 	const x = date.getHours() * 60 * 60 + date.getMinutes() * 60 + date.getSeconds() - data[0];
 	const sonne = document.getElementById("SonneC");
+	const wolken = document.getElementById("Clouds");
+	const bg = document.getElementById("BGrect");
 	sonne.style.opacity = Math.pow(x, 2) * data[1] + x * data[2] + data[3];
+	wolken.style.filter = `brightness(${(
+		(0.73 + (Math.pow(x, 2) * data[1] + x * data[2] + data[3]) * 0.3) *
+		100
+	).toFixed(0)}%)`;
+	bg.style.filter = `brightness(${((0.73 + (Math.pow(x, 2) * data[1] + x * data[2] + data[3]) * 0.3) * 100).toFixed(
+		0
+	)}%)`;
 </script>
