@@ -68,7 +68,7 @@
 	const sonne = document.getElementById("SonneC");
 	const wolken = document.getElementById("Clouds");
 	const bg = document.getElementById("BGrect");
-	sonne.style.opacity = Math.pow(x, 2) * data[1] + x * data[2] + data[3];
+	sonne.style.opacity = (Math.pow(x, 2) * data[1] + x * data[2] + data[3]) * 2;
 	wolken.style.filter = `brightness(${(
 		(0.73 + (Math.pow(x, 2) * data[1] + x * data[2] + data[3]) * 0.3) *
 		100
