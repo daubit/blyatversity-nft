@@ -1,8 +1,8 @@
 import { BigNumber } from "ethers";
-import { PathLike, readdirSync, readFileSync, writeFileSync } from "fs";
+import { PathLike, readdirSync, readFileSync } from "fs";
 import { minify } from "html-minifier";
 import { encode } from "js-base64";
-import { MetadataFactory, MetadataFactory__factory } from "../../typechain-types";
+import { MetadataFactory } from "../../typechain-types";
 
 export interface Variant {
 	name: string;
