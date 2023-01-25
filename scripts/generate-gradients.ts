@@ -10,6 +10,7 @@ const genGradients = gradients.map((gradient, i) => {
     const random = randomColor();
     const newColors = randomColor({ hue: random, count: gradientColors[i]?.length ?? 0 })
     let result = gradient
+    console.log(gradientColors[i]?.length)
     for (let j = 0; j < gradientColors[i]?.length!; j++) {
         const oldColor = gradientColors[i]![j];
         result = result.replace(oldColor, newColors[j])
