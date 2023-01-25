@@ -1,9 +1,8 @@
-import classes from "../assets/Layer_4/_Styles/classes.json"
+import classes from "../data/classes.json"
 import randomColor from "randomcolor"
-import { readFileSync } from "fs";
-import parse from "node-html-parser";
+import { writeFileSync } from "fs"
 
-const template = readFileSync("assets/Layer_4/_Styles/default.html", "utf8")
-const $ = parse(template);
-const style = $.firstChild.childNodes.find((node: any) => node.rawTagName === "style")
-console.log(style?.toString())
+const template = (innerText: string, gradients: string) => `<defs><style>${innerText}</style>${gradients}</defs>`
+const colors = randomColor({ count: classes.length })
+const styles = classes.map((className, i) => `${className} {fill: ${colors[i]};}`).join("\n")
+writeFileSync("assets/Layer_4/_Styles/var_1.html", template(styles, ""))
