@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, writeFileSync } from "fs";
 
 const ROOT_FOLDER = "assets";
-const layers = readdirSync(ROOT_FOLDER)
+const layers = ["Layer_3"]//readdirSync(ROOT_FOLDER)
 const gradients = []
 for (const layer of layers) {
     const layerPath = `${ROOT_FOLDER}/${layer}`
@@ -18,6 +18,8 @@ for (const layer of layers) {
             writeFileSync(`${layerPath}/${attribute}/${fileName}`, file, "utf8");
         }
     }
-
 }
-writeFileSync(`data/gradients.json`, JSON.stringify(gradients, null, 2));
+
+const template = (gradients: string) => `<defs>\n${gradients}\n</defs>`
+
+writeFileSync(`data/default.html`, template(gradients.join("\n")));
