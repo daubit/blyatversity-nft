@@ -15,7 +15,7 @@ for (const layer of layers) {
             for (let i = 0; i < styleClasses.length; i++) {
                 const styleClass = styleClasses[i];
                 const className = new RegExp(styleClass.replace(".", ""), "g");
-                const newClassName = `${attribute.slice(0, 2) + attribute.slice(attribute.length - 2, attribute.length)}-${fileName.replace(".html", "").slice(0, 2)}-${i}`
+                const newClassName = `${attribute.slice(0, 2) + attribute.slice(attribute.length - 2, attribute.length)}-${fileName.replace(".html", "").slice(0, 3)}-${i}`
                 file = file.replace(className, newClassName);
                 writeFileSync(`${layerPath}/${attribute}/${fileName}`, file);
             }
