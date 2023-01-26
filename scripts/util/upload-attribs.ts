@@ -26,6 +26,55 @@ export async function uploadDescription(metadata: MetadataFactory, description: 
 	await setDescriptionTx.wait();
 	//console.log(`Set Description`);
 }
+export async function uploadStyles(metadata: MetadataFactory, ROOT_FOLDER: string, startId: number, options?: Options) {
+	type Style = Variant;
+	let attributeId = startId;
+	const attributes = readdirSync(ROOT_FOLDER);
+	for (const attribute of attributes) {
+		const variants = readdirSync(`${ROOT_FOLDER}/${attribute}`)
+		for (const variant of variants) {
+			console.log(`Adding attribute ${attribute}`);
+			attributeId++;
+			const stylePath = `${ROOT_FOLDER}/${attribute}/${variant}`
+			const styles: Style[] = readdirSync(stylePath).map((file) => ({
+				name: file.replace(".html", ""),
+				svg: minify(readFileSync(`${stylePath}/${file}`, "utf-8"), {
+					collapseWhitespace: true,
+					collapseBooleanAttributes: true,
+					minifyCSS: true,
+					minifyJS: true,
+					removeComments: false,
+					removeEmptyAttributes: true,
+					removeRedundantAttributes: true,
+					sortAttributes: true,
+					sortClassName: true,
+					caseSensitive: true,
+				}),
+			}));
+			for (const variant of styles) {
+				const { svg, name } = variant;
+				const chunkSize = 5_000;
+				for (let start = 0; start < svg.length; start += chunkSize) {
+					// console.log(`Adding attribute ${attributeFolders[i]} variant ${name} chunk ${start}`);
+					const till = start + chunkSize < svg.length ? start + chunkSize : svg.length;
+					let svgChunk = svg.slice(start, till);
+					while (encode(svgChunk, false).endsWith("=")) {
+						svgChunk += " ";
+					}
+					const addVariantChunkedTx = await metadata.addStyleChunked(
+						attributeId,
+						name,
+						encodeURIComponent(encode(svgChunk, false))
+					);
+					await addVariantChunkedTx.wait();
+					console.log(`Added attribute ${attributeId}, ${attribute} chunk ${start}`);
+				}
+			}
+		}
+
+		// console.log(`Added attribute ${attributeFolders[i]}`);
+	}
+}
 
 
 interface Options {
@@ -35,7 +84,6 @@ interface Options {
 }
 
 export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: PathLike, options?: Options) {
-	const network = await metadata.provider.getNetwork();
 	const layerId = options?.layer ?? 0;
 	let layers = readdirSync(ROOT_FOLDER)
 	if (layerId > 0) {
