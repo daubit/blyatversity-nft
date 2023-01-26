@@ -147,7 +147,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		require(attributeId > 0 && attributeId <= _attributeCounter.current(), "Invalid attribute");
 		uint256 variantId = _indexedVariant[attributeId][variant];
 		require(variantId != 0, "Invalid variant");
-		require(_variantName[attributeId][variantId].equals(""), "Invalid attribute");
+		require(!_variantName[attributeId][variantId].equals(""), "Invalid attribute");
 		_variantStyleCounter[attributeId][variantId].increment();
 		uint nextStyleId = _variantStyleCounter[attributeId][variantId].current();
 		_variantStyle[attributeId][variantId][nextStyleId] = style;
@@ -161,7 +161,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		require(attributeId > 0 && attributeId <= _attributeCounter.current(), "Invalid attribute");
 		uint256 variantId = _indexedVariant[attributeId][variant];
 		require(variantId != 0, "Invalid variant");
-		require(_variantName[attributeId][variantId].equals(""), "Invalid attribute");
+		require(!_variantName[attributeId][variantId].equals(""), "Invalid attribute");
 		_variantStyleCounter[attributeId][variantId].increment();
 		uint nextStyleId = _variantStyleCounter[attributeId][variantId].current();
 		_variantStyle[attributeId][variantId][nextStyleId] = _variantStyle[attributeId][variantId][nextStyleId].concat(
@@ -236,34 +236,47 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 	function _generateStyles(uint[] memory variantIds, bytes32 seed) internal view returns (bytes memory) {
 		uint256 amount = variantIds.length;
 		uint i = 0;
-		bytes memory styles;
+		bytes memory styles = "";
 		while (i < amount) {
 			if ((amount - i) % 5 == 0) {
 				styles = abi.encodePacked(
 					styles,
-					_variantStyle[i + 1][variantIds[i + 0]][
-						uint256(seed) % _variantStyleCounter[i + 1][variantIds[i + 0]].current()
-					],
-					_variantStyle[i + 2][variantIds[i + 1]][
-						uint256(seed) % _variantStyleCounter[i + 2][variantIds[i + 1]].current()
-					],
-					_variantStyle[i + 3][variantIds[i + 2]][
-						uint256(seed) % _variantStyleCounter[i + 3][variantIds[i + 2]].current()
-					],
-					_variantStyle[i + 4][variantIds[i + 3]][
-						uint256(seed) % _variantStyleCounter[i + 4][variantIds[i + 3]].current()
-					],
-					_variantStyle[i + 5][variantIds[i + 4]][
-						uint256(seed) % _variantStyleCounter[i + 5][variantIds[i + 4]].current()
-					]
+					_variantStyleCounter[i + 1][variantIds[i + 0]].current() != 0
+						? _variantStyle[i + 1][variantIds[i + 0]][
+							uint256(seed) % _variantStyleCounter[i + 1][variantIds[i + 0]].current()
+						]
+						: "",
+					_variantStyleCounter[i + 2][variantIds[i + 1]].current() != 0
+						? _variantStyle[i + 2][variantIds[i + 1]][
+							uint256(seed) % _variantStyleCounter[i + 2][variantIds[i + 1]].current()
+						]
+						: "",
+					_variantStyleCounter[i + 3][variantIds[i + 2]].current() != 0
+						? _variantStyle[i + 3][variantIds[i + 2]][
+							uint256(seed) % _variantStyleCounter[i + 3][variantIds[i + 2]].current()
+						]
+						: "",
+					_variantStyleCounter[i + 4][variantIds[i + 3]].current() != 0
+						? _variantStyle[i + 4][variantIds[i + 3]][
+							uint256(seed) % _variantStyleCounter[i + 4][variantIds[i + 3]].current()
+						]
+						: "",
+					_variantStyleCounter[i + 5][variantIds[i + 4]].current() != 0
+						? _variantStyle[i + 5][variantIds[i + 4]][
+							uint256(seed) % _variantStyleCounter[i + 5][variantIds[i + 4]].current()
+						]
+						: ""
 				);
 				i += 5;
 			} else {
+				console.log("Packing one");
 				styles = abi.encodePacked(
 					styles,
-					_variantStyle[i + 1][variantIds[i]][
-						uint256(seed) % _variantStyleCounter[i + 1][variantIds[i]].current()
-					]
+					_variantStyleCounter[i + 1][variantIds[i]].current() != 0
+						? _variantStyle[i + 1][variantIds[i]][
+							uint256(seed) % _variantStyleCounter[i + 1][variantIds[i]].current()
+						]
+						: ""
 				);
 				i++;
 			}
