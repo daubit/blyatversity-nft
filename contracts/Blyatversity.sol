@@ -37,12 +37,14 @@ contract Blyatversity is
         Unlimited
     }
 
+    // TokenId to internal itemId tokenId
+    mapping(uint256 => uint256) private _itemInternalIds;
+    // ItemId to internal itemId tokenId Counter
+    mapping(uint256 => CountersUpgradeable.Counter) private _itemIdCounters;
     // TokenId to ItemId
     mapping(uint256 => uint256) private _itemIds;
     // ItemId => Max Supply
     mapping(uint256 => uint256) private _itemMaxSupply;
-    // ItemId => Total Supply
-    mapping(uint256 => uint256) private _itemTotalSupply;
     //ItemId => boolean
     mapping(uint256 => ItemState) private _itemState;
     //ItemId => Lock Period
@@ -59,19 +61,19 @@ contract Blyatversity is
 
     modifier itemValid(uint256 itemId) {
         if (itemId <= 0 && itemId > _itemId.current()) revert InvalidItemId();
-        uint256 totalSupply = _itemTotalSupply[itemId];
+        uint256 totalSupply = _itemIdCounters[itemId].current();
         uint256 maxSupply = _itemMaxSupply[itemId];
         ItemState state = _itemState[itemId];
         if (state == ItemState.Paused) revert ItemPaused();
-        if (state == ItemState.Limited && totalSupply >= maxSupply)
-            revert MaxSupply();
+        if (state == ItemState.Limited && totalSupply >= maxSupply) revert MaxSupply();
         _;
     }
 
-    function initialize(
-        string memory contractCID_,
-        address proxyRegistryAddress
-    ) public initializer initializerERC721A {
+    function initialize(string memory contractCID_, address proxyRegistryAddress)
+        public
+        initializer
+        initializerERC721A
+    {
         __ERC721A_init("Blyatversity", "Blyat");
         _contractCID = contractCID_;
         _proxyRegistryAddress = proxyRegistryAddress;
@@ -98,18 +100,11 @@ contract Blyatversity is
     /**
      * @dev This is used instead of msg.sender as transactions won't be sent by the original token owner, but by OpenSea.
      */
-    function _msgSenderERC721A()
-        internal
-        view
-        override
-        returns (address sender)
-    {
+    function _msgSenderERC721A() internal view override returns (address sender) {
         return ContextMixin.msgSender();
     }
 
-    function setContractCID(
-        string memory contractCID_
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setContractCID(string memory contractCID_) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _contractCID = contractCID_;
     }
 
@@ -120,10 +115,7 @@ contract Blyatversity is
         return string(abi.encodePacked(_baseURI(), _contractCID));
     }
 
-    function mint(
-        uint256 itemId,
-        address to
-    )
+    function mint(uint256 itemId, address to)
         external
         itemValid(itemId)
         onlyRole(MINTER_ROLE)
@@ -131,6 +123,8 @@ contract Blyatversity is
     {
         uint256 nextToken = _nextTokenId();
         _itemIds[nextToken] = itemId;
+        _itemInternalIds[nextToken] = _itemIdCounters[itemId].current();
+        _itemIdCounters[itemId].increment();
         _mint(to, 1);
     }
 
@@ -138,10 +132,7 @@ contract Blyatversity is
         _burn(id);
     }
 
-    function addItem(
-        address factory,
-        uint256 supply
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function addItem(address factory, uint256 supply) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (supply == 0) revert InvalidSupply();
         _itemId.increment();
         uint256 itemId = _itemId.current();
@@ -166,49 +157,39 @@ contract Blyatversity is
         return _itemMaxSupply[itemId];
     }
 
-    function getItemTotalSupply(
-        uint256 itemId
-    ) external view returns (uint256) {
-        return _itemTotalSupply[itemId];
+    function getItemTotalSupply(uint256 itemId) external view returns (uint256) {
+        return _itemIdCounters[itemId].current();
     }
 
-    function pauseItem(
-        uint256 itemId
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) itemValid(itemId) {
+    function pauseItem(uint256 itemId) external onlyRole(DEFAULT_ADMIN_ROLE) itemValid(itemId) {
         _itemState[itemId] = ItemState.Paused;
     }
 
-    function unpauseItem(
-        uint256 itemId
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) itemValid(itemId) {
+    function unpauseItem(uint256 itemId) external onlyRole(DEFAULT_ADMIN_ROLE) itemValid(itemId) {
         _itemState[itemId] = ItemState.Paused;
     }
 
-    function setLockPeriod(
-        uint256 itemId,
-        uint256 timePeriod
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setLockPeriod(uint256 itemId, uint256 timePeriod) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _itemLockPeriod[itemId] = timePeriod;
+    }
+
+    function getInternalItemId(uint256 tokenId) external view returns (uint256) {
+        return _itemInternalIds[tokenId];
     }
 
     /**
      * @dev Returns the Uniform Resource Identifier (URI) for `tokenId` token.
      */
-    function tokenURI(
-        uint256 tokenId
-    ) public view virtual override returns (string memory) {
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         uint256 itemId = _itemIds[tokenId];
         IMetadataFactory metadata = IMetadataFactory(_metadataFactory[itemId]);
-        return metadata.tokenURI(tokenId);
+        return metadata.tokenURI(tokenId, _itemInternalIds[tokenId]);
     }
 
     /**
      * @dev Override isApprovedForAll to whitelist user's OpenSea proxy accounts to enable gas-less listings.
      */
-    function isApprovedForAll(
-        address owner,
-        address operator
-    ) public view override returns (bool) {
+    function isApprovedForAll(address owner, address operator) public view override returns (bool) {
         // Whitelist OpenSea proxy contract for easy trading.
         ProxyRegistry proxyRegistry = ProxyRegistry(_proxyRegistryAddress);
         if (address(proxyRegistry.proxies(owner)) == operator) {
@@ -218,9 +199,7 @@ contract Blyatversity is
         return super.isApprovedForAll(owner, operator);
     }
 
-    function supportsInterface(
-        bytes4 interfaceId
-    )
+    function supportsInterface(bytes4 interfaceId)
         public
         view
         virtual

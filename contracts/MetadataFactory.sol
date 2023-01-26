@@ -44,7 +44,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		string[] memory variants = _collectVariants(seed);
 		bytes memory attributes = _generateAttributes(variants);
 		bytes memory image = _generateImage(variants, seed);
-		bytes memory name = _getName(variants);
+		bytes memory name = _getName(tokenId);
 		return
 			string(
 				abi.encodePacked(
@@ -225,12 +225,8 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		return abi.encodePacked("%5B", base, "%5D");
 	}
 
-	function _getName(string[] memory variants) internal pure returns (bytes memory) {
-		bytes memory name;
-		for (uint256 i; i < variants.length; i++) {
-			name = abi.encodePacked(name, variants[i], "%20");
-		}
-		return name;
+	function _getName(uint256 internalId) internal pure returns (bytes memory) {
+		return abi.encodePacked("Blyatversity-Monsterparty-", Strings.toString(internalId));
 	}
 
 	function _generateStyles(uint[] memory variantIds, bytes32 seed) internal view returns (bytes memory) {
