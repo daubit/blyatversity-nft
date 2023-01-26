@@ -10,7 +10,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { Blyatversity, MetadataFactory } from "../typechain-types";
 import { readdirSync, writeFileSync } from "fs";
 import { BigNumber } from "ethers";
-import uploadAll, { uploadAttributes, uploadVariants } from "./util/upload-attribs";
+import uploadAll, { uploadAttributes, uploadStyles, uploadVariants } from "./util/upload-attribs";
 
 interface MintArgs {
 	to: string;
@@ -101,6 +101,19 @@ export async function upload(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
 	const ROOT_FOLDER = "assets";
 	await uploadVariants(metadata, ROOT_FOLDER, { start, end, layer });
+}
+
+export async function uploadStls(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
+	const network = await hre.ethers.provider.getNetwork();
+	const storage = new Storage("addresses.json");
+	const { stringLib: stringLibAddress, metadata: metadataAddress } = storage.fetch(network.chainId);
+	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
+		libraries: { String: stringLibAddress },
+	});
+	const { start, end, layer } = args;
+	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
+	const ROOT_FOLDER = "styles";
+	await uploadStyles(metadata, ROOT_FOLDER, 5, { layer, start, end })
 }
 
 export async function mint(args: MintArgs, hre: HardhatRuntimeEnvironment) {
