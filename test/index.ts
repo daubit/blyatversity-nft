@@ -78,6 +78,23 @@ describe("Blyatversity", function () {
 				expect(balance.toNumber()).to.be.equal(2);
 				expect(itemId.toNumber()).to.be.equal(1);
 			});
+			it("should returns getters correctly", async () => {
+				const internal1 = await blyat.getInternalItemId(1);
+				const totalSup1 = await blyat.getItemTotalSupply(1);
+				expect(internal1.toNumber()).to.be.equal(1);
+				expect(totalSup1.toNumber()).to.be.equal(2);
+
+				await blyat.mint(2, userA.address);
+				const balance = await blyat.balanceOf(userA.address);
+				const itemId = await blyat.getItem(2);
+				expect(balance.toNumber()).to.be.equal(3);
+				expect(itemId.toNumber()).to.be.equal(2);
+
+				const internal2 = await blyat.getInternalItemId(2);
+				const totalSup2 = await blyat.getItemTotalSupply(2);
+				expect(internal2.toNumber()).to.be.equal(0);
+				expect(totalSup2.toNumber()).to.be.equal(1);
+			});
 			it("should NOT able for user to mint", async () => {
 				const mintTx = blyat.mint(1, userA.address, { from: userA.address });
 				expect(mintTx).to.be.reverted;
@@ -88,7 +105,7 @@ describe("Blyatversity", function () {
 				const burnTx = await blyat.connect(userA).burn(0);
 				await burnTx.wait();
 				const balance = await blyat.balanceOf(userA.address);
-				expect(balance.toNumber()).to.be.equal(1);
+				expect(balance.toNumber()).to.be.equal(2);
 			});
 			it("should NOT be able for user to burn", async () => {
 				const burnTx = blyat.burn(1, { from: userA.address });
@@ -108,7 +125,7 @@ describe("Blyatversity", function () {
 				await mintTx.wait();
 				const balanceUser = await blyat.balanceOf(userA.address);
 				const balanceAdmin = await blyat.balanceOf(admin.address);
-				expect(balanceUser.toNumber()).to.be.equal(2, "User balance is incorrect!");
+				expect(balanceUser.toNumber()).to.be.equal(3, "User balance is incorrect!");
 				expect(balanceAdmin.toNumber()).to.be.equal(0, "Admin balance is incorrect!");
 			});
 			it("should NOT be able to transfer", async () => {
@@ -133,7 +150,7 @@ describe("Blyatversity", function () {
 		});
 		describe("TokenURI", () => {
 			it("should return the corrent token URI", async function () {
-				const tokenURI = await metadata.tokenURI(0, { gasLimit: 30_000_000 });
+				const tokenURI = await metadata.tokenURI(0, 0, { gasLimit: 30_000_000 });
 				writeFileSync("dist/token-0.txt", tokenURI, "utf-8");
 			});
 		});

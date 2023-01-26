@@ -2,19 +2,19 @@
   "manifestVersion": "3.2",
   "admin": {
     "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
-    "txHash": "0x74394e3043f9167f4bd21d2fbecaa7007a57f7e354a219ecf7055aea030b2b6f"
+    "txHash": "0x24cc38dc944189dfe36e061fadd99ec8f61105f6f814efa910ef94e42375c082"
   },
   "proxies": [
     {
       "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-      "txHash": "0xa738b450a78cdc660b582029304fca027d0eebf3f05fafb44e73bb5f1ae8b190",
+      "txHash": "0xa7a33075f9c7e371844443133f5fffd7df1b9addc7016b09e02b547e26d43bdb",
       "kind": "transparent"
     }
   ],
   "impls": {
-    "9eb233dfcfc0623eacc152d217e6a04610c799fae881e473d426aa363f8e256e": {
+    "4cfd340100cc21e2abeb38ac148ecddf6a5f17e8a758769213375242daf7b719": {
       "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-      "txHash": "0x91ff7fb61dd14c53cffa18f7f63576d562118198a9a66afcb3d5240a6ec85aaf",
+      "txHash": "0xb58263af5b548aa448c47fc6635adccecf0dc9661ab34c63abeed1d8a1bc7754",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -108,7 +108,7 @@
             "src": "contracts\\Blyatversity.sol:32"
           },
           {
-            "label": "_itemIds",
+            "label": "_itemInternalIds",
             "offset": 0,
             "slot": "156",
             "type": "t_mapping(t_uint256,t_uint256)",
@@ -116,15 +116,15 @@
             "src": "contracts\\Blyatversity.sol:41"
           },
           {
-            "label": "_itemMaxSupply",
+            "label": "_itemIdCounters",
             "offset": 0,
             "slot": "157",
-            "type": "t_mapping(t_uint256,t_uint256)",
+            "type": "t_mapping(t_uint256,t_struct(Counter)909_storage)",
             "contract": "Blyatversity",
             "src": "contracts\\Blyatversity.sol:43"
           },
           {
-            "label": "_itemTotalSupply",
+            "label": "_itemIds",
             "offset": 0,
             "slot": "158",
             "type": "t_mapping(t_uint256,t_uint256)",
@@ -132,28 +132,36 @@
             "src": "contracts\\Blyatversity.sol:45"
           },
           {
-            "label": "_itemState",
+            "label": "_itemMaxSupply",
             "offset": 0,
             "slot": "159",
-            "type": "t_mapping(t_uint256,t_enum(ItemState)3988)",
+            "type": "t_mapping(t_uint256,t_uint256)",
             "contract": "Blyatversity",
             "src": "contracts\\Blyatversity.sol:47"
           },
           {
-            "label": "_itemLockPeriod",
+            "label": "_itemState",
             "offset": 0,
             "slot": "160",
-            "type": "t_mapping(t_uint256,t_uint256)",
+            "type": "t_mapping(t_uint256,t_enum(ItemState)3988)",
             "contract": "Blyatversity",
             "src": "contracts\\Blyatversity.sol:49"
           },
           {
-            "label": "_metadataFactory",
+            "label": "_itemLockPeriod",
             "offset": 0,
             "slot": "161",
-            "type": "t_mapping(t_uint256,t_address)",
+            "type": "t_mapping(t_uint256,t_uint256)",
             "contract": "Blyatversity",
             "src": "contracts\\Blyatversity.sol:51"
+          },
+          {
+            "label": "_metadataFactory",
+            "offset": 0,
+            "slot": "162",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "Blyatversity",
+            "src": "contracts\\Blyatversity.sol:53"
           }
         ],
         "types": {
@@ -204,6 +212,10 @@
           },
           "t_mapping(t_uint256,t_enum(ItemState)3988)": {
             "label": "mapping(uint256 => enum Blyatversity.ItemState)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Counter)909_storage)": {
+            "label": "mapping(uint256 => struct CountersUpgradeable.Counter)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_uint256,t_uint256)": {
