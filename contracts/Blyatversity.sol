@@ -183,7 +183,7 @@ contract Blyatversity is
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         uint256 itemId = _itemIds[tokenId];
         IMetadataFactory metadata = IMetadataFactory(_metadataFactory[itemId]);
-        return metadata.tokenURI(tokenId, _itemInternalIds[tokenId]);
+        return metadata.tokenURI(_itemInternalIds[tokenId]);
     }
 
     /**

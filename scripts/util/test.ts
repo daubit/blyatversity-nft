@@ -20,7 +20,7 @@ export async function benchmarkTokenURI(args: TokenArgs, hre: HardhatRuntimeEnvi
 	const benchMarks = [];
 	for (let i = 0; i < amount; i++) {
 		const start = Date.now();
-		await metadata.tokenURI(tokenId, tokenId);
+		await metadata.tokenURI(tokenId);
 		const end = Date.now();
 		console.log(`Time: ${end - start} ms`);
 		benchMarks.push(end - start);
