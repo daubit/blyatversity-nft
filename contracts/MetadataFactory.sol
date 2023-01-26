@@ -269,7 +269,6 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 				);
 				i += 5;
 			} else {
-				console.log("Packing one");
 				styles = abi.encodePacked(
 					styles,
 					_variantStyleCounter[i + 1][variantIds[i]].current() != 0
