@@ -12,7 +12,7 @@ import "solidity-coverage";
 import "hardhat-contract-sizer";
 import "@openzeppelin/hardhat-upgrades";
 import { addAttributes, mint, reset, setDescription, tokenURI, upload } from "./scripts/tasks";
-import { benchmarkTokenURI } from "./scripts/test";
+import { benchmarkTokenURI } from "./scripts/util/test";
 
 dotenv.config();
 
