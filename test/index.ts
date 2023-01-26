@@ -5,7 +5,7 @@ import CONST from "../scripts/util/const.json";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
 import { writeFileSync } from "fs";
-import uploadAttribs from "../scripts/util/upload-attribs";
+import upload from "../scripts/util/upload-attribs";
 
 const { REGISTRY_ADDRESS, CONTRACT_METADATA_CID, ADMIN_ROLE } = CONST;
 
@@ -145,7 +145,7 @@ describe("Blyatversity", function () {
 		describe("Setup", function () {
 			it("should upload data", async function () {
 				const ROOT_FOLDER = "assets";
-				await uploadAttribs(ROOT_FOLDER, metadata);
+				await upload(metadata, ROOT_FOLDER);
 			});
 		});
 		describe("TokenURI", () => {
