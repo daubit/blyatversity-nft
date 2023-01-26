@@ -17,7 +17,7 @@ export async function uploadAttributes(metadata: MetadataFactory, ROOT_FOLDER: P
 		const addAttributesTx = await metadata.addAttributes(attributes);
 		await addAttributesTx.wait();
 	}
-	//console.log("Added attributes folder");
+	console.log("Added attributes folder");
 }
 
 export async function uploadDescription(metadata: MetadataFactory, description: string) {
@@ -48,8 +48,9 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 		if (layerId) {
 			attributeFolders = attributeFolders.slice(options?.start, options?.end)
 		}
+		console.log(`Uploading from ${layer}`)
 		for (let i = 0; i < attributeFolders.length; i++) {
-			//console.log(`Adding attribute ${attributeFolders[i]}`);
+			console.log(`Adding attribute ${attributeFolders[i]}`);
 			const attribute = attributeFolders[i];
 			attributeId++;
 			const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${layer}/${attribute}`).map((file) => ({
@@ -69,7 +70,7 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 			}));
 			for (const variant of variants) {
 				const { svg, name } = variant;
-				const chunkSize = 30_000;
+				const chunkSize = 5_000;
 				for (let start = 0; start < svg.length; start += chunkSize) {
 					// console.log(`Adding attribute ${attributeFolders[i]} variant ${name} chunk ${start}`);
 
@@ -81,11 +82,10 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 					const addVariantChunkedTx = await metadata.addVariantChunked(
 						attributeId,
 						name,
-						encodeURIComponent(encode(svgChunk, false)),
-						network.chainId === 31337 ? { gasLimit: BigNumber.from(30_000_000) } : undefined
+						encodeURIComponent(encode(svgChunk, false))
 					);
 					await addVariantChunkedTx.wait();
-					// console.log(`Added attribute ${attributeId}, ${attributeFolders[i]} chunk ${start}`);
+					console.log(`Added attribute ${attributeId}, ${attributeFolders[i]} chunk ${start}`);
 				}
 			}
 			// console.log(`Added attribute ${attributeFolders[i]}`);
@@ -93,8 +93,8 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 	}
 }
 
-export default async function uploadAll(metadata: MetadataFactory, ROOT_FOLDER: PathLike) {
+export default async function uploadAll(metadata: MetadataFactory, ROOT_FOLDER: PathLike, options?: Options) {
 	await uploadAttributes(metadata, ROOT_FOLDER);
-	await uploadVariants(metadata, ROOT_FOLDER);
+	await uploadVariants(metadata, ROOT_FOLDER, options);
 	await uploadDescription(metadata, "Monster AG");
 }
