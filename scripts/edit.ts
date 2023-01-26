@@ -1,10 +1,10 @@
 import { readdirSync, readFileSync, writeFileSync } from "fs";
 
 const ROOT_FOLDER = "assets";
-const layers = readdirSync(ROOT_FOLDER)
+const layers = ["Layer_3"]//readdirSync(ROOT_FOLDER)
 for (const layer of layers) {
     const layerPath = `${ROOT_FOLDER}/${layer}`
-    const attributes = readdirSync(layerPath);
+    const attributes = ["Monster_5"]//readdirSync(layerPath);
     for (const attribute of attributes) {
         const files = readdirSync(`${layerPath}/${attribute}`)
         for (const fileName of files) {
