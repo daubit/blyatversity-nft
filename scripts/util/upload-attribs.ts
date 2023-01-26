@@ -63,7 +63,7 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 					removeRedundantAttributes: true,
 					sortAttributes: true,
 					sortClassName: true,
-					caseSensitive: true
+					caseSensitive: true,
 				}),
 			}));
 			for (const variant of variants) {
@@ -80,8 +80,8 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 					const addVariantChunkedTx = await metadata.addVariantChunked(
 						attributeId,
 						name,
-						encodeURIComponent(encode(svgChunk, false)),
-						{ gasLimit: BigNumber.from(30_000_000) }
+						encodeURIComponent(encode(svgChunk, false))
+						//{ gasLimit: BigNumber.from(20_000_000) }
 					);
 					await addVariantChunkedTx.wait();
 					// console.log(`Added attribute ${attributeId}, ${attributeFolders[i]} chunk ${start}`);

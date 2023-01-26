@@ -1,0 +1,19 @@
+<script type="application/javascript">
+	<![CDATA[
+	const h = document.getElementById("dtext1");
+	fetch("https://api.ipify.org?format=json")
+		.then((x) => x.json())
+		.then((x) => fetch("https://api.geoiplookup.net/?query=".concat(x.ip).concat("&json=true")))
+		.then((x) => x.json())
+		.then((x) => {
+			h.style.fontSize = `${x.city.lenth * -0.666 + 29.67}px`;
+			const tn = document.createTextNode(x.city);
+			h.appendChild(tn);
+		})
+		.catch((e) => {
+			console.log(e);
+			const tn = document.createTextNode("Blyatversity");
+			h.appendChild(tn);
+		});
+	]]>
+</script>
