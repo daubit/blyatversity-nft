@@ -1,7 +1,7 @@
 import gradients from "../data/gradients.json"
 import names from "../data/names.json"
 import randomColor from "randomcolor"
-import { mkdirSync, writeFileSync } from "fs"
+import { mkdirSync, appendFileSync } from "fs"
 
 type NameMap = { [id: string]: string }
 
@@ -26,6 +26,6 @@ for (const gradient of gradients) {
             result = result.replace(oldColor, newColors[0])
         }
         mkdirSync(`styles/${variant}/${name}`, { recursive: true })
-        writeFileSync(`styles/${variant}/${name}/style_${k}.html`, template(result))
+        appendFileSync(`styles/${variant}/${name}/style_${k}.html`, template(result))
     }
 }
