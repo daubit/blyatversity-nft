@@ -44,6 +44,7 @@ export async function uploadStyles(metadata: MetadataFactory, rootFolder: PathLi
 	}
 	for (const attribute of attributes) {
 		const variants = readdirSync(`${rootFolder}/${attribute}`).slice(options?.start, options?.end)
+		console.log(variants)
 		for (const variant of variants) {
 			// console.log(`Adding attribute ${attribute}`);
 			const stylePath = `${rootFolder}/${attribute}/${variant}`
@@ -81,7 +82,7 @@ export async function uploadStyles(metadata: MetadataFactory, rootFolder: PathLi
 			}
 		}
 		attributeId++;
-		// console.log(`Added attribute ${attributeFolders[i]}`);
+		console.log(`Added attribute ${attribute}`);
 	}
 }
 
@@ -138,7 +139,7 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 					// console.log(`Added attribute ${attributeId}, ${attributeFolders[i]} chunk ${start}`);
 				}
 			}
-			// console.log(`Added attribute ${attributeFolders[i]}`);
+			console.log(`Added attribute ${attributeFolders[i]}`);
 		}
 	}
 }

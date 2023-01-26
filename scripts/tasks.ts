@@ -137,6 +137,8 @@ export async function tokenURI(args: TokenArgs, hre: HardhatRuntimeEnvironment) 
 		libraries: { String: stringLibAddress },
 	});
 	const metadata = Metadata.attach(blyatAddress) as MetadataFactory;
-	const tokenURI = await metadata.tokenURI(tokenId);
-	writeFileSync("token.txt", tokenURI, "utf-8");
+	// const tokenURI = await metadata.tokenURI(tokenId);
+	// writeFileSync("token.txt", tokenURI, "utf-8");
+	const tx = await metadata.getAttribute(tokenId)
+	console.log(tx)
 }
