@@ -10,7 +10,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { Blyatversity, MetadataFactory } from "../typechain-types";
 import { readdirSync, writeFileSync } from "fs";
 import { BigNumber } from "ethers";
-import uploadAttribs from "./util/upload-attribs";
+import uploadAll from "./util/upload-attribs";
 
 interface MintArgs {
 	to: string;
@@ -94,7 +94,7 @@ export async function upload(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 	});
 	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
 	const ROOT_FOLDER = "assets";
-	await uploadAttribs(ROOT_FOLDER, metadata);
+	await uploadAll(metadata, ROOT_FOLDER);
 }
 
 export async function mint(args: MintArgs, hre: HardhatRuntimeEnvironment) {
