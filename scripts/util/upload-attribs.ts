@@ -35,6 +35,7 @@ interface Options {
 }
 
 export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: PathLike, options?: Options) {
+	const network = await metadata.provider.getNetwork();
 	const layerId = options?.layer ?? 0;
 	let layers = readdirSync(ROOT_FOLDER)
 	if (layerId > 0) {
@@ -80,8 +81,8 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 					const addVariantChunkedTx = await metadata.addVariantChunked(
 						attributeId,
 						name,
-						encodeURIComponent(encode(svgChunk, false))
-						//{ gasLimit: BigNumber.from(20_000_000) }
+						encodeURIComponent(encode(svgChunk, false)),
+						network.chainId === 31337 ? { gasLimit: BigNumber.from(30_000_000) } : undefined
 					);
 					await addVariantChunkedTx.wait();
 					// console.log(`Added attribute ${attributeId}, ${attributeFolders[i]} chunk ${start}`);
