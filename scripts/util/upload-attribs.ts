@@ -59,7 +59,7 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 					collapseBooleanAttributes: true,
 					minifyCSS: true,
 					minifyJS: true,
-					removeComments: true,
+					removeComments: false,
 					removeEmptyAttributes: true,
 					removeRedundantAttributes: true,
 					sortAttributes: true,
