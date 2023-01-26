@@ -1,23 +1,31 @@
 import gradients from "../data/gradients.json"
+import names from "../data/names.json"
 import randomColor from "randomcolor"
-import { writeFileSync } from "fs"
+import { mkdirSync, writeFileSync } from "fs"
 
-const amount = 10;
-for (let k = 0; k < amount; k++) {
-    const gradientColors = gradients.map((gradient => gradient.match(/(#)([a-f]|[0-9]){6}/g)))
-    const template = (gradients: string) => `<defs>\n${gradients}\n</defs>`
-    // const colors = randomColor({ count: classes.length })
-    // const styles = classes.map((className, i) => `${className} {fill: ${colors[i]};}`).join("\n")
-    const genGradients = gradients.map((gradient, i) => {
-        const random = randomColor();
-        const newColors = randomColor({ hue: random, count: gradientColors[i]?.length ?? 0 })
+type NameMap = { [id: string]: string }
+
+const amount = 2;
+// const gradientColors = gradients.map((gradient => gradient.match(/(#)([a-f]|[0-9]){6}/g)))
+const getId = (gradient: string) => gradient.match(/id=\"(\S){10}\"/g)![0].replace(/(id=|\")/g, "")
+const getVariant = (id: string) => id.match(/Mo_[0-9]/g)![0].replace("Mo", "Monster")
+const template = (gradients: string) => `<defs>\n${gradients}\n</defs>`
+
+for (const gradient of gradients) {
+    for (let k = 0; k < amount; k++) {
+        // const colors = randomColor({ count: classes.length })
+        // const styles = classes.map((className, i) => `${className} {fill: ${colors[i]};}`).join("\n")
+        const id = getId(gradient);
+        const variant = getVariant(id);
+        const name = (names as NameMap)[id]
+        const gradientColors = gradient.match(/(#)([a-f]|[0-9]){6}/g)!
         let result = gradient
-        for (let j = 0; j < gradientColors[i]?.length!; j++) {
-            const oldColor = gradientColors[i]![j];
-            result = result.replace(oldColor, newColors[j])
+        for (const oldColor of gradientColors) {
+            const random = randomColor();
+            const newColors = randomColor({ hue: random, count: gradientColors.length ?? 0 })
+            result = result.replace(oldColor, newColors[0])
         }
-        return result;
-    }).join("")
-
-    writeFileSync(`assets/Layer_4/_Styles/grad_${k}.html`, template(genGradients))
+        mkdirSync(`styles/${variant}/${name}`, { recursive: true })
+        writeFileSync(`styles/${variant}/${name}/style_${k}.html`, template(result))
+    }
 }
