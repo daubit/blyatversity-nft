@@ -26,7 +26,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 	mapping(uint256 => mapping(uint256 => string)) private _variantKind;
 	// AttributeId => VariantId => svg
 	mapping(uint256 => mapping(uint256 => string)) private _svg;
-	// AttributeId => VariantId => Variant Style
+	// AttributeId => VariantId => StyleId => Variant Style
 	mapping(uint256 => mapping(uint256 => mapping(uint256 => string))) private _variantStyle;
 	// AttributeId => VariantId => Style Amount
 	mapping(uint256 => mapping(uint256 => Counters.Counter)) private _variantStyleCounter;
@@ -286,31 +286,31 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		uint32 i = 0;
 		while (i < amount) {
 			if ((amount - i) % 5 == 0) {
-				base = abi.encodePacked(
-					base,
-					_svg[i + 1][_indexedVariant[i + 1][variants[i + 0]]],
-					_svg[i + 2][_indexedVariant[i + 2][variants[i + 1]]],
-					_svg[i + 3][_indexedVariant[i + 3][variants[i + 2]]],
-					_svg[i + 4][_indexedVariant[i + 4][variants[i + 3]]],
-					_svg[i + 5][_indexedVariant[i + 5][variants[i + 4]]]
-				);
 				variantIds[i + 0] = _indexedVariant[i + 1][variants[i + 0]];
 				variantIds[i + 1] = _indexedVariant[i + 2][variants[i + 1]];
 				variantIds[i + 2] = _indexedVariant[i + 3][variants[i + 2]];
 				variantIds[i + 3] = _indexedVariant[i + 4][variants[i + 3]];
 				variantIds[i + 4] = _indexedVariant[i + 5][variants[i + 4]];
+				base = abi.encodePacked(
+					base,
+					_svg[i + 1][variantIds[i + 0]],
+					_svg[i + 2][variantIds[i + 1]],
+					_svg[i + 3][variantIds[i + 2]],
+					_svg[i + 4][variantIds[i + 3]],
+					_svg[i + 5][variantIds[i + 4]]
+				);
 				i += 5;
 			} else {
-				base = abi.encodePacked(base, _svg[i + 1][_indexedVariant[i + 1][variants[i]]]);
 				variantIds[i] = _indexedVariant[i + 1][variants[i]];
+				base = abi.encodePacked(base, variantIds[i]);
 				i++;
 			}
 		}
 		bytes memory styles = _generateStyles(variantIds, seed);
-		base = abi.encodePacked(base, styles);
 		base = abi.encodePacked(
 			"PHN2ZyB3aWR0aD0nMTAwMCcgaGVpZ2h0PScxMDAwJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbG5zOnhsaW5rPSdodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rJyB2aWV3Qm94PScwIDAgMTAwMCAxMDAwJz4g",
 			base,
+			styles,
 			"PC9zdmc+"
 		);
 		// "<svg width='1000' height='1000' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 1000 1000'>"
