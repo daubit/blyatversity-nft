@@ -2,6 +2,7 @@ import { BigNumber } from "ethers";
 import { PathLike, readdirSync, readFileSync } from "fs";
 import { minify } from "html-minifier";
 import { encode } from "js-base64";
+// @ts-ignore
 import { MetadataFactory } from "../../typechain-types";
 
 export interface Variant {
@@ -61,7 +62,7 @@ export async function uploadStyles(metadata: MetadataFactory, rootFolder: PathLi
 				}),
 			);
 			for (const style of styles) {
-				const chunkSize = 5_000;
+				const chunkSize = 30_000;
 				for (let start = 0; start < style.length; start += chunkSize) {
 					// console.log(`Adding attribute ${attributeFolders[i]} variant ${name} chunk ${start}`);
 					const till = start + chunkSize < style.length ? start + chunkSize : style.length;
@@ -69,12 +70,12 @@ export async function uploadStyles(metadata: MetadataFactory, rootFolder: PathLi
 					while (encode(styleChunk, false).endsWith("=")) {
 						styleChunk += " ";
 					}
-					const addVariantChunkedTx = await metadata.addStyleChunked(
+					const addStyleChunkedTx = await metadata.addStyleChunked(
 						attributeId,
 						variant,
 						encodeURIComponent(encode(styleChunk, false))
 					);
-					await addVariantChunkedTx.wait();
+					await addStyleChunkedTx.wait();
 					// console.log(`Added attribute ${attributeId}, ${attribute} chunk ${start}`);
 				}
 			}

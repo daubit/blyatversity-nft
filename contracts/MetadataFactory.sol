@@ -302,7 +302,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 				i += 5;
 			} else {
 				variantIds[i] = _indexedVariant[i + 1][variants[i]];
-				base = abi.encodePacked(base, variantIds[i]);
+				base = abi.encodePacked(base, _svg[i + 1][variantIds[i]]);
 				i++;
 			}
 		}
