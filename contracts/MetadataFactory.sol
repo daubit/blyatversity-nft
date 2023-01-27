@@ -68,7 +68,11 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		_description = description;
 	}
 
-	function addVariants(uint256 attributeId, string[] memory variants, string[] memory svgs) external {
+	function addVariants(
+		uint256 attributeId,
+		string[] memory variants,
+		string[] memory svgs
+	) external {
 		if (variants.length != svgs.length) revert UnequalArrays();
 		string memory attribute = _attributes[attributeId];
 		for (uint256 i; i < variants.length; i++) {
@@ -101,7 +105,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		_svg[attributeId][variantId] = svg;
 	}
 
-	function getVariantIndex(uint256 attributeId, string memory variant) external view returns (uint) {
+	function getVariantIndex(uint256 attributeId, string memory variant) external view returns (uint256) {
 		require(!variant.equals(""), "Empty string");
 		require(attributeId > 0 && attributeId <= _attributeCounter.current(), "Invalid attribute");
 		return _indexedVariant[attributeId][variant];
@@ -149,7 +153,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		require(variantId != 0, "Invalid variant");
 		require(!_variantName[attributeId][variantId].equals(""), "Invalid attribute");
 		_variantStyleCounter[attributeId][variantId].increment();
-		uint nextStyleId = _variantStyleCounter[attributeId][variantId].current();
+		uint256 nextStyleId = _variantStyleCounter[attributeId][variantId].current();
 		_variantStyle[attributeId][variantId][nextStyleId] = style;
 	}
 
@@ -163,10 +167,19 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		require(variantId != 0, "Invalid variant");
 		require(!_variantName[attributeId][variantId].equals(""), "Invalid attribute");
 		_variantStyleCounter[attributeId][variantId].increment();
-		uint nextStyleId = _variantStyleCounter[attributeId][variantId].current();
+		uint256 nextStyleId = _variantStyleCounter[attributeId][variantId].current();
 		_variantStyle[attributeId][variantId][nextStyleId] = _variantStyle[attributeId][variantId][nextStyleId].concat(
 			style
 		);
+	}
+
+	function _randomIndex(
+		bytes32 seed,
+		uint256 max,
+		uint256 offset
+	) internal pure returns (uint256) {
+		uint256 info = (uint256(seed) >> offset) & 0x1111_1111;
+		return info % max;
 	}
 
 	function _collectVariants(bytes32 seed) internal view returns (string[] memory) {
@@ -175,7 +188,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		for (uint256 i; i < currentAmount; i++) {
 			uint256 attributeId = i + 1;
 			uint256 variantAmount = _variantCounter[attributeId].current();
-			uint256 randomIndex = uint16((uint256(seed) % variantAmount) + 1);
+			uint256 randomIndex = _randomIndex(seed, variantAmount, i) + 1;
 			variants[i] = _variantName[attributeId][randomIndex];
 		}
 		return variants;
@@ -229,50 +242,36 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		return abi.encodePacked("Blyatversity-Monsterparty-", Strings.toString(internalId));
 	}
 
-	function _generateStyles(uint[] memory variantIds, bytes32 seed) internal view returns (bytes memory) {
+	function _randomStyle(
+		bytes32 seed,
+		uint256 attribId,
+		uint256 variantId
+	) internal view returns (string memory) {
+		uint256 counter = _variantStyleCounter[attribId][variantId].current();
+		if (counter == 0) {
+			return "";
+		} else {
+			return _variantStyle[attribId][variantId][_randomIndex(seed, counter, attribId)];
+		}
+	}
+
+	function _generateStyles(uint256[] memory variantIds, bytes32 seed) internal view returns (bytes memory) {
 		uint256 amount = variantIds.length;
-		uint i = 0;
+		uint256 i = 0;
 		bytes memory styles = "";
 		while (i < amount) {
 			if ((amount - i) % 5 == 0) {
 				styles = abi.encodePacked(
 					styles,
-					_variantStyleCounter[i + 1][variantIds[i + 0]].current() != 0
-						? _variantStyle[i + 1][variantIds[i + 0]][
-							uint256(seed) % _variantStyleCounter[i + 1][variantIds[i + 0]].current()
-						]
-						: "",
-					_variantStyleCounter[i + 2][variantIds[i + 1]].current() != 0
-						? _variantStyle[i + 2][variantIds[i + 1]][
-							uint256(seed) % _variantStyleCounter[i + 2][variantIds[i + 1]].current()
-						]
-						: "",
-					_variantStyleCounter[i + 3][variantIds[i + 2]].current() != 0
-						? _variantStyle[i + 3][variantIds[i + 2]][
-							uint256(seed) % _variantStyleCounter[i + 3][variantIds[i + 2]].current()
-						]
-						: "",
-					_variantStyleCounter[i + 4][variantIds[i + 3]].current() != 0
-						? _variantStyle[i + 4][variantIds[i + 3]][
-							uint256(seed) % _variantStyleCounter[i + 4][variantIds[i + 3]].current()
-						]
-						: "",
-					_variantStyleCounter[i + 5][variantIds[i + 4]].current() != 0
-						? _variantStyle[i + 5][variantIds[i + 4]][
-							uint256(seed) % _variantStyleCounter[i + 5][variantIds[i + 4]].current()
-						]
-						: ""
+					_randomStyle(seed, i + 1, variantIds[i + 0]),
+					_randomStyle(seed, i + 2, variantIds[i + 1]),
+					_randomStyle(seed, i + 3, variantIds[i + 2]),
+					_randomStyle(seed, i + 4, variantIds[i + 3]),
+					_randomStyle(seed, i + 5, variantIds[i + 4])
 				);
 				i += 5;
 			} else {
-				styles = abi.encodePacked(
-					styles,
-					_variantStyleCounter[i + 1][variantIds[i]].current() != 0
-						? _variantStyle[i + 1][variantIds[i]][
-							uint256(seed) % _variantStyleCounter[i + 1][variantIds[i]].current()
-						]
-						: ""
-				);
+				styles = abi.encodePacked(styles, _randomStyle(seed, i + 1, variantIds[i + 0]));
 				i++;
 			}
 		}
@@ -282,7 +281,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 	function _generateImage(string[] memory variants, bytes32 seed) internal view returns (bytes memory) {
 		bytes memory base;
 		uint256 amount = variants.length;
-		uint[] memory variantIds = new uint[](amount);
+		uint256[] memory variantIds = new uint256[](amount);
 		uint32 i = 0;
 		while (i < amount) {
 			if ((amount - i) % 5 == 0) {
