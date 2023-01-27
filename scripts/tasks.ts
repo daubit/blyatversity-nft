@@ -35,7 +35,7 @@ export async function addAttributes(args: any, hre: HardhatRuntimeEnvironment) {
 		libraries: { String: stringLibAddress },
 	});
 	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
-	const ROOT_FOLDER = "assets";
+	const ROOT_FOLDER = "assets/layers";
 	await uploadAttributes(metadata, ROOT_FOLDER);
 }
 
@@ -65,10 +65,10 @@ export async function reset(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 		name: string;
 		svg: string;
 	}
-	const ROOT_FOLDER = "assets";
+	const ROOT_FOLDER = "assets/layers";
 	let layers = readdirSync(ROOT_FOLDER);
 	if (layerId > 0) {
-		const chosenLayer = layers.find(layer => layer.includes(layerId.toString()))
+		const chosenLayer = layers.find((layer) => layer.includes(layerId.toString()));
 		layers = chosenLayer ? [chosenLayer] : layers;
 	}
 	for (const layer of layers) {
@@ -99,7 +99,7 @@ export async function upload(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 	});
 	const { start, end, layer } = args;
 	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
-	const ROOT_FOLDER = "assets";
+	const ROOT_FOLDER = "assets/layers";
 	await uploadVariants(metadata, ROOT_FOLDER, { start, end, layer });
 }
 
@@ -113,7 +113,7 @@ export async function uploadStls(args: UploadArgs, hre: HardhatRuntimeEnvironmen
 	const { start, end, layer } = args;
 	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
 	const ROOT_FOLDER = "styles";
-	await uploadStyles(metadata, ROOT_FOLDER, 5, { layer, start, end })
+	await uploadStyles(metadata, ROOT_FOLDER, 5, { layer, start, end });
 }
 
 export async function mint(args: MintArgs, hre: HardhatRuntimeEnvironment) {
@@ -139,6 +139,6 @@ export async function tokenURI(args: TokenArgs, hre: HardhatRuntimeEnvironment) 
 	const metadata = Metadata.attach(blyatAddress) as MetadataFactory;
 	// const tokenURI = await metadata.tokenURI(tokenId);
 	// writeFileSync("token.txt", tokenURI, "utf-8");
-	const tx = await metadata.getAttribute(tokenId)
-	console.log(tx)
+	const tx = await metadata.getAttribute(tokenId);
+	console.log(tx);
 }
