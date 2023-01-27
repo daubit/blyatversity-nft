@@ -150,7 +150,7 @@ describe("Blyatversity", function () {
 		});
 		describe("TokenURI", () => {
 			it("should return the corrent token URI", async function () {
-				const tokenURI = await metadata.tokenURI(0, 0, { gasLimit: 30_000_000 });
+				const tokenURI = await metadata.tokenURI(0, { gasLimit: 30_000_000 });
 				writeFileSync("dist/token-0.txt", tokenURI, "utf-8");
 			});
 		});

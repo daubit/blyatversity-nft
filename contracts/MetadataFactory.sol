@@ -17,7 +17,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 	// Id => Attribute
 	mapping(uint256 => string) private _attributes;
 	// AttributeId => Variant => Id
-	mapping(uint256 => mapping(string => uint256)) private _indexedVariants;
+	mapping(uint256 => mapping(string => uint256)) private _indexedVariant;
 	// AttributeId => Variant Amount
 	mapping(uint256 => Counters.Counter) private _variantCounter;
 	// AttributeId => VariantId => Variant
@@ -25,7 +25,11 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 	// AttributeId => VariantId => Attribute
 	mapping(uint256 => mapping(uint256 => string)) private _variantKind;
 	// AttributeId => VariantId => svg
-	mapping(uint256 => mapping(uint256 => string)) private _svgs;
+	mapping(uint256 => mapping(uint256 => string)) private _svg;
+	// AttributeId => VariantId => StyleId => Variant Style
+	mapping(uint256 => mapping(uint256 => mapping(uint256 => string))) private _variantStyle;
+	// AttributeId => VariantId => Style Amount
+	mapping(uint256 => mapping(uint256 => Counters.Counter)) private _variantStyleCounter;
 
 	error ZeroValue();
 	error EmptyString();
@@ -35,12 +39,12 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		_grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
 	}
 
-	function tokenURI(uint256 idExternal, uint256 idInternal) external view returns (string memory) {
-		bytes32 seed = keccak256(abi.encodePacked(idInternal));
+	function tokenURI(uint256 tokenId) external view returns (string memory) {
+		bytes32 seed = keccak256(abi.encodePacked(tokenId));
 		string[] memory variants = _collectVariants(seed);
 		bytes memory attributes = _generateAttributes(variants);
-		bytes memory image = _generateImage(variants);
-		bytes memory name = _getName(idInternal);
+		bytes memory image = _generateImage(variants, seed);
+		bytes memory name = _getName(tokenId);
 		return
 			string(
 				abi.encodePacked(
@@ -64,22 +68,18 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		_description = description;
 	}
 
-	function addVariants(
-		uint256 attributeId,
-		string[] memory variants,
-		string[] memory svgs
-	) external {
+	function addVariants(uint256 attributeId, string[] memory variants, string[] memory svgs) external {
 		if (variants.length != svgs.length) revert UnequalArrays();
 		string memory attribute = _attributes[attributeId];
 		for (uint256 i; i < variants.length; i++) {
 			string memory variant = variants[i];
-			uint256 variantId = _indexedVariants[attributeId][variant];
+			uint256 variantId = _indexedVariant[attributeId][variant];
 			if (variantId == 0) {
 				_variantCounter[attributeId].increment();
 				variantId = _variantCounter[attributeId].current();
-				_indexedVariants[attributeId][variant] = variantId;
+				_indexedVariant[attributeId][variant] = variantId;
 				_variantName[attributeId][variantId] = variant;
-				_svgs[attributeId][variantId] = svgs[i];
+				_svg[attributeId][variantId] = svgs[i];
 				_variantKind[attributeId][variantId] = attribute;
 			}
 		}
@@ -90,15 +90,21 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		string memory variant,
 		string memory svg
 	) external onlyRole(DEFAULT_ADMIN_ROLE) {
-		uint256 variantId = _indexedVariants[attributeId][variant];
+		uint256 variantId = _indexedVariant[attributeId][variant];
 		if (variantId == 0) {
 			_variantCounter[attributeId].increment();
 			variantId = _variantCounter[attributeId].current();
-			_indexedVariants[attributeId][variant] = variantId;
+			_indexedVariant[attributeId][variant] = variantId;
 			_variantName[attributeId][variantId] = variant;
 			_variantKind[attributeId][variantId] = _attributes[attributeId];
 		}
-		_svgs[attributeId][variantId] = svg;
+		_svg[attributeId][variantId] = svg;
+	}
+
+	function getVariantIndex(uint256 attributeId, string memory variant) external view returns (uint) {
+		require(!variant.equals(""), "Empty string");
+		require(attributeId > 0 && attributeId <= _attributeCounter.current(), "Invalid attribute");
+		return _indexedVariant[attributeId][variant];
 	}
 
 	function addVariantChunked(
@@ -106,15 +112,15 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		string memory variant,
 		string memory svgChunk
 	) external onlyRole(DEFAULT_ADMIN_ROLE) {
-		uint256 variantId = _indexedVariants[attributeId][variant];
+		uint256 variantId = _indexedVariant[attributeId][variant];
 		if (variantId == 0) {
 			_variantCounter[attributeId].increment();
 			variantId = _variantCounter[attributeId].current();
-			_indexedVariants[attributeId][variant] = variantId;
+			_indexedVariant[attributeId][variant] = variantId;
 			_variantName[attributeId][variantId] = variant;
 			_variantKind[attributeId][variantId] = _attributes[attributeId];
 		}
-		_svgs[attributeId][variantId] = _svgs[attributeId][variantId].concat(svgChunk);
+		_svg[attributeId][variantId] = _svg[attributeId][variantId].concat(svgChunk);
 	}
 
 	function addAttribute(string memory attribute) external onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -127,6 +133,40 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 			_attributeCounter.increment();
 			_attributes[_attributeCounter.current()] = attributes[i];
 		}
+	}
+
+	function getAttribute(uint256 id) external view returns (string memory) {
+		return _attributes[id];
+	}
+
+	function addStyle(
+		uint256 attributeId,
+		string memory variant,
+		string memory style
+	) external onlyRole(DEFAULT_ADMIN_ROLE) {
+		require(attributeId > 0 && attributeId <= _attributeCounter.current(), "Invalid attribute");
+		uint256 variantId = _indexedVariant[attributeId][variant];
+		require(variantId != 0, "Invalid variant");
+		require(!_variantName[attributeId][variantId].equals(""), "Invalid attribute");
+		_variantStyleCounter[attributeId][variantId].increment();
+		uint nextStyleId = _variantStyleCounter[attributeId][variantId].current();
+		_variantStyle[attributeId][variantId][nextStyleId] = style;
+	}
+
+	function addStyleChunked(
+		uint256 attributeId,
+		string memory variant,
+		string memory style
+	) external onlyRole(DEFAULT_ADMIN_ROLE) {
+		require(attributeId > 0 && attributeId <= _attributeCounter.current(), "Invalid attribute");
+		uint256 variantId = _indexedVariant[attributeId][variant];
+		require(variantId != 0, "Invalid variant");
+		require(!_variantName[attributeId][variantId].equals(""), "Invalid attribute");
+		_variantStyleCounter[attributeId][variantId].increment();
+		uint nextStyleId = _variantStyleCounter[attributeId][variantId].current();
+		_variantStyle[attributeId][variantId][nextStyleId] = _variantStyle[attributeId][variantId][nextStyleId].concat(
+			style
+		);
 	}
 
 	function _collectVariants(bytes32 seed) internal view returns (string[] memory) {
@@ -145,14 +185,14 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		bytes memory base;
 		for (uint16 i; i < variants.length; i++) {
 			uint256 attributeId = i + 1;
-			uint256 variantId = _indexedVariants[attributeId][variants[i]];
+			uint256 variantId = _indexedVariant[attributeId][variants[i]];
 			string memory variantType = _variantKind[attributeId][variantId];
 			if (bytes(variantType)[0] == "_") {
 				continue;
 			}
 			if (i < _attributeCounter.current() - 1) {
 				// assumes that there will ALWAYS be an element with _ at the end otherwise reverts
-				if (bytes(_variantKind[i + 2][_indexedVariants[i + 2][variants[i + 1]]])[0] == "_") {
+				if (bytes(_variantKind[i + 2][_indexedVariant[i + 2][variants[i + 1]]])[0] == "_") {
 					base = abi.encodePacked(
 						base,
 						"%7B%22trait_type%22%3A%22",
@@ -189,29 +229,88 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		return abi.encodePacked("Blyatversity-Monsterparty-", Strings.toString(internalId));
 	}
 
-	function _generateImage(string[] memory variants) internal view returns (bytes memory) {
-		bytes memory base;
-		uint256 amount = variants.length;
-		uint32 i = 0;
+	function _generateStyles(uint[] memory variantIds, bytes32 seed) internal view returns (bytes memory) {
+		uint256 amount = variantIds.length;
+		uint i = 0;
+		bytes memory styles = "";
 		while (i < amount) {
 			if ((amount - i) % 5 == 0) {
-				base = abi.encodePacked(
-					base,
-					_svgs[i + 1][_indexedVariants[i + 1][variants[i + 0]]],
-					_svgs[i + 2][_indexedVariants[i + 2][variants[i + 1]]],
-					_svgs[i + 3][_indexedVariants[i + 3][variants[i + 2]]],
-					_svgs[i + 4][_indexedVariants[i + 4][variants[i + 3]]],
-					_svgs[i + 5][_indexedVariants[i + 5][variants[i + 4]]]
+				styles = abi.encodePacked(
+					styles,
+					_variantStyleCounter[i + 1][variantIds[i + 0]].current() != 0
+						? _variantStyle[i + 1][variantIds[i + 0]][
+							uint256(seed) % _variantStyleCounter[i + 1][variantIds[i + 0]].current()
+						]
+						: "",
+					_variantStyleCounter[i + 2][variantIds[i + 1]].current() != 0
+						? _variantStyle[i + 2][variantIds[i + 1]][
+							uint256(seed) % _variantStyleCounter[i + 2][variantIds[i + 1]].current()
+						]
+						: "",
+					_variantStyleCounter[i + 3][variantIds[i + 2]].current() != 0
+						? _variantStyle[i + 3][variantIds[i + 2]][
+							uint256(seed) % _variantStyleCounter[i + 3][variantIds[i + 2]].current()
+						]
+						: "",
+					_variantStyleCounter[i + 4][variantIds[i + 3]].current() != 0
+						? _variantStyle[i + 4][variantIds[i + 3]][
+							uint256(seed) % _variantStyleCounter[i + 4][variantIds[i + 3]].current()
+						]
+						: "",
+					_variantStyleCounter[i + 5][variantIds[i + 4]].current() != 0
+						? _variantStyle[i + 5][variantIds[i + 4]][
+							uint256(seed) % _variantStyleCounter[i + 5][variantIds[i + 4]].current()
+						]
+						: ""
 				);
 				i += 5;
 			} else {
-				base = abi.encodePacked(base, _svgs[i + 1][_indexedVariants[i + 1][variants[i]]]);
+				styles = abi.encodePacked(
+					styles,
+					_variantStyleCounter[i + 1][variantIds[i]].current() != 0
+						? _variantStyle[i + 1][variantIds[i]][
+							uint256(seed) % _variantStyleCounter[i + 1][variantIds[i]].current()
+						]
+						: ""
+				);
 				i++;
 			}
 		}
+		return styles;
+	}
+
+	function _generateImage(string[] memory variants, bytes32 seed) internal view returns (bytes memory) {
+		bytes memory base;
+		uint256 amount = variants.length;
+		uint[] memory variantIds = new uint[](amount);
+		uint32 i = 0;
+		while (i < amount) {
+			if ((amount - i) % 5 == 0) {
+				variantIds[i + 0] = _indexedVariant[i + 1][variants[i + 0]];
+				variantIds[i + 1] = _indexedVariant[i + 2][variants[i + 1]];
+				variantIds[i + 2] = _indexedVariant[i + 3][variants[i + 2]];
+				variantIds[i + 3] = _indexedVariant[i + 4][variants[i + 3]];
+				variantIds[i + 4] = _indexedVariant[i + 5][variants[i + 4]];
+				base = abi.encodePacked(
+					base,
+					_svg[i + 1][variantIds[i + 0]],
+					_svg[i + 2][variantIds[i + 1]],
+					_svg[i + 3][variantIds[i + 2]],
+					_svg[i + 4][variantIds[i + 3]],
+					_svg[i + 5][variantIds[i + 4]]
+				);
+				i += 5;
+			} else {
+				variantIds[i] = _indexedVariant[i + 1][variants[i]];
+				base = abi.encodePacked(base, _svg[i + 1][variantIds[i]]);
+				i++;
+			}
+		}
+		bytes memory styles = _generateStyles(variantIds, seed);
 		base = abi.encodePacked(
 			"PHN2ZyB3aWR0aD0nMTAwMCcgaGVpZ2h0PScxMDAwJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbG5zOnhsaW5rPSdodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rJyB2aWV3Qm94PScwIDAgMTAwMCAxMDAwJz4g",
 			base,
+			styles,
 			"PC9zdmc+"
 		);
 		// "<svg width='1000' height='1000' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 1000 1000'>"

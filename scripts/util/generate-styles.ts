@@ -1,4 +1,4 @@
-import classes from "../data/classes.json"
+import classes from "../../data/classes.json"
 import randomColor from "randomcolor"
 import { writeFileSync } from "fs"
 

@@ -11,8 +11,8 @@ import "hardhat-gas-reporter";
 import "solidity-coverage";
 import "hardhat-contract-sizer";
 import "@openzeppelin/hardhat-upgrades";
-import { addAttributes, mint, reset, setDescription, tokenURI, upload } from "./scripts/tasks";
-import { benchmarkTokenURI } from "./scripts/test";
+import { addAttributes, mint, reset, setDescription, tokenURI, upload, uploadStls } from "./scripts/tasks";
+import { benchmarkTokenURI } from "./scripts/util/test";
 
 dotenv.config();
 
@@ -28,8 +28,9 @@ task("accounts", "Prints the list of accounts", async (_args, hre: HardhatRuntim
 task("mint", "Mint Blyat Token", mint).addParam("to", "Address to mint to").addParam("seasonid");
 task("setDescription", setDescription);
 task("addAttributes", addAttributes);
-task("upload", "Upload variants", upload);
-task("reset", "Reset metadata", reset).addParam("start").addParam("end");
+task("upload", "Upload variants", upload).addParam("start").addParam("end").addParam("layer");
+task("uploadStyles", uploadStls).addParam("start").addParam("end").addParam("layer");
+task("reset", "Reset metadata", reset).addParam("start").addParam("end").addParam("layer");
 task("tokenURI", "Display tokenURI", tokenURI).addParam("id");
 task("benchMark", benchmarkTokenURI).addParam("id").addParam("amount");
 

@@ -10,7 +10,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { Blyatversity, MetadataFactory } from "../typechain-types";
 import { readdirSync, writeFileSync } from "fs";
 import { BigNumber } from "ethers";
-import uploadAll from "./util/upload-attribs";
+import uploadAll, { uploadAttributes, uploadStyles, uploadVariants } from "./util/upload-attribs";
 
 interface MintArgs {
 	to: string;
@@ -20,6 +20,7 @@ interface MintArgs {
 interface UploadArgs {
 	start: number;
 	end: number;
+	layer: number;
 }
 
 interface TokenArgs {
@@ -35,10 +36,7 @@ export async function addAttributes(args: any, hre: HardhatRuntimeEnvironment) {
 	});
 	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
 	const ROOT_FOLDER = "assets";
-	const attributesFolder = readdirSync(ROOT_FOLDER);
-	const addAttributesTx = await metadata.addAttributes(attributesFolder);
-	await addAttributesTx.wait();
-	console.log("Added attributes!");
+	await uploadAttributes(metadata, ROOT_FOLDER);
 }
 
 export async function setDescription(args: any, hre: HardhatRuntimeEnvironment) {
@@ -61,27 +59,34 @@ export async function reset(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
 		libraries: { String: stringLibAddress },
 	});
-	const { start, end } = args;
+	const { start, end, layer: layerId } = args;
 	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
 	interface Variant {
 		name: string;
 		svg: string;
 	}
 	const ROOT_FOLDER = "assets";
-	const attributesFolder = readdirSync(ROOT_FOLDER).slice(start, end);
-	for (let i = 0; i < attributesFolder.length; i++) {
-		const attribute = attributesFolder[i];
-		const attributeId = i + 1;
-		const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${attribute}`).map((file) => ({
-			name: file.replace(".html", ""),
-			svg: "",
-		}));
-		for (const variant of variants) {
-			const { svg, name } = variant;
-			const setVariantTx = await metadata.setVariant(attributeId, name, svg);
-			await setVariantTx.wait();
+	let layers = readdirSync(ROOT_FOLDER);
+	if (layerId > 0) {
+		const chosenLayer = layers.find(layer => layer.includes(layerId.toString()))
+		layers = chosenLayer ? [chosenLayer] : layers;
+	}
+	for (const layer of layers) {
+		const attributesFolder = readdirSync(`${ROOT_FOLDER}/${layer}`).slice(start, end);
+		for (let i = 0; i < attributesFolder.length; i++) {
+			const attribute = attributesFolder[i];
+			const attributeId = i + 1;
+			const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${layer}/${attribute}`).map((file) => ({
+				name: file.replace(".html", ""),
+				svg: "",
+			}));
+			for (const variant of variants) {
+				const { svg, name } = variant;
+				const setVariantTx = await metadata.setVariant(attributeId, name, svg);
+				await setVariantTx.wait();
+			}
+			console.log(`Resetting ${attribute}`);
 		}
-		console.log(`Resetting ${attribute}`);
 	}
 }
 
@@ -92,9 +97,23 @@ export async function upload(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
 		libraries: { String: stringLibAddress },
 	});
+	const { start, end, layer } = args;
 	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
 	const ROOT_FOLDER = "assets";
-	await uploadAll(metadata, ROOT_FOLDER);
+	await uploadVariants(metadata, ROOT_FOLDER, { start, end, layer });
+}
+
+export async function uploadStls(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
+	const network = await hre.ethers.provider.getNetwork();
+	const storage = new Storage("addresses.json");
+	const { stringLib: stringLibAddress, metadata: metadataAddress } = storage.fetch(network.chainId);
+	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
+		libraries: { String: stringLibAddress },
+	});
+	const { start, end, layer } = args;
+	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
+	const ROOT_FOLDER = "styles";
+	await uploadStyles(metadata, ROOT_FOLDER, 5, { layer, start, end })
 }
 
 export async function mint(args: MintArgs, hre: HardhatRuntimeEnvironment) {
@@ -118,6 +137,8 @@ export async function tokenURI(args: TokenArgs, hre: HardhatRuntimeEnvironment) 
 		libraries: { String: stringLibAddress },
 	});
 	const metadata = Metadata.attach(blyatAddress) as MetadataFactory;
-	const tokenURI = await metadata.tokenURI(tokenId, tokenId);
-	writeFileSync("token.txt", tokenURI, "utf-8");
+	// const tokenURI = await metadata.tokenURI(tokenId);
+	// writeFileSync("token.txt", tokenURI, "utf-8");
+	const tx = await metadata.getAttribute(tokenId)
+	console.log(tx)
 }
