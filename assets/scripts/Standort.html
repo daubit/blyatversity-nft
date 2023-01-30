@@ -1,5 +1,4 @@
 <script type="application/javascript">
-	<![CDATA[
 	const h = document.getElementById("dtext1");
 	fetch("https://api.ipify.org?format=json")
 		.then((x) => x.json())
@@ -12,8 +11,7 @@
 		})
 		.catch((e) => {
 			console.log(e);
-			const tn = document.createTextNode("Blyatversity");
+			const tn = document.createTextNode("Cryptospacefleet");
 			h.appendChild(tn);
 		});
-	]]>
 </script>
