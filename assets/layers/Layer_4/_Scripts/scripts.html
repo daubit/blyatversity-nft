@@ -1,5 +1,4 @@
 <script type="application/javascript">
-	<![CDATA[
 	const h = document.getElementById("dtext1");
 	fetch("https://api.ipify.org?format=json")
 		.then((x) => x.json())
@@ -15,11 +14,9 @@
 			const tn = document.createTextNode("Blyatversity");
 			h.appendChild(tn);
 		});
-	]]>
 </script>
 <script type="application/javascript">
-	<![CDATA[
-		const d = [
+	const d = [
 		[31786, -5.005403577174987e-9, 0.0001414977537231597, 0],
 		[31585, -4.745436464716093e-9, 0.00013777425688010233, -8.881784197001252e-16],
 		[31229, -4.429371779509659e-9, 0.00013310705134604478, 5.921189464667501e-16],
@@ -92,5 +89,4 @@
 	sonne.style.opacity = y * 1.5;
 	wolken.style.filter = "brightness(".concat(((0.73 + y * 0.3) * 100).toFixed(0)).concat("%)");
 	bg.style.filter = "brightness(".concat(((0.73 + y * 0.3) * 100).toFixed(0)).concat("%)");
-	]]>
 </script>

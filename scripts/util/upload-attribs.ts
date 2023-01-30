@@ -4,6 +4,7 @@ import { minify } from "html-minifier";
 import { encode } from "js-base64";
 // @ts-ignore
 import { MetadataFactory } from "../../typechain-types";
+import { wrapInCData } from "./cdata";
 import { pad, PadType } from "./padding";
 
 export interface Variant {
@@ -127,7 +128,12 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 			const padType = attribute.includes("_Scripts") ? PadType.Script : PadType.Svg;
 
 			for (const variant of variants) {
-				const { svg, name } = variant;
+				let { svg, name } = variant;
+				if (attribute === "_Scripts") {
+					console.log("wrap in cdata");
+					svg = wrapInCData(svg);
+					console.log(svg);
+				}
 				const chunkSize = 5_000;
 				for (let start = 0; start < svg.length; start += chunkSize) {
 					const till = start + chunkSize < svg.length ? start + chunkSize : svg.length;
