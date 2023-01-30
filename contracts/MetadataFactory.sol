@@ -251,7 +251,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 		if (counter == 0) {
 			return "";
 		} else {
-			return _variantStyle[attribId][variantId][_randomIndex(seed, counter, attribId)];
+			return _variantStyle[attribId][variantId][_randomIndex(seed, counter, attribId) + 1];
 		}
 	}
 
