@@ -203,39 +203,16 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
 			if (bytes(variantType)[0] == "_") {
 				continue;
 			}
-			if (i < _attributeCounter.current() - 1) {
-				// assumes that there will ALWAYS be an element with _ at the end otherwise reverts
-				if (bytes(_variantKind[i + 2][_indexedVariant[i + 2][variants[i + 1]]])[0] == "_") {
-					base = abi.encodePacked(
-						base,
-						"%7B%22trait_type%22%3A%22",
-						_variantKind[attributeId][variantId],
-						"%22%2C%22value%22%3A%22",
-						variants[i],
-						"%22%7D"
-					);
-				} else {
-					base = abi.encodePacked(
-						base,
-						"%7B%22trait_type%22%3A%22",
-						_variantKind[attributeId][variantId],
-						"%22%2C%22value%22%3A%22",
-						variants[i],
-						"%22%7D%2C"
-					);
-				}
-			} else {
-				base = abi.encodePacked(
-					base,
-					"%7B%22trait_type%22%3A%22",
-					_variantKind[attributeId][variantId],
-					"%22%2C%22value%22%3A%22",
-					variants[i],
-					"%22%7D"
-				);
-			}
+			base = abi.encodePacked(
+				base,
+				"%7B%22trait_type%22%3A%22",
+				_variantKind[attributeId][variantId],
+				"%22%2C%22value%22%3A%22",
+				variants[i],
+				"%22%7D%2C"
+			);
 		}
-		return abi.encodePacked("%5B", base, "%5D");
+		return abi.encodePacked("%5B", base, "%7B%22trait_type%22%3A%22Season%22%2C%22value%22%3A%221%22%7D%5D");
 	}
 
 	function _getName(uint256 internalId) internal pure returns (bytes memory) {
