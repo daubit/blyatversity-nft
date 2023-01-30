@@ -144,7 +144,7 @@ describe("Blyatversity", function () {
 	describe("Metadata", () => {
 		describe("Setup", function () {
 			it("should upload data", async function () {
-				const ROOT_FOLDER = "assets";
+				const ROOT_FOLDER = "assets/layers";
 				await upload(metadata, ROOT_FOLDER);
 			});
 		});

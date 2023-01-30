@@ -1,5 +1,7 @@
 import * as dotenv from "dotenv";
 
+dotenv.config();
+
 import { HardhatUserConfig, task } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import "@nomiclabs/hardhat-ethers";
@@ -13,8 +15,6 @@ import "hardhat-contract-sizer";
 import "@openzeppelin/hardhat-upgrades";
 import { addAttributes, mint, reset, setDescription, tokenURI, upload, uploadStls } from "./scripts/tasks";
 import { benchmarkTokenURI } from "./scripts/util/test";
-
-dotenv.config();
 
 task("accounts", "Prints the list of accounts", async (_args, hre: HardhatRuntimeEnvironment) => {
 	const accounts = await hre.ethers.getSigners();
