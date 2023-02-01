@@ -14,3 +14,4 @@ npx hardhat run scripts/deploy.ts
 ## Assets
 - [x] Banner
 - [x] Profile
+- [ ] Beschreibungstext
