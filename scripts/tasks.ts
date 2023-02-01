@@ -8,10 +8,11 @@ import { Storage } from "./util/storage";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 // @ts-ignore
 import { Blyatversity, MetadataFactory } from "../typechain-types";
-import { readdirSync, writeFileSync } from "fs";
+import { readdirSync } from "fs";
 import { BigNumber } from "ethers";
 import { uploadAttributes, uploadStyles, uploadVariants } from "./util/upload-attribs";
 import uploadAllHelper from "../scripts/util/upload-attribs";
+import { keccak256 } from "./util/utils";
 
 interface MintArgs {
 	to: string;
@@ -154,4 +155,32 @@ export async function tokenURI(args: TokenArgs, hre: HardhatRuntimeEnvironment) 
 	// writeFileSync("token.txt", tokenURI, "utf-8");
 	const tx = await metadata.getAttribute(tokenId);
 	console.log(tx);
+}
+
+interface MinterRoleArgs {
+	address: string;
+}
+
+export async function addMinterRole(args: MinterRoleArgs, hre: HardhatRuntimeEnvironment) {
+	const network = await hre.ethers.provider.getNetwork();
+	const storage = new Storage("addresses.json");
+	const { blyat: blyatAddress } = storage.fetch(network.chainId);
+	const { address } = args;
+	const Metadata = await hre.ethers.getContractFactory("Blyatversity");
+	const metadata = Metadata.attach(blyatAddress) as Blyatversity;
+	const tx = await metadata.grantRole(keccak256("MINTER_ROLE"), address);
+	await tx.wait();
+	console.log(tx.hash);
+}
+
+export async function removeMinterRole(args: MinterRoleArgs, hre: HardhatRuntimeEnvironment) {
+	const network = await hre.ethers.provider.getNetwork();
+	const storage = new Storage("addresses.json");
+	const { blyat: blyatAddress } = storage.fetch(network.chainId);
+	const { address } = args;
+	const Metadata = await hre.ethers.getContractFactory("Blyatversity");
+	const metadata = Metadata.attach(blyatAddress) as Blyatversity;
+	const tx = await metadata.revokeRole(keccak256("MINTER_ROLE"), address);
+	await tx.wait();
+	console.log(tx.hash);
 }

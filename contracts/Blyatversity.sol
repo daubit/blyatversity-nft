@@ -9,7 +9,6 @@ import "./lib/IMetadataFactory.sol";
 import "./common/OpenSeaPolygonProxy.sol";
 import "./common/meta-transactions/ContentMixin.sol";
 import "./common/meta-transactions/NativeMetaTransaction.sol";
-import "hardhat/console.sol";
 
 /**
  *
@@ -115,13 +114,7 @@ contract Blyatversity is
         return string(abi.encodePacked(_baseURI(), _contractCID));
     }
 
-    function mint(uint256 itemId, address to)
-        external
-        itemValid(itemId)
-        onlyRole(MINTER_ROLE)
-        onlyRole(DEFAULT_ADMIN_ROLE)
-        returns (uint256)
-    {
+    function mint(uint256 itemId, address to) external itemValid(itemId) onlyRole(MINTER_ROLE) returns (uint256) {
         uint256 nextToken = _nextTokenId();
         _itemIds[nextToken] = itemId;
         _itemInternalIds[nextToken] = _itemIdCounters[itemId].current();

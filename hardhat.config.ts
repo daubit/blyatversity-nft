@@ -13,7 +13,18 @@ import "hardhat-gas-reporter";
 import "solidity-coverage";
 import "hardhat-contract-sizer";
 import "@openzeppelin/hardhat-upgrades";
-import { addAttributes, mint, reset, setDescription, tokenURI, upload, uploadStls, uploadAll } from "./scripts/tasks";
+import {
+	addAttributes,
+	mint,
+	reset,
+	setDescription,
+	tokenURI,
+	upload,
+	uploadStls,
+	uploadAll,
+	addMinterRole,
+	removeMinterRole,
+} from "./scripts/tasks";
 import { benchmarkTokenURI } from "./scripts/util/test";
 
 task("accounts", "Prints the list of accounts", async (_args, hre: HardhatRuntimeEnvironment) => {
@@ -34,6 +45,8 @@ task("uploadAll", uploadAll);
 task("reset", "Reset metadata", reset).addParam("start").addParam("end").addParam("layer");
 task("tokenURI", "Display tokenURI", tokenURI).addParam("id");
 task("benchMark", benchmarkTokenURI).addParam("id").addParam("amount");
+task("makeMinter", addMinterRole).addParam("address");
+task("removeMinter", removeMinterRole).addParam("address");
 
 const MNEMONIC = process.env.MNEMONIC;
 const ALCHEMY_KEY_MAINNET = process.env.ALCHEMY_KEY_MAINNET;
