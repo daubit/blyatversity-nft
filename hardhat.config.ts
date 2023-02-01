@@ -22,6 +22,8 @@ import {
 	upload,
 	uploadStls,
 	uploadAll,
+	addItem,
+	lockItem,
 	addMinterRole,
 	removeMinterRole,
 } from "./scripts/tasks";
@@ -40,10 +42,12 @@ task("mint", "Mint Blyat Token", mint).addParam("to", "Address to mint to").addP
 task("setDescription", setDescription);
 task("addAttributes", addAttributes);
 task("upload", "Upload variants", upload).addParam("start").addParam("end").addParam("layer");
-task("uploadStyles", uploadStls).addParam("start").addParam("end").addParam("layer");
 task("uploadAll", uploadAll);
+task("uploadStyles", uploadStls).addParam("start").addParam("end").addParam("layer");
 task("reset", "Reset metadata", reset).addParam("start").addParam("end").addParam("layer");
 task("tokenURI", "Display tokenURI", tokenURI).addParam("id");
+task("addItem", addItem).addParam("factory").addOptionalParam("supply");
+task("lockItem", lockItem).addParam("seasonid").addParam("deadline");
 task("benchMark", benchmarkTokenURI).addParam("id").addParam("amount");
 task("makeMinter", addMinterRole).addParam("address");
 task("removeMinter", removeMinterRole).addParam("address");

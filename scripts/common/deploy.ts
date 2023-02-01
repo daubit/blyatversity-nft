@@ -47,9 +47,6 @@ async function main() {
 		await metadata.deployed();
 		addresses.metadata = metadata.address;
 		console.log("Metadata deployed!");
-		const addTx = await blyatversity["addItem(address)"](metadata.address);
-		await addTx.wait();
-		console.log("Metadata added!");
 	}
 	storage.save(network.chainId, addresses);
 }

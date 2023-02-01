@@ -23,8 +23,6 @@ export function wrapInCData(content: string) {
 		throw new Error("Length missmatch when adding cdata");
 	}
 
-	console.log(startPoints);
-	console.log(endPoints);
 	let ret = "";
 	for (let i = 0; i < startPoints.length; i++) {
 		const start = startPoints[i];

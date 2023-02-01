@@ -8,6 +8,7 @@ import { writeFileSync } from "fs";
 import upload from "../scripts/util/upload-attribs";
 
 const { REGISTRY_ADDRESS, CONTRACT_METADATA_CID, ADMIN_ROLE } = CONST;
+const PREFIX = "data:application/json,"
 
 describe("Blyatversity", function () {
 	let blyat: Blyatversity;
@@ -150,7 +151,17 @@ describe("Blyatversity", function () {
 		});
 		describe("TokenURI", () => {
 			it("should return the corrent token URI", async function () {
-				const tokenURI = await metadata.tokenURI(0, { gasLimit: 30_000_000 });
+				const tokenURI = await blyat.tokenURI(0, { gasLimit: 30_000_000 });
+				const decoded = decodeURIComponent(tokenURI);
+				expect(decoded.startsWith(PREFIX)).to.be.true;
+				const token = JSON.parse(decoded.replace(PREFIX, ""))
+				expect(token).to.not.be.undefined
+				expect(token.name).to.not.be.undefined
+				expect(token.description).to.not.be.undefined
+				expect(token.attributes).to.not.be.undefined
+				expect(token.image_data).to.not.be.undefined
+				expect(token.animation_url).to.not.be.undefined
+				writeFileSync("dist/image-0.txt", token.animation_url, "utf8");
 				writeFileSync("dist/token-0.txt", tokenURI, "utf-8");
 			});
 		});

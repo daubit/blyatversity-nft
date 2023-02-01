@@ -60,6 +60,9 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
                     "%2C",
                     "%22animation_url%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Bbase64%2C",
                     image,
+                    "%22%2C",
+                    "%22image_data%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Bbase64%2C",
+                    image,
                     "%22%7D"
                 )
             );
@@ -264,7 +267,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     function _getName(uint256 internalId) internal pure returns (bytes memory) {
         return
             abi.encodePacked(
-                "Blyatversity-Monsterparty-",
+                "Blyatversity%20Monsterparty%20%23",
                 Strings.toString(internalId)
             );
     }

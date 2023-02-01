@@ -11,11 +11,9 @@ GAS_REPORT=true npx hardhat test
 npx hardhat node
 npx hardhat run scripts/deploy.ts
 ```
+## Assets
 
-
-
-
-
-## Features
-- Upgradable?
-- 
+- [x] Banner
+- [x] Profile
+- [x] Description
+- [ ] Deadline

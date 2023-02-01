@@ -1,7 +1,7 @@
 {
-  "80001": {
-    "stringLib": "0x5AB84FC81E18fe87B44Aa627864C972947993Ee3",
-    "blyat": "0xCbe272D28a0725F4a0af3ac0AAe28bdd57BF3933",
-    "metadata": "0x88881a33361b5DA6f96b96bC3Cf0327f59460cbC"
-  }
+	"80001": {
+		"stringLib": "0x5AB84FC81E18fe87B44Aa627864C972947993Ee3",
+		"blyat": "0xCbe272D28a0725F4a0af3ac0AAe28bdd57BF3933",
+		"metadata": "0x88881a33361b5DA6f96b96bC3Cf0327f59460cbC"
+	}
 }

@@ -126,7 +126,7 @@ export async function uploadStls(args: UploadArgs, hre: HardhatRuntimeEnvironmen
 	});
 	const { start, end, layer } = args;
 	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
-	const ROOT_FOLDER = "styles";
+	const ROOT_FOLDER = "assets/styles";
 	await uploadStyles(metadata, ROOT_FOLDER, 5, { layer, start, end });
 }
 
@@ -183,4 +183,41 @@ export async function removeMinterRole(args: MinterRoleArgs, hre: HardhatRuntime
 	const tx = await metadata.revokeRole(keccak256("MINTER_ROLE"), address);
 	await tx.wait();
 	console.log(tx.hash);
+}
+
+interface AddItemArgs {
+	factory: string;
+	supply?: number;
+}
+export async function addItem(args: AddItemArgs, hre: HardhatRuntimeEnvironment) {
+	const network = await hre.ethers.provider.getNetwork();
+	const storage = new Storage("addresses.json");
+	const { blyat: blyatAddress } = storage.fetch(network.chainId);
+	const { factory, supply } = args;
+	const Blyatversity = await hre.ethers.getContractFactory("Blyatversity");
+	const blyat = Blyatversity.attach(blyatAddress) as Blyatversity;
+	if (supply) {
+		const addTx = await blyat["addItem(address,uint256)"](factory, supply);
+		await addTx.wait();
+	} else {
+		const addTx = await blyat["addItem(address)"](factory);
+		await addTx.wait();
+	}
+	console.log("Metadata added!");
+}
+interface LockArgs {
+	deadline: number;
+	seasonid: number;
+}
+
+export async function lockItem(args: LockArgs, hre: HardhatRuntimeEnvironment) {
+	const network = await hre.ethers.provider.getNetwork();
+	const storage = new Storage("addresses.json");
+	const { blyat: blyatAddress } = storage.fetch(network.chainId);
+	const { seasonid, deadline } = args;
+	const Blyatversity = await hre.ethers.getContractFactory("Blyatversity");
+	const blyat = Blyatversity.attach(blyatAddress) as Blyatversity;
+	const lockTx = await blyat.setLockPeriod(seasonid, deadline);
+	await lockTx.wait();
+	console.log(`Locked item ${seasonid} till ${new Date(deadline)}`);
 }
