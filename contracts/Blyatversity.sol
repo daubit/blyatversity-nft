@@ -120,12 +120,14 @@ contract Blyatversity is
         itemValid(itemId)
         onlyRole(MINTER_ROLE)
         onlyRole(DEFAULT_ADMIN_ROLE)
+        returns (uint256)
     {
         uint256 nextToken = _nextTokenId();
         _itemIds[nextToken] = itemId;
         _itemInternalIds[nextToken] = _itemIdCounters[itemId].current();
         _itemIdCounters[itemId].increment();
         _mint(to, 1);
+        return nextToken;
     }
 
     function burn(uint256 id) external {
