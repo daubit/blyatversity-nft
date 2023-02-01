@@ -211,7 +211,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     }
 
     function _getName(uint256 internalId) internal pure returns (bytes memory) {
-        return abi.encodePacked("Blyatversity-Monsterparty-", Strings.toString(internalId));
+        return abi.encodePacked("Blyatversity%20Monsterparty%20%23", Strings.toString(internalId));
     }
 
     function _randomStyle(bytes32 seed, uint256 attribId, uint256 variantId) internal view returns (string memory) {

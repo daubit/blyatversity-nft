@@ -125,7 +125,7 @@ export async function uploadStls(args: UploadArgs, hre: HardhatRuntimeEnvironmen
 	});
 	const { start, end, layer } = args;
 	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
-	const ROOT_FOLDER = "styles";
+	const ROOT_FOLDER = "assets/styles";
 	await uploadStyles(metadata, ROOT_FOLDER, 5, { layer, start, end });
 }
 
