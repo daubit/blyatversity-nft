@@ -35,8 +35,6 @@ async function main() {
 		await blyatversity.deployed();
 		addresses.blyat = blyatversity.address;
 		console.log("Blyatversity deployed to:", blyatversity.address);
-		console.log("Waiting for verification...");
-		await verify(hardhat, blyatversity.address, network.chainId, [CONTRACT_METADATA_CID, REGISTRY_ADDRESS]);
 	} else {
 		const Blyatversity = await ethers.getContractFactory("Blyatversity");
 		blyatversity = Blyatversity.attach(blyatAddress) as Blyatversity;
@@ -52,7 +50,6 @@ async function main() {
 		const addTx = await blyatversity["addItem(address)"](metadata.address);
 		await addTx.wait();
 		console.log("Metadata added!");
-		await verify(hardhat, metadata.address, network.chainId, []);
 	}
 	storage.save(network.chainId, addresses);
 }
