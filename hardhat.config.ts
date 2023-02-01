@@ -28,10 +28,10 @@ task("accounts", "Prints the list of accounts", async (_args, hre: HardhatRuntim
 task("mint", "Mint Blyat Token", mint).addParam("to", "Address to mint to").addParam("seasonid");
 task("setDescription", setDescription);
 task("addAttributes", addAttributes);
-task("upload", "Upload variants", upload).addParam("start").addParam("end").addParam("layer");
+task("upload", "Upload variants", upload).addOptionalParam("start").addOptionalParam("end").addOptionalParam("layer");
 task("uploadAll", uploadAll);
-task("uploadStyles", uploadStls).addParam("start").addParam("end").addParam("layer");
-task("reset", "Reset metadata", reset).addParam("start").addParam("end").addParam("layer");
+task("uploadStyles", uploadStls).addOptionalParam("start").addOptionalParam("end").addOptionalParam("layer");
+task("reset", "Reset metadata", reset).addOptionalParam("start").addOptionalParam("end").addOptionalParam("layer");
 task("tokenURI", "Display tokenURI", tokenURI).addParam("id");
 task("addItem", addItem).addParam("factory").addOptionalParam("supply")
 task("lockItem", lockItem).addParam("seasonid").addParam("deadline")

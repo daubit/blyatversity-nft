@@ -144,16 +144,13 @@ export async function mint(args: MintArgs, hre: HardhatRuntimeEnvironment) {
 export async function tokenURI(args: TokenArgs, hre: HardhatRuntimeEnvironment) {
 	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
-	const { blyat: blyatAddress, stringLib: stringLibAddress } = storage.fetch(network.chainId);
+	const { blyat: blyatAddress } = storage.fetch(network.chainId);
 	const { id: tokenId } = args;
-	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
-		libraries: { String: stringLibAddress },
-	});
-	const metadata = Metadata.attach(blyatAddress) as MetadataFactory;
-	// const tokenURI = await metadata.tokenURI(tokenId);
-	// writeFileSync("token.txt", tokenURI, "utf-8");
-	const tx = await metadata.getAttribute(tokenId);
-	console.log(tx);
+	const Blyatversity = await hre.ethers.getContractFactory("Blyatversity");
+	const blyat = Blyatversity.attach(blyatAddress) as MetadataFactory;
+	const tokenURI = await blyat.tokenURI(tokenId);
+	writeFileSync("token.txt", tokenURI, "utf-8");
+	console.log("Fetched tokenURI!")
 }
 
 
