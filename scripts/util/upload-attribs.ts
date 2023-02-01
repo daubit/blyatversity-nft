@@ -130,7 +130,6 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 			for (const variant of variants) {
 				let { svg, name } = variant;
 				if (attribute === "_Scripts") {
-					console.log("wrap in cdata");
 					svg = wrapInCData(svg);
 				}
 				const chunkSize = 5_000;
