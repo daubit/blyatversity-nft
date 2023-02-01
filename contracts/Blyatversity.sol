@@ -69,11 +69,10 @@ contract Blyatversity is
         _;
     }
 
-    function initialize(string memory contractCID_, address proxyRegistryAddress)
-        public
-        initializer
-        initializerERC721A
-    {
+    function initialize(
+        string memory contractCID_,
+        address proxyRegistryAddress
+    ) public initializer initializerERC721A {
         __ERC721A_init("Blyatversity", "Blyat");
         _contractCID = contractCID_;
         _proxyRegistryAddress = proxyRegistryAddress;
@@ -115,13 +114,7 @@ contract Blyatversity is
         return string(abi.encodePacked(_baseURI(), _contractCID));
     }
 
-    function mint(uint256 itemId, address to)
-        external
-        itemValid(itemId)
-        onlyRole(MINTER_ROLE)
-        onlyRole(DEFAULT_ADMIN_ROLE)
-        returns (uint256)
-    {
+    function mint(uint256 itemId, address to) external itemValid(itemId) onlyRole(MINTER_ROLE) returns (uint256) {
         uint256 nextToken = _nextTokenId();
         _itemIds[nextToken] = itemId;
         _itemInternalIds[nextToken] = _itemIdCounters[itemId].current();
@@ -201,13 +194,9 @@ contract Blyatversity is
         return super.isApprovedForAll(owner, operator);
     }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC721AUpgradeable, AccessControlUpgradeable)
-        returns (bool)
-    {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(ERC721AUpgradeable, AccessControlUpgradeable) returns (bool) {
         // Supports the following `interfaceId`s:
         // - IERC165: 0x01ffc9a7
         // - IERC721: 0x80ac58cd
