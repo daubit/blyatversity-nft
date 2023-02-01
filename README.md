@@ -12,6 +12,8 @@ npx hardhat node
 npx hardhat run scripts/deploy.ts
 ```
 ## Assets
+
 - [x] Banner
 - [x] Profile
-- [ ] Beschreibungstext
+- [x] Description
+- [ ] Deadline
