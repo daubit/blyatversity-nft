@@ -20,11 +20,15 @@ export const verify = async (
 ) => {
 	if ([80001, 137, 1337].includes(chainId)) {
 		await sleep(60 * 1000);
-		hardhat.run("verify:verify", {
-			address: adddress,
-			network: networkName(chainId),
-			constructorArgsParams: params ?? [],
-		});
+		try {
+			hardhat.run("verify:verify", {
+				address: adddress,
+				network: networkName(chainId),
+				constructorArgsParams: params ?? [],
+			});
+		} catch (e) {
+			console.log(e);
+		}
 	} else {
 		console.log(`Cannot verify for ChainId ${chainId}`);
 	}

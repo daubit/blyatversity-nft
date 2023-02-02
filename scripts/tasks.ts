@@ -8,10 +8,11 @@ import { Storage } from "./util/storage";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 // @ts-ignore
 import { Blyatversity, MetadataFactory } from "../typechain-types";
-import { readdirSync, writeFileSync } from "fs";
+import { readdirSync } from "fs";
 import { BigNumber } from "ethers";
 import { uploadAttributes, uploadStyles, uploadVariants } from "./util/upload-attribs";
 import uploadAllHelper from "../scripts/util/upload-attribs";
+import { keccak256 } from "./util/utils";
 
 interface MintArgs {
 	to: string;
@@ -153,6 +154,33 @@ export async function tokenURI(args: TokenArgs, hre: HardhatRuntimeEnvironment) 
 	console.log("Fetched tokenURI!")
 }
 
+interface MinterRoleArgs {
+	address: string;
+}
+
+export async function addMinterRole(args: MinterRoleArgs, hre: HardhatRuntimeEnvironment) {
+	const network = await hre.ethers.provider.getNetwork();
+	const storage = new Storage("addresses.json");
+	const { blyat: blyatAddress } = storage.fetch(network.chainId);
+	const { address } = args;
+	const Metadata = await hre.ethers.getContractFactory("Blyatversity");
+	const metadata = Metadata.attach(blyatAddress) as Blyatversity;
+	const tx = await metadata.grantRole(keccak256("MINTER_ROLE"), address);
+	await tx.wait();
+	console.log(tx.hash);
+}
+
+export async function removeMinterRole(args: MinterRoleArgs, hre: HardhatRuntimeEnvironment) {
+	const network = await hre.ethers.provider.getNetwork();
+	const storage = new Storage("addresses.json");
+	const { blyat: blyatAddress } = storage.fetch(network.chainId);
+	const { address } = args;
+	const Metadata = await hre.ethers.getContractFactory("Blyatversity");
+	const metadata = Metadata.attach(blyatAddress) as Blyatversity;
+	const tx = await metadata.revokeRole(keccak256("MINTER_ROLE"), address);
+	await tx.wait();
+	console.log(tx.hash);
+}
 
 interface AddItemArgs {
 	factory: string;
@@ -166,7 +194,7 @@ export async function addItem(args: AddItemArgs, hre: HardhatRuntimeEnvironment)
 	const Blyatversity = await hre.ethers.getContractFactory("Blyatversity");
 	const blyat = Blyatversity.attach(blyatAddress) as Blyatversity;
 	if (supply) {
-		const addTx = await blyat["addItem(address,uint256)"](factory, supply)
+		const addTx = await blyat["addItem(address,uint256)"](factory, supply);
 		await addTx.wait();
 	} else {
 		const addTx = await blyat["addItem(address)"](factory);
@@ -188,5 +216,5 @@ export async function lockItem(args: LockArgs, hre: HardhatRuntimeEnvironment) {
 	const blyat = Blyatversity.attach(blyatAddress) as Blyatversity;
 	const lockTx = await blyat.setLockPeriod(seasonid, deadline);
 	await lockTx.wait();
-	console.log(`Locked item ${seasonid} till ${new Date(deadline)}`)
+	console.log(`Locked item ${seasonid} till ${new Date(deadline)}`);
 }

@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./lib/IMetadataFactory.sol";
 import "./lib/String.sol";
-import "hardhat/console.sol";
 
 contract MetadataFactory is IMetadataFactory, AccessControl {
     using String for string;
@@ -27,9 +26,11 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     // AttributeId => VariantId => svg
     mapping(uint256 => mapping(uint256 => string)) private _svg;
     // AttributeId => VariantId => StyleId => Variant Style
-    mapping(uint256 => mapping(uint256 => mapping(uint256 => string))) private _variantStyle;
+    mapping(uint256 => mapping(uint256 => mapping(uint256 => string)))
+        private _variantStyle;
     // AttributeId => VariantId => Style Amount
-    mapping(uint256 => mapping(uint256 => Counters.Counter)) private _variantStyleCounter;
+    mapping(uint256 => mapping(uint256 => Counters.Counter))
+        private _variantStyleCounter;
 
     error ZeroValue();
     error EmptyString();
@@ -67,11 +68,18 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
             );
     }
 
-    function setDescription(string memory description) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setDescription(string memory description)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         _description = description;
     }
 
-    function addVariants(uint256 attributeId, string[] memory variants, string[] memory svgs) external {
+    function addVariants(
+        uint256 attributeId,
+        string[] memory variants,
+        string[] memory svgs
+    ) external {
         if (variants.length != svgs.length) revert UnequalArrays();
         string memory attribute = _attributes[attributeId];
         for (uint256 i; i < variants.length; i++) {
@@ -104,9 +112,16 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         _svg[attributeId][variantId] = svg;
     }
 
-    function getVariantIndex(uint256 attributeId, string memory variant) external view returns (uint256) {
+    function getVariantIndex(uint256 attributeId, string memory variant)
+        external
+        view
+        returns (uint256)
+    {
         require(!variant.equals(""), "Empty string");
-        require(attributeId > 0 && attributeId <= _attributeCounter.current(), "Invalid attribute");
+        require(
+            attributeId > 0 && attributeId <= _attributeCounter.current(),
+            "Invalid attribute"
+        );
         return _indexedVariant[attributeId][variant];
     }
 
@@ -123,15 +138,23 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
             _variantName[attributeId][variantId] = variant;
             _variantKind[attributeId][variantId] = _attributes[attributeId];
         }
-        _svg[attributeId][variantId] = _svg[attributeId][variantId].concat(svgChunk);
+        _svg[attributeId][variantId] = _svg[attributeId][variantId].concat(
+            svgChunk
+        );
     }
 
-    function addAttribute(string memory attribute) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function addAttribute(string memory attribute)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         _attributeCounter.increment();
         _attributes[_attributeCounter.current()] = attribute;
     }
 
-    function addAttributes(string[] memory attributes) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function addAttributes(string[] memory attributes)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         for (uint256 i; i < attributes.length; i++) {
             _attributeCounter.increment();
             _attributes[_attributeCounter.current()] = attributes[i];
@@ -147,12 +170,19 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         string memory variant,
         string memory style
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(attributeId > 0 && attributeId <= _attributeCounter.current(), "Invalid attribute");
+        require(
+            attributeId > 0 && attributeId <= _attributeCounter.current(),
+            "Invalid attribute"
+        );
         uint256 variantId = _indexedVariant[attributeId][variant];
         require(variantId != 0, "Invalid variant");
-        require(!_variantName[attributeId][variantId].equals(""), "Invalid attribute");
+        require(
+            !_variantName[attributeId][variantId].equals(""),
+            "Invalid attribute"
+        );
         _variantStyleCounter[attributeId][variantId].increment();
-        uint256 nextStyleId = _variantStyleCounter[attributeId][variantId].current();
+        uint256 nextStyleId = _variantStyleCounter[attributeId][variantId]
+            .current();
         _variantStyle[attributeId][variantId][nextStyleId] = style;
     }
 
@@ -161,23 +191,38 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         string memory variant,
         string memory style
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(attributeId > 0 && attributeId <= _attributeCounter.current(), "Invalid attribute");
+        require(
+            attributeId > 0 && attributeId <= _attributeCounter.current(),
+            "Invalid attribute"
+        );
         uint256 variantId = _indexedVariant[attributeId][variant];
         require(variantId != 0, "Invalid variant");
-        require(!_variantName[attributeId][variantId].equals(""), "Invalid attribute");
-        _variantStyleCounter[attributeId][variantId].increment();
-        uint256 nextStyleId = _variantStyleCounter[attributeId][variantId].current();
-        _variantStyle[attributeId][variantId][nextStyleId] = _variantStyle[attributeId][variantId][nextStyleId].concat(
-            style
+        require(
+            !_variantName[attributeId][variantId].equals(""),
+            "Invalid attribute"
         );
+        _variantStyleCounter[attributeId][variantId].increment();
+        uint256 nextStyleId = _variantStyleCounter[attributeId][variantId]
+            .current();
+        _variantStyle[attributeId][variantId][nextStyleId] = _variantStyle[
+            attributeId
+        ][variantId][nextStyleId].concat(style);
     }
 
-    function _randomIndex(bytes32 seed, uint256 max, uint256 offset) internal pure returns (uint256) {
+    function _randomIndex(
+        bytes32 seed,
+        uint256 max,
+        uint256 offset
+    ) internal pure returns (uint256) {
         uint256 info = (uint256(seed) >> offset) & 0x1111_1111;
         return info % max;
     }
 
-    function _collectVariants(bytes32 seed) internal view returns (string[] memory) {
+    function _collectVariants(bytes32 seed)
+        internal
+        view
+        returns (string[] memory)
+    {
         uint256 currentAmount = _attributeCounter.current();
         string[] memory variants = new string[](currentAmount);
         for (uint256 i; i < currentAmount; i++) {
@@ -189,7 +234,11 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
         return variants;
     }
 
-    function _generateAttributes(string[] memory variants) internal view returns (bytes memory) {
+    function _generateAttributes(string[] memory variants)
+        internal
+        view
+        returns (bytes memory)
+    {
         bytes memory base;
         for (uint16 i; i < variants.length; i++) {
             uint256 attributeId = i + 1;
@@ -207,23 +256,43 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
                 "%22%7D%2C"
             );
         }
-        return abi.encodePacked("%5B", base, "%7B%22trait_type%22%3A%22Season%22%2C%22value%22%3A%221%22%7D%5D");
+        return
+            abi.encodePacked(
+                "%5B",
+                base,
+                "%7B%22trait_type%22%3A%22Season%22%2C%22value%22%3A%221%22%7D%5D"
+            );
     }
 
     function _getName(uint256 internalId) internal pure returns (bytes memory) {
-        return abi.encodePacked("Blyatversity%20Monsterparty%20%23", Strings.toString(internalId));
+        return
+            abi.encodePacked(
+                "Blyatversity%20Monsterparty%20%23",
+                Strings.toString(internalId)
+            );
     }
 
-    function _randomStyle(bytes32 seed, uint256 attribId, uint256 variantId) internal view returns (string memory) {
+    function _randomStyle(
+        bytes32 seed,
+        uint256 attribId,
+        uint256 variantId
+    ) internal view returns (string memory) {
         uint256 counter = _variantStyleCounter[attribId][variantId].current();
         if (counter == 0) {
             return "";
         } else {
-            return _variantStyle[attribId][variantId][_randomIndex(seed, counter, attribId) + 1];
+            return
+                _variantStyle[attribId][variantId][
+                    _randomIndex(seed, counter, attribId) + 1
+                ];
         }
     }
 
-    function _generateStyles(uint256[] memory variantIds, bytes32 seed) internal view returns (bytes memory) {
+    function _generateStyles(uint256[] memory variantIds, bytes32 seed)
+        internal
+        view
+        returns (bytes memory)
+    {
         uint256 amount = variantIds.length;
         uint256 i = 0;
         bytes memory styles = "";
@@ -239,14 +308,21 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
                 );
                 i += 5;
             } else {
-                styles = abi.encodePacked(styles, _randomStyle(seed, i + 1, variantIds[i + 0]));
+                styles = abi.encodePacked(
+                    styles,
+                    _randomStyle(seed, i + 1, variantIds[i + 0])
+                );
                 i++;
             }
         }
         return styles;
     }
 
-    function _generateImage(string[] memory variants, bytes32 seed) internal view returns (bytes memory) {
+    function _generateImage(string[] memory variants, bytes32 seed)
+        internal
+        view
+        returns (bytes memory)
+    {
         bytes memory base;
         uint256 amount = variants.length;
         uint256[] memory variantIds = new uint256[](amount);
