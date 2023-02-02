@@ -5,11 +5,15 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 import { ethers, upgrades } from "hardhat";
-import hardhat from "hardhat";
 import { AddressStorage, Storage } from "../util/storage";
-import { verify } from "../util/utils";
-import { REGISTRY_ADDRESS, CONTRACT_METADATA_CID } from "../util/const.json";
+import { REGISTRY_ADDRESS } from "../util/const.json";
 import { Blyatversity } from "../../typechain-types";
+import { readFileSync } from "fs";
+
+const file = readFileSync("./scripts/metadata.json", "utf8");
+const metadata = () => {
+	return `data:application/json,${encodeURIComponent(file)}`;
+};
 
 async function main() {
 	const network = await ethers.provider.getNetwork();
@@ -28,10 +32,7 @@ async function main() {
 	if (!addresses.stringLib) throw new Error("Cannot find String Library!");
 	if (!blyatAddress) {
 		const Blyatversity = await ethers.getContractFactory("Blyatversity");
-		blyatversity = (await upgrades.deployProxy(Blyatversity, [
-			CONTRACT_METADATA_CID,
-			REGISTRY_ADDRESS,
-		])) as Blyatversity;
+		blyatversity = (await upgrades.deployProxy(Blyatversity, [metadata(), REGISTRY_ADDRESS])) as Blyatversity;
 		await blyatversity.deployed();
 		addresses.blyat = blyatversity.address;
 		console.log("Blyatversity deployed to:", blyatversity.address);

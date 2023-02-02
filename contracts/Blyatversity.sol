@@ -105,6 +105,13 @@ contract Blyatversity is
         _contractCID = contractCID_;
     }
 
+    function setProxyRegistryAddress(address proxyRegistryAddress)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        _proxyRegistryAddress = proxyRegistryAddress;
+    }
+
     /**
      * @dev Returns the contract CID.
      */
