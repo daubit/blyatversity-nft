@@ -16,4 +16,4 @@ npx hardhat run scripts/deploy.ts
 - [x] Banner
 - [x] Profile
 - [x] Description
-- [ ] Deadline
+- [x] Deadline (6.2.24 => 1707174000)
