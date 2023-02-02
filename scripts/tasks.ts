@@ -8,7 +8,7 @@ import { Storage } from "./util/storage";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 // @ts-ignore
 import { Blyatversity, MetadataFactory } from "../typechain-types";
-import { readdirSync } from "fs";
+import { readdirSync, writeFileSync } from "fs";
 import { BigNumber } from "ethers";
 import { uploadAttributes, uploadStyles, uploadVariants } from "./util/upload-attribs";
 import uploadAllHelper from "../scripts/util/upload-attribs";
@@ -151,7 +151,7 @@ export async function tokenURI(args: TokenArgs, hre: HardhatRuntimeEnvironment) 
 	const blyat = Blyatversity.attach(blyatAddress) as MetadataFactory;
 	const tokenURI = await blyat.tokenURI(tokenId);
 	writeFileSync("token.txt", tokenURI, "utf-8");
-	console.log("Fetched tokenURI!")
+	console.log("Fetched tokenURI!");
 }
 
 interface MinterRoleArgs {

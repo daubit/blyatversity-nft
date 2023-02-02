@@ -8,7 +8,7 @@ import { writeFileSync } from "fs";
 import upload from "../scripts/util/upload-attribs";
 
 const { REGISTRY_ADDRESS, CONTRACT_METADATA_CID, ADMIN_ROLE } = CONST;
-const PREFIX = "data:application/json,"
+const PREFIX = "data:application/json,";
 
 describe("Blyatversity", function () {
 	let blyat: Blyatversity;
@@ -133,6 +133,16 @@ describe("Blyatversity", function () {
 				const transferTx = blyat.connect(userA).transferFrom(userA.address, admin.address, 0);
 				expect(transferTx).to.be.reverted;
 			});
+			it("should be able to transfer as Admin", async () => {
+				const mintTx = await blyat.mint(3, admin.address);
+				await mintTx.wait();
+
+				const transferTx = await blyat.connect(admin).transferFrom(admin.address, userA.address, 4);
+				await transferTx.wait();
+
+				const balance = await blyat.balanceOf(userA.address);
+				expect(balance.toNumber()).to.be.equal(4);
+			});
 			it("should be able to transfer now", async () => {
 				await time.increaseTo(fiveMinPeriod);
 				const transferTx = await blyat.connect(userA).transferFrom(userA.address, admin.address, 1);
@@ -154,13 +164,13 @@ describe("Blyatversity", function () {
 				const tokenURI = await blyat.tokenURI(0, { gasLimit: 30_000_000 });
 				const decoded = decodeURIComponent(tokenURI);
 				expect(decoded.startsWith(PREFIX)).to.be.true;
-				const token = JSON.parse(decoded.replace(PREFIX, ""))
-				expect(token).to.not.be.undefined
-				expect(token.name).to.not.be.undefined
-				expect(token.description).to.not.be.undefined
-				expect(token.attributes).to.not.be.undefined
-				expect(token.image_data).to.not.be.undefined
-				expect(token.animation_url).to.not.be.undefined
+				const token = JSON.parse(decoded.replace(PREFIX, ""));
+				expect(token).to.not.be.undefined;
+				expect(token.name).to.not.be.undefined;
+				expect(token.description).to.not.be.undefined;
+				expect(token.attributes).to.not.be.undefined;
+				expect(token.image_data).to.not.be.undefined;
+				expect(token.animation_url).to.not.be.undefined;
 				writeFileSync("dist/image-0.txt", token.animation_url, "utf8");
 				writeFileSync("dist/token-0.txt", tokenURI, "utf-8");
 			});
