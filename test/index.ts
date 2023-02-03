@@ -162,8 +162,11 @@ describe("Blyatversity", function () {
 		describe("TokenURI", () => {
 			it("should return the corrent token URI", async function () {
 				const tokenURI = await blyat.tokenURI(0, { gasLimit: 30_000_000 });
+				writeFileSync("dist/image-0-raw.txt", tokenURI, "utf8");
 				const decoded = decodeURIComponent(tokenURI);
 				expect(decoded.startsWith(PREFIX)).to.be.true;
+				writeFileSync("dist/image-0-decoded.txt", decoded, "utf8");
+				writeFileSync("dist/image-0-fail.txt", decoded.replace(PREFIX, ""), "utf8");
 				const token = JSON.parse(decoded.replace(PREFIX, ""));
 				expect(token).to.not.be.undefined;
 				expect(token.name).to.not.be.undefined;

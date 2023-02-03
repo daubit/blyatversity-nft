@@ -67,6 +67,31 @@ async function main() {
 				.map((x) => [x.s, x.a, x.b, x.c])
 		)
 	);
+
+	writeFileSync(
+		"out3.json",
+		JSON.stringify(
+			chunk(
+				readFileSync("astro-202301-202312.csv", { encoding: "utf8" })
+					.split("\n")
+					.filter((x, i) => i > 0 && x.length > 0)
+					.map((x) => x.split(";"))
+					.map((x) => {
+						return {
+							dayStart: parseDate(x[1]),
+							dayLength: parseDate(x[3]),
+						};
+					}),
+				7
+			).map((x, i) => {
+				return {
+					week: i,
+					dayStart: Math.round(sum(x.map((x) => x.dayStart)) / x.length),
+					dayLength: Math.round(sum(x.map((x) => x.dayLength)) / x.length),
+				};
+			})
+		)
+	);
 }
 
 main().then(() => console.log("done"));

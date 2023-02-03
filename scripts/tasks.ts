@@ -8,11 +8,12 @@ import { Storage } from "./util/storage";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 // @ts-ignore
 import { Blyatversity, MetadataFactory } from "../typechain-types";
-import { readdirSync, writeFileSync } from "fs";
+import { readdirSync, readFileSync, writeFileSync } from "fs";
 import { BigNumber } from "ethers";
 import { uploadAttributes, uploadStyles, uploadVariants } from "./util/upload-attribs";
 import uploadAllHelper from "../scripts/util/upload-attribs";
 import { keccak256 } from "./util/utils";
+import data from "./data.json";
 
 interface MintArgs {
 	to: string;
@@ -49,9 +50,25 @@ export async function setDescription(args: any, hre: HardhatRuntimeEnvironment) 
 		libraries: { String: stringLibAddress },
 	});
 	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
-	const setDescriptionTx = await metadata.setDescription("Monster AG");
+	const setDescriptionTx = await metadata.setDescription(data.description);
 	await setDescriptionTx.wait();
 	console.log("Set description!");
+}
+
+export async function setContractDescription(args: any, hre: HardhatRuntimeEnvironment) {
+	const file = readFileSync("./scripts/metadata.json", "utf8");
+	const metadataFactory = () => {
+		return `data:application/json,${encodeURIComponent(file)}`;
+	};
+
+	const network = await hre.ethers.provider.getNetwork();
+	const storage = new Storage("addresses.json");
+	const { blyat: blyatAddress } = storage.fetch(network.chainId);
+	const Blyatversity = await hre.ethers.getContractFactory("Blyatversity", {});
+	const blyat = Blyatversity.attach(blyatAddress) as Blyatversity;
+	const setDescriptionTx = await blyat.setContractCID(metadataFactory());
+	await setDescriptionTx.wait();
+	console.log("Set Contract description!");
 }
 
 export async function reset(args: UploadArgs, hre: HardhatRuntimeEnvironment) {

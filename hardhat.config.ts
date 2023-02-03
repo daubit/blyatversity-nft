@@ -26,6 +26,7 @@ import {
 	lockItem,
 	addMinterRole,
 	removeMinterRole,
+	setContractDescription,
 } from "./scripts/tasks";
 import { benchmarkTokenURI } from "./scripts/util/test";
 
@@ -51,6 +52,7 @@ task("lockItem", lockItem).addParam("seasonid").addParam("deadline");
 task("benchMark", benchmarkTokenURI).addParam("id").addParam("amount");
 task("makeMinter", addMinterRole).addParam("address");
 task("removeMinter", removeMinterRole).addParam("address");
+task("setContractDesc", setContractDescription);
 
 const MNEMONIC = process.env.MNEMONIC;
 const ALCHEMY_KEY_MAINNET = process.env.ALCHEMY_KEY_MAINNET;

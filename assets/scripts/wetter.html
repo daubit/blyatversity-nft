@@ -69,7 +69,7 @@
 	const wolken = document.getElementById("Clouds");
 	const bg = document.getElementById("BGrect");
 	const y = Math.pow(x, 2) * data[1] + x * data[2] + data[3];
-	sonne.style.opacity = y * 1.5;
-	wolken.style.filter = "brightness(".concat(((0.73 + y * 0.3) * 100).toFixed(0)).concat("%)");
-	bg.style.filter = "brightness(".concat(((0.73 + y * 0.3) * 100).toFixed(0)).concat("%)");
+	sonne.style.opacity = y * 4;
+	wolken.style.filter = "brightness(".concat(((0.8 + y * 0.4) * 100).toFixed(0)).concat("%)");
+	bg.style.filter = "brightness(".concat(((0.8 + y * 0.4) * 100).toFixed(0)).concat("%)");
 </script>

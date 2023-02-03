@@ -6,6 +6,7 @@ import { encode } from "js-base64";
 import { MetadataFactory } from "../../typechain-types";
 import { wrapInCData } from "./cdata";
 import { pad, PadType } from "./padding";
+import data from "../data.json";
 
 export interface Variant {
 	name: string;
@@ -156,5 +157,5 @@ export default async function uploadAll(metadata: MetadataFactory, ROOT_FOLDER: 
 	await uploadVariants(metadata, ROOT_FOLDER, options);
 	// 5 ist die Id für das Monster_1 Attribut
 	await uploadStyles(metadata, "assets/styles", 5);
-	await uploadDescription(metadata, "Monster AG");
+	await uploadDescription(metadata, encodeURIComponent(data.description));
 }
