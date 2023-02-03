@@ -176,6 +176,13 @@ contract Blyatversity is
         _metadataFactory[itemId] = factory;
     }
 
+    function addItemIndexed(uint256 index, address factory)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        _metadataFactory[index] = factory;
+    }
+
     /**
      * @dev Returns the item id of the token
      * @param tokenId, id of the token

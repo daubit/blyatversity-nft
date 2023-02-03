@@ -72,19 +72,16 @@ export async function uploadStyles(
 			for (const style of styles) {
 				const chunkSize = 30_000;
 				for (let start = 0; start < style.length; start += chunkSize) {
-					console.log(`Adding style for ${attributeId} ${variant}`);
+					console.log(`Adding style for ${attributeId} ${variant} chunk ${start}`);
 					const till = start + chunkSize < style.length ? start + chunkSize : style.length;
-					let styleChunk = style.slice(start, till);
-					while (encode(styleChunk, false).endsWith("=")) {
-						styleChunk += " ";
-					}
+					let styleChunk = pad(style.slice(start, till), PadType.Svg);
 					const addStyleChunkedTx = await metadata.addStyleChunked(
 						attributeId,
 						variant,
 						encodeURIComponent(encode(styleChunk, false))
 					);
 					await addStyleChunkedTx.wait();
-					// console.log(`Added attribute ${attributeId}, ${attribute} chunk ${start}`);
+					console.log(`Added style for ${attributeId}, ${attribute} chunk ${start}`);
 				}
 			}
 		}
@@ -106,6 +103,7 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 		if (layerId) {
 			attributeFolders = attributeFolders.slice(options?.start, options?.end);
 		}
+		console.log(attributeFolders);
 		// console.log(`Uploading from ${layer}`)
 		for (let i = 0; i < attributeFolders.length; i++) {
 			// console.log(`Adding attribute ${attributeFolders[i]}`);
