@@ -223,7 +223,7 @@ export async function uploadVariant(metadata: MetadataFactory, ROOT_FOLDER: Path
 			attributeId,
 			name,
 			encodeURIComponent(encode(svgChunk, false))
-			//{ gasPrice: BigNumber.from(150_000_000_000) }
+			{ maxFeePerGas: BigNumber.from(150_000_000_000), maxPriorityFeePerGas:  BigNumber.from(100_000_000_000)}
 		);
 		console.log(addVariantChunkedTx.hash);
 		await addVariantChunkedTx.wait();
