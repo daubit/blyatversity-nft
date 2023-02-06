@@ -27,6 +27,7 @@ import {
 	addMinterRole,
 	removeMinterRole,
 	setContractDescription,
+	addItemIndexed,
 } from "./scripts/tasks";
 import { benchmarkTokenURI } from "./scripts/util/test";
 
@@ -42,10 +43,18 @@ task("accounts", "Prints the list of accounts", async (_args, hre: HardhatRuntim
 task("mint", "Mint Blyat Token", mint).addParam("to", "Address to mint to").addParam("seasonid");
 task("setDescription", setDescription);
 task("addAttributes", addAttributes);
-task("upload", "Upload variants", upload).addOptionalParam("start").addOptionalParam("end").addOptionalParam("layer").addOptionalParam("startid");
+task("upload", "Upload variants", upload)
+	.addOptionalParam("start")
+	.addOptionalParam("end")
+	.addOptionalParam("layer")
+	.addOptionalParam("startid");
 task("uploadAll", uploadAll);
-task("uploadStyles", uploadStls).addOptionalParam("start").addOptionalParam("end").addOptionalParam("layer")
-task("reset", "Reset metadata", reset).addOptionalParam("start").addOptionalParam("end").addOptionalParam("layer").addOptionalParam("startid");
+task("uploadStyles", uploadStls).addOptionalParam("start").addOptionalParam("end").addOptionalParam("layer");
+task("reset", "Reset metadata", reset)
+	.addOptionalParam("start")
+	.addOptionalParam("end")
+	.addOptionalParam("layer")
+	.addOptionalParam("startid");
 task("tokenURI", "Display tokenURI", tokenURI).addParam("id");
 task("addItem", addItem).addParam("factory").addOptionalParam("supply");
 task("lockItem", lockItem).addParam("seasonid").addParam("deadline");
@@ -53,6 +62,7 @@ task("benchMark", benchmarkTokenURI).addParam("id").addParam("amount");
 task("makeMinter", addMinterRole).addParam("address");
 task("removeMinter", removeMinterRole).addParam("address");
 task("setContractDesc", setContractDescription);
+task("addItemIndexed", addItemIndexed).addParam("factory").addParam("index");
 
 const MNEMONIC = process.env.MNEMONIC;
 const ALCHEMY_KEY_MAINNET = process.env.ALCHEMY_KEY_MAINNET;

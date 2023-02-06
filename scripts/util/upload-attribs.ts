@@ -37,11 +37,7 @@ export async function uploadDescription(metadata: MetadataFactory, description: 
 	await setDescriptionTx.wait();
 	//console.log(`Set Description`);
 }
-export async function uploadStyles(
-	metadata: MetadataFactory,
-	rootFolder: PathLike,
-	options?: Options
-) {
+export async function uploadStyles(metadata: MetadataFactory, rootFolder: PathLike, options?: Options) {
 	const layerId = options?.layer ?? 0;
 	let attributeId = options?.startid ?? 0;
 	let attributes = readdirSync(rootFolder);
@@ -130,7 +126,7 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 				if (attribute === "_Scripts") {
 					svg = wrapInCData(svg);
 				}
-				const chunkSize = 10_000;
+				const chunkSize = 30_000;
 				for (let start = 0; start < svg.length; start += chunkSize) {
 					const till = start + chunkSize < svg.length ? start + chunkSize : svg.length;
 					const svgChunk = pad(svg.slice(start, till), padType);
@@ -142,7 +138,7 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 					await addVariantChunkedTx.wait();
 					// console.log(`Added attribute ${attributeId}, ${attributeFolders[i]} chunk ${start}`);
 				}
-				console.log(`Added variant ${name}`)
+				console.log(`Added variant ${name}`);
 			}
 			console.log(`Added attribute ${attributeFolders[i]}`);
 		}

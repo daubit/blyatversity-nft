@@ -221,6 +221,23 @@ export async function addItem(args: AddItemArgs, hre: HardhatRuntimeEnvironment)
 	}
 	console.log("Metadata added!");
 }
+
+interface AddItemIndexedArgs {
+	factory: string;
+	index: number;
+}
+export async function addItemIndexed(args: AddItemIndexedArgs, hre: HardhatRuntimeEnvironment) {
+	const network = await hre.ethers.provider.getNetwork();
+	const storage = new Storage("addresses.json");
+	const { blyat: blyatAddress } = storage.fetch(network.chainId);
+	const { factory, index } = args;
+	const Blyatversity = await hre.ethers.getContractFactory("Blyatversity");
+	const blyat = Blyatversity.attach(blyatAddress) as Blyatversity;
+	const addTx = await blyat.addItemIndexed(index, factory);
+	await addTx.wait();
+	console.log("Metadata added!");
+}
+
 interface LockArgs {
 	deadline: number;
 	seasonid: number;
