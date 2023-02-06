@@ -71,6 +71,7 @@ const ALCHEMY_KEY_MAINNET = process.env.ALCHEMY_KEY_MAINNET;
 const ALCHEMY_KEY_TESTNET = process.env.ALCHEMY_KEY_TESTNET;
 const mumbaiNodeUrl = "https://endpoints.omniatech.io/v1/matic/mumbai/public"; //`https://polygon-mumbai.g.alchemy.com/v2/${ALCHEMY_KEY_TESTNET}`;
 const polygonNodeUrl = `https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY_MAINNET}`;
+//"https://polygon-rpc.com"; //
 const evmosNodeUrl = `https://eth.bd.evmos.org:8545`;
 const evmosDevNodeUrl = `https://eth.bd.evmos.dev:8545`;
 // You need to export an object to set up your config

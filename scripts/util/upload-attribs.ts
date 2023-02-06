@@ -134,12 +134,15 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 				for (let start = 0; start < svg.length; start += chunkSize) {
 					const till = start + chunkSize < svg.length ? start + chunkSize : svg.length;
 					const svgChunk = pad(svg.slice(start, till), padType);
+					await sleep(30000);
+					//console.log(`attributeId: ${attributeId}`);
+					//console.log(`name: ${name}`);
+					console.log(`Sending tx to add ${attributeId} ${name}`);
 					const addVariantChunkedTx = await metadata.addVariantChunked(
 						attributeId,
 						name,
 						encodeURIComponent(encode(svgChunk, false))
 					);
-					await sleep(30000);
 					await addVariantChunkedTx.wait();
 					// console.log(`Added attribute ${attributeId}, ${attributeFolders[i]} chunk ${start}`);
 				}
@@ -215,12 +218,14 @@ export async function uploadVariant(metadata: MetadataFactory, ROOT_FOLDER: Path
 		console.log(`attributeId ${attributeId}`);
 		console.log(`name ${name}`);
 		console.log(`svg ${encodeURIComponent(encode(svgChunk, false))}`);
-		await sleep(30000);
+		console.log("send tx");
 		const addVariantChunkedTx = await metadata.addVariantChunked(
 			attributeId,
 			name,
 			encodeURIComponent(encode(svgChunk, false))
+			//{ gasPrice: BigNumber.from(150_000_000_000) }
 		);
+		console.log(addVariantChunkedTx.hash);
 		await addVariantChunkedTx.wait();
 		// console.log(`Added attribute ${attributeId}, ${attributeFolders[i]} chunk ${start}`);
 	}
