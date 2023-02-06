@@ -32,10 +32,9 @@ interface TokenArgs {
 }
 
 export async function addAttributes(args: any, hre: HardhatRuntimeEnvironment) {
-	const chainId = hre.network.config.chainId
-	if (!chainId) throw new Error("Cannot find chainId")
+	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
-	const { stringLib: stringLibAddress, metadata: metadataAddress } = storage.fetch(chainId);
+	const { stringLib: stringLibAddress, metadata: metadataAddress } = storage.fetch(network.chainId);
 	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
 		libraries: { String: stringLibAddress },
 	});
@@ -45,10 +44,9 @@ export async function addAttributes(args: any, hre: HardhatRuntimeEnvironment) {
 }
 
 export async function setDescription(args: any, hre: HardhatRuntimeEnvironment) {
-	const chainId = hre.network.config.chainId
-	if (!chainId) throw new Error("Cannot find chainId")
+	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
-	const { stringLib: stringLibAddress, metadata: metadataAddress } = storage.fetch(chainId);
+	const { stringLib: stringLibAddress, metadata: metadataAddress } = storage.fetch(network.chainId);
 	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
 		libraries: { String: stringLibAddress },
 	});
@@ -64,10 +62,9 @@ export async function setContractDescription(args: any, hre: HardhatRuntimeEnvir
 		return `data:application/json,${encodeURIComponent(file)}`;
 	};
 
-	const chainId = hre.network.config.chainId
-	if (!chainId) throw new Error("Cannot find chainId")
+	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
-	const { blyat: blyatAddress } = storage.fetch(chainId);
+	const { blyat: blyatAddress } = storage.fetch(network.chainId);
 	const Blyatversity = await hre.ethers.getContractFactory("Blyatversity", {});
 	const blyat = Blyatversity.attach(blyatAddress) as Blyatversity;
 	const setDescriptionTx = await blyat.setContractCID(metadataFactory());
@@ -76,10 +73,9 @@ export async function setContractDescription(args: any, hre: HardhatRuntimeEnvir
 }
 
 export async function reset(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
-	const chainId = hre.network.config.chainId
-	if (!chainId) throw new Error("Cannot find chainId")
+	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
-	const { stringLib: stringLibAddress, metadata: metadataAddress } = storage.fetch(chainId);
+	const { stringLib: stringLibAddress, metadata: metadataAddress } = storage.fetch(network.chainId);
 	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
 		libraries: { String: stringLibAddress },
 	});
@@ -116,10 +112,9 @@ export async function reset(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 }
 
 export async function uploadAll(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
-	const chainId = hre.network.config.chainId
-	if (!chainId) throw new Error("Cannot find chainId")
+	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
-	const { stringLib: stringLibAddress, metadata: metadataAddress } = storage.fetch(chainId);
+	const { stringLib: stringLibAddress, metadata: metadataAddress } = storage.fetch(network.chainId);
 	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
 		libraries: { String: stringLibAddress },
 	});
@@ -129,10 +124,9 @@ export async function uploadAll(args: UploadArgs, hre: HardhatRuntimeEnvironment
 }
 
 export async function upload(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
-	const chainId = hre.network.config.chainId
-	if (!chainId) throw new Error("Cannot find chainId")
+	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
-	const { stringLib: stringLibAddress, metadata: metadataAddress } = storage.fetch(chainId);
+	const { stringLib: stringLibAddress, metadata: metadataAddress } = storage.fetch(network.chainId);
 	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
 		libraries: { String: stringLibAddress },
 	});
@@ -143,10 +137,9 @@ export async function upload(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 }
 
 export async function uploadStls(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
-	const chainId = hre.network.config.chainId
-	if (!chainId) throw new Error("Cannot find chainId")
+	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
-	const { stringLib: stringLibAddress, metadata: metadataAddress } = storage.fetch(chainId);
+	const { stringLib: stringLibAddress, metadata: metadataAddress } = storage.fetch(network.chainId);
 	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
 		libraries: { String: stringLibAddress },
 	});
@@ -157,23 +150,21 @@ export async function uploadStls(args: UploadArgs, hre: HardhatRuntimeEnvironmen
 }
 
 export async function mint(args: MintArgs, hre: HardhatRuntimeEnvironment) {
-	const chainId = hre.network.config.chainId
-	if (!chainId) throw new Error("Cannot find chainId")
+	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
-	const { blyat: blyatAddress } = storage.fetch(chainId);
+	const { blyat: blyatAddress } = storage.fetch(network.chainId);
 	const { to, seasonid: itemId } = args;
 	const Blyatversity = await hre.ethers.getContractFactory("Blyatversity");
 	const blyat = Blyatversity.attach(blyatAddress) as Blyatversity;
 	const mintTx = await blyat.mint(BigNumber.from(itemId), to);
 	await mintTx.wait();
-	console.log(`https://${chainId === 80001 ? "mumbai." : ""}polygonscan.com/tx/${mintTx.hash}`);
+	console.log(`https://${network.chainId === 80001 ? "mumbai." : ""}polygonscan.com/tx/${mintTx.hash}`);
 }
 
 export async function tokenURI(args: TokenArgs, hre: HardhatRuntimeEnvironment) {
-	const chainId = hre.network.config.chainId
-	if (!chainId) throw new Error("Cannot find chainId")
+	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
-	const { blyat: blyatAddress } = storage.fetch(chainId);
+	const { blyat: blyatAddress } = storage.fetch(network.chainId);
 	const { id: tokenId } = args;
 	const Blyatversity = await hre.ethers.getContractFactory("Blyatversity");
 	const blyat = Blyatversity.attach(blyatAddress) as MetadataFactory;
@@ -187,10 +178,9 @@ interface MinterRoleArgs {
 }
 
 export async function addMinterRole(args: MinterRoleArgs, hre: HardhatRuntimeEnvironment) {
-	const chainId = hre.network.config.chainId
-	if (!chainId) throw new Error("Cannot find chainId")
+	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
-	const { blyat: blyatAddress } = storage.fetch(chainId);
+	const { blyat: blyatAddress } = storage.fetch(network.chainId);
 	const { address } = args;
 	const Metadata = await hre.ethers.getContractFactory("Blyatversity");
 	const metadata = Metadata.attach(blyatAddress) as Blyatversity;
@@ -200,10 +190,9 @@ export async function addMinterRole(args: MinterRoleArgs, hre: HardhatRuntimeEnv
 }
 
 export async function removeMinterRole(args: MinterRoleArgs, hre: HardhatRuntimeEnvironment) {
-	const chainId = hre.network.config.chainId
-	if (!chainId) throw new Error("Cannot find chainId")
+	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
-	const { blyat: blyatAddress } = storage.fetch(chainId);
+	const { blyat: blyatAddress } = storage.fetch(network.chainId);
 	const { address } = args;
 	const Metadata = await hre.ethers.getContractFactory("Blyatversity");
 	const metadata = Metadata.attach(blyatAddress) as Blyatversity;
@@ -217,10 +206,9 @@ interface AddItemArgs {
 	supply?: number;
 }
 export async function addItem(args: AddItemArgs, hre: HardhatRuntimeEnvironment) {
-	const chainId = hre.network.config.chainId
-	if (!chainId) throw new Error("Cannot find chainId")
+	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
-	const { blyat: blyatAddress } = storage.fetch(chainId);
+	const { blyat: blyatAddress } = storage.fetch(network.chainId);
 	const { factory, supply } = args;
 	const Blyatversity = await hre.ethers.getContractFactory("Blyatversity");
 	const blyat = Blyatversity.attach(blyatAddress) as Blyatversity;
@@ -239,10 +227,9 @@ interface AddItemIndexedArgs {
 	index: number;
 }
 export async function addItemIndexed(args: AddItemIndexedArgs, hre: HardhatRuntimeEnvironment) {
-	const chainId = hre.network.config.chainId
-	if (!chainId) throw new Error("Cannot find chainId")
+	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
-	const { blyat: blyatAddress } = storage.fetch(chainId);
+	const { blyat: blyatAddress } = storage.fetch(network.chainId);
 	const { factory, index } = args;
 	const Blyatversity = await hre.ethers.getContractFactory("Blyatversity");
 	const blyat = Blyatversity.attach(blyatAddress) as Blyatversity;
@@ -257,10 +244,9 @@ interface LockArgs {
 }
 
 export async function lockItem(args: LockArgs, hre: HardhatRuntimeEnvironment) {
-	const chainId = hre.network.config.chainId
-	if (!chainId) throw new Error("Cannot find chainId")
+	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
-	const { blyat: blyatAddress } = storage.fetch(chainId);
+	const { blyat: blyatAddress } = storage.fetch(network.chainId);
 	const { seasonid, deadline } = args;
 	const Blyatversity = await hre.ethers.getContractFactory("Blyatversity");
 	const blyat = Blyatversity.attach(blyatAddress) as Blyatversity;
@@ -276,11 +262,10 @@ interface AddVariantArgs {
 	atrribname: string;
 }
 export async function addVariant(args: AddVariantArgs, hre: HardhatRuntimeEnvironment) {
-	const chainId = hre.network.config.chainId
-	if (!chainId) throw new Error("Cannot find chainId")
+	const network = await hre.ethers.provider.getNetwork();
 	const storage = new Storage("addresses.json");
 	const { layer, variant, atrribid, atrribname } = args;
-	const { metadata: metadataAddress, stringLib: stringLibAddress } = storage.fetch(chainId);
+	const { metadata: metadataAddress, stringLib: stringLibAddress } = storage.fetch(network.chainId);
 	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
 		libraries: { String: stringLibAddress },
 	});
