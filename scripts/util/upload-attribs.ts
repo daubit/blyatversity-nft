@@ -222,8 +222,8 @@ export async function uploadVariant(metadata: MetadataFactory, ROOT_FOLDER: Path
 		const addVariantChunkedTx = await metadata.addVariantChunked(
 			attributeId,
 			name,
-			encodeURIComponent(encode(svgChunk, false))
-			{ maxFeePerGas: BigNumber.from(150_000_000_000), maxPriorityFeePerGas:  BigNumber.from(100_000_000_000)}
+			encodeURIComponent(encode(svgChunk, false)),
+			{ maxFeePerGas: BigNumber.from(150_000_000_000), maxPriorityFeePerGas: BigNumber.from(100_000_000_000) }
 		);
 		console.log(addVariantChunkedTx.hash);
 		await addVariantChunkedTx.wait();
