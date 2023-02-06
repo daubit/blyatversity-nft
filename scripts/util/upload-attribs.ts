@@ -157,3 +157,73 @@ export default async function uploadAll(metadata: MetadataFactory, ROOT_FOLDER: 
 	await uploadStyles(metadata, "assets/styles", { startid: 5 });
 	await uploadDescription(metadata, encodeURIComponent(data.description));
 }
+
+interface VariantUploadOptions {
+	layer: number;
+	variant: string;
+	atrribId: string;
+	atrribName: string;
+}
+
+export async function uploadVariant(metadata: MetadataFactory, ROOT_FOLDER: PathLike, options: VariantUploadOptions) {
+	const layers = readdirSync(ROOT_FOLDER);
+	const chosenLayer = layers.find((layer) => layer.includes(options.layer.toString()));
+	if (!chosenLayer) {
+		throw new Error("Did not find layer");
+	}
+	console.log(`Layer ${chosenLayer}`);
+	const attributeId = options.atrribId;
+	const attributeFolders = readdirSync(`${ROOT_FOLDER}/${chosenLayer}`);
+	const attribFolder = attributeFolders.find((x) => x.includes(options.atrribName));
+	if (!attribFolder) {
+		throw new Error("Did not find attribFolder");
+	}
+	console.log(`attribFolder ${attribFolder}`);
+
+	const attribute = attribFolder;
+	const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${chosenLayer}/${attribute}`)
+		.filter((x) => x.includes(options.variant))
+		.map((file) => ({
+			name: file.replace(".html", ""),
+			svg: minify(readFileSync(`${ROOT_FOLDER}/${chosenLayer}/${attribute}/${file}`, "utf-8"), {
+				collapseWhitespace: true,
+				collapseBooleanAttributes: true,
+				minifyCSS: true,
+				minifyJS: true,
+				removeComments: false,
+				removeEmptyAttributes: true,
+				removeRedundantAttributes: true,
+				sortAttributes: true,
+				sortClassName: true,
+				caseSensitive: true,
+			}),
+		}));
+	console.log(`variants ${variants.map((x) => x.name)}`);
+	const padType = attribute.includes("_Scripts") ? PadType.Script : PadType.Svg;
+
+	if (variants.length !== 1) {
+		throw new Error("More or less than one variant");
+	}
+	let { svg, name } = variants[0];
+	if (attribute === "_Scripts") {
+		svg = wrapInCData(svg);
+	}
+	const chunkSize = 30_000;
+	for (let start = 0; start < svg.length; start += chunkSize) {
+		const till = start + chunkSize < svg.length ? start + chunkSize : svg.length;
+		const svgChunk = pad(svg.slice(start, till), padType);
+		console.log(`attributeId ${attributeId}`);
+		console.log(`name ${name}`);
+		console.log(`svg ${encodeURIComponent(encode(svgChunk, false))}`);
+		await sleep(30000);
+		const addVariantChunkedTx = await metadata.addVariantChunked(
+			attributeId,
+			name,
+			encodeURIComponent(encode(svgChunk, false))
+		);
+		await addVariantChunkedTx.wait();
+		// console.log(`Added attribute ${attributeId}, ${attributeFolders[i]} chunk ${start}`);
+	}
+	console.log(`Added variant ${name}`);
+	console.log(`Added attribute ${attribute}`);
+}

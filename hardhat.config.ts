@@ -28,6 +28,7 @@ import {
 	removeMinterRole,
 	setContractDescription,
 	addItemIndexed,
+	addVariant,
 } from "./scripts/tasks";
 import { benchmarkTokenURI } from "./scripts/util/test";
 
@@ -63,6 +64,7 @@ task("makeMinter", addMinterRole).addParam("address");
 task("removeMinter", removeMinterRole).addParam("address");
 task("setContractDesc", setContractDescription);
 task("addItemIndexed", addItemIndexed).addParam("factory").addParam("index");
+task("addVariant", addVariant).addParam("layer").addParam("variant").addParam("atrribid").addParam("atrribname");
 
 const MNEMONIC = process.env.MNEMONIC;
 const ALCHEMY_KEY_MAINNET = process.env.ALCHEMY_KEY_MAINNET;

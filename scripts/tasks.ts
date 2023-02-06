@@ -10,7 +10,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { Blyatversity, MetadataFactory } from "../typechain-types";
 import { readdirSync, readFileSync, writeFileSync } from "fs";
 import { BigNumber } from "ethers";
-import { uploadAttributes, uploadStyles, uploadVariants } from "./util/upload-attribs";
+import { uploadAttributes, uploadStyles, uploadVariant, uploadVariants } from "./util/upload-attribs";
 import uploadAllHelper from "../scripts/util/upload-attribs";
 import { keccak256 } from "./util/utils";
 import data from "./data.json";
@@ -253,4 +253,23 @@ export async function lockItem(args: LockArgs, hre: HardhatRuntimeEnvironment) {
 	const lockTx = await blyat.setLockPeriod(seasonid, deadline);
 	await lockTx.wait();
 	console.log(`Locked item ${seasonid} till ${new Date(deadline)}`);
+}
+
+interface AddVariantArgs {
+	layer: number;
+	variant: string;
+	atrribid: string;
+	atrribname: string;
+}
+export async function addVariant(args: AddVariantArgs, hre: HardhatRuntimeEnvironment) {
+	const network = await hre.ethers.provider.getNetwork();
+	const storage = new Storage("addresses.json");
+	const { layer, variant, atrribid, atrribname } = args;
+	const { metadata: metadataAddress, stringLib: stringLibAddress } = storage.fetch(network.chainId);
+	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
+		libraries: { String: stringLibAddress },
+	});
+	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
+	await uploadVariant(metadata, "assets/layers", { layer, variant, atrribId: atrribid, atrribName: atrribname });
+	console.log("Variant added!");
 }
