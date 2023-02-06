@@ -51,7 +51,7 @@ export async function setDescription(args: any, hre: HardhatRuntimeEnvironment) 
 		libraries: { String: stringLibAddress },
 	});
 	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
-	const setDescriptionTx = await metadata.setDescription(data.description);
+	const setDescriptionTx = await metadata.setDescription(encodeURIComponent(data.description));
 	await setDescriptionTx.wait();
 	console.log("Set description!");
 }

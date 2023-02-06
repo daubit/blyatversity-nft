@@ -74,12 +74,16 @@ export async function uploadStyles(metadata: MetadataFactory, rootFolder: PathLi
 					console.log(`Adding style for ${attributeId} ${variant} chunk ${start}`);
 					const till = start + chunkSize < style.length ? start + chunkSize : style.length;
 					let styleChunk = pad(style.slice(start, till), PadType.Svg);
+					await sleep(10000);
 					const addStyleChunkedTx = await metadata.addStyleChunked(
 						attributeId,
 						variant,
-						encodeURIComponent(encode(styleChunk, false))
+						encodeURIComponent(encode(styleChunk, false)),
+						{
+							maxFeePerGas: BigNumber.from(150_000_000_000),
+							maxPriorityFeePerGas: BigNumber.from(100_000_000_000),
+						}
 					);
-					await sleep(30000);
 					await addStyleChunkedTx.wait();
 					console.log(`Added style for ${attributeId}, ${attribute} chunk ${start}`);
 				}
@@ -141,7 +145,11 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 					const addVariantChunkedTx = await metadata.addVariantChunked(
 						attributeId,
 						name,
-						encodeURIComponent(encode(svgChunk, false))
+						encodeURIComponent(encode(svgChunk, false)),
+						{
+							maxFeePerGas: BigNumber.from(150_000_000_000),
+							maxPriorityFeePerGas: BigNumber.from(100_000_000_000),
+						}
 					);
 					await addVariantChunkedTx.wait();
 					// console.log(`Added attribute ${attributeId}, ${attributeFolders[i]} chunk ${start}`);
