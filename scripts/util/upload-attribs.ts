@@ -7,6 +7,7 @@ import { MetadataFactory } from "../../typechain-types";
 import { wrapInCData } from "./cdata";
 import { pad, PadType } from "./padding";
 import data from "../data.json";
+import { sleep } from "./utils";
 
 export interface Variant {
 	name: string;
@@ -25,8 +26,10 @@ export async function uploadAttributes(metadata: MetadataFactory, ROOT_FOLDER: P
 	const layers = readdirSync(ROOT_FOLDER);
 	for (const layer of layers) {
 		const attributes = readdirSync(`${ROOT_FOLDER}/${layer}`);
+		await sleep(10000);
 		const addAttributesTx = await metadata.addAttributes(attributes);
 		await addAttributesTx.wait();
+		console.log(`Added attributes ${attributes}`);
 	}
 	console.log("Added attributes folder");
 }
@@ -76,6 +79,7 @@ export async function uploadStyles(metadata: MetadataFactory, rootFolder: PathLi
 						variant,
 						encodeURIComponent(encode(styleChunk, false))
 					);
+					await sleep(30000);
 					await addStyleChunkedTx.wait();
 					console.log(`Added style for ${attributeId}, ${attribute} chunk ${start}`);
 				}
@@ -135,6 +139,7 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 						name,
 						encodeURIComponent(encode(svgChunk, false))
 					);
+					await sleep(30000);
 					await addVariantChunkedTx.wait();
 					// console.log(`Added attribute ${attributeId}, ${attributeFolders[i]} chunk ${start}`);
 				}

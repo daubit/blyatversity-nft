@@ -36,10 +36,10 @@ async function main() {
 		await blyatversity.deployed();
 		addresses.blyat = blyatversity.address;
 		console.log("Blyatversity deployed to:", blyatversity.address);
-	} else {
+	} /*else {
 		const Blyatversity = await ethers.getContractFactory("Blyatversity");
 		blyatversity = Blyatversity.attach(blyatAddress) as Blyatversity;
-	}
+	}*/
 	if (!metadataAddress) {
 		const Metadata = await ethers.getContractFactory("MetadataFactory", {
 			libraries: { String: addresses.stringLib },
