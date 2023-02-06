@@ -24,6 +24,7 @@ interface UploadArgs {
 	start: number;
 	end: number;
 	layer: number;
+	startid: number;
 }
 
 interface TokenArgs {
@@ -78,13 +79,13 @@ export async function reset(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
 		libraries: { String: stringLibAddress },
 	});
-	const { start, end, layer: layerId } = args;
+	const { start, end, layer: layerId, startid } = args;
 	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
 	interface Variant {
 		name: string;
 		svg: string;
 	}
-	const ROOT_FOLDER = "assets/layers";
+	const ROOT_FOLDER = "assets";
 	let layers = readdirSync(ROOT_FOLDER);
 	if (layerId > 0) {
 		const chosenLayer = layers.find((layer) => layer.includes(layerId.toString()));
@@ -94,7 +95,8 @@ export async function reset(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 		const attributesFolder = readdirSync(`${ROOT_FOLDER}/${layer}`).slice(start, end);
 		for (let i = 0; i < attributesFolder.length; i++) {
 			const attribute = attributesFolder[i];
-			const attributeId = i + 1;
+			const attributeId = i + 1 + +startid;
+			console.log(`Removing attribute ${attributeId}`);
 			const variants: Variant[] = readdirSync(`${ROOT_FOLDER}/${layer}/${attribute}`).map((file) => ({
 				name: file.replace(".html", ""),
 				svg: "",
@@ -128,10 +130,10 @@ export async function upload(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
 	const Metadata = await hre.ethers.getContractFactory("MetadataFactory", {
 		libraries: { String: stringLibAddress },
 	});
-	const { start, end, layer } = args;
+	const { start, end, layer, startid } = args;
 	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
 	const ROOT_FOLDER = "assets/layers";
-	await uploadVariants(metadata, ROOT_FOLDER, { start, end, layer });
+	await uploadVariants(metadata, ROOT_FOLDER, { start, end, layer, startid });
 }
 
 export async function uploadStls(args: UploadArgs, hre: HardhatRuntimeEnvironment) {
@@ -144,7 +146,7 @@ export async function uploadStls(args: UploadArgs, hre: HardhatRuntimeEnvironmen
 	const { start, end, layer } = args;
 	const metadata = Metadata.attach(metadataAddress) as MetadataFactory;
 	const ROOT_FOLDER = "assets/styles";
-	await uploadStyles(metadata, ROOT_FOLDER, 5, { layer, start, end });
+	await uploadStyles(metadata, ROOT_FOLDER, { layer, start, end, startid: 5 });
 }
 
 export async function mint(args: MintArgs, hre: HardhatRuntimeEnvironment) {
