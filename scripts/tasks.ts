@@ -252,7 +252,7 @@ export async function lockItem(args: LockArgs, hre: HardhatRuntimeEnvironment) {
 	const blyat = Blyatversity.attach(blyatAddress) as Blyatversity;
 	const lockTx = await blyat.setLockPeriod(seasonid, deadline);
 	await lockTx.wait();
-	console.log(`Locked item ${seasonid} till ${new Date(deadline)}`);
+	console.log(`Locked item ${seasonid} till ${new Date(deadline * 1000)}`);
 }
 
 interface AddVariantArgs {
