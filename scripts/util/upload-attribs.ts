@@ -14,9 +14,10 @@ export interface Variant {
 }
 
 interface Options {
-	layer: number;
-	start: number;
-	end: number;
+	layer?: number;
+	start?: number;
+	end?: number;
+	startid?: number;
 }
 
 export async function uploadAttributes(metadata: MetadataFactory, ROOT_FOLDER: PathLike) {
@@ -39,11 +40,10 @@ export async function uploadDescription(metadata: MetadataFactory, description: 
 export async function uploadStyles(
 	metadata: MetadataFactory,
 	rootFolder: PathLike,
-	startId: number,
 	options?: Options
 ) {
 	const layerId = options?.layer ?? 0;
-	let attributeId = startId;
+	let attributeId = options?.startid ?? 0;
 	let attributes = readdirSync(rootFolder);
 	if (layerId > 0) {
 		const chosenLayer = attributes.find((attribute) => attribute.includes(layerId.toString()));
@@ -97,13 +97,12 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 		const chosenLayer = layers.find((layer) => layer.includes(layerId.toString()));
 		layers = chosenLayer ? [chosenLayer] : layers;
 	}
-	let attributeId = 0;
+	let attributeId = options?.startid ?? 0;
 	for (const layer of layers) {
 		let attributeFolders = readdirSync(`${ROOT_FOLDER}/${layer}`);
 		if (layerId) {
 			attributeFolders = attributeFolders.slice(options?.start, options?.end);
 		}
-		console.log(attributeFolders);
 		// console.log(`Uploading from ${layer}`)
 		for (let i = 0; i < attributeFolders.length; i++) {
 			// console.log(`Adding attribute ${attributeFolders[i]}`);
@@ -131,11 +130,10 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 				if (attribute === "_Scripts") {
 					svg = wrapInCData(svg);
 				}
-				const chunkSize = 5_000;
+				const chunkSize = 10_000;
 				for (let start = 0; start < svg.length; start += chunkSize) {
 					const till = start + chunkSize < svg.length ? start + chunkSize : svg.length;
 					const svgChunk = pad(svg.slice(start, till), padType);
-
 					const addVariantChunkedTx = await metadata.addVariantChunked(
 						attributeId,
 						name,
@@ -144,6 +142,7 @@ export async function uploadVariants(metadata: MetadataFactory, ROOT_FOLDER: Pat
 					await addVariantChunkedTx.wait();
 					// console.log(`Added attribute ${attributeId}, ${attributeFolders[i]} chunk ${start}`);
 				}
+				console.log(`Added variant ${name}`)
 			}
 			console.log(`Added attribute ${attributeFolders[i]}`);
 		}
@@ -154,6 +153,6 @@ export default async function uploadAll(metadata: MetadataFactory, ROOT_FOLDER: 
 	await uploadAttributes(metadata, ROOT_FOLDER);
 	await uploadVariants(metadata, ROOT_FOLDER, options);
 	// 5 ist die Id für das Monster_1 Attribut
-	await uploadStyles(metadata, "assets/styles", 5);
+	await uploadStyles(metadata, "assets/styles", { startid: 5 });
 	await uploadDescription(metadata, encodeURIComponent(data.description));
 }
