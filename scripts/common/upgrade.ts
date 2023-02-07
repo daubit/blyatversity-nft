@@ -1,9 +1,17 @@
-// import { ethers, upgrades } from "hardhat";
+import { ethers, upgrades } from "hardhat";
+import { AddressStorage, Storage } from "../util/storage";
 
-// async function main() {
-//     const BoxV2 = await ethers.getContractFactory("BoxV2");
-//     const box = await upgrades.upgradeProxy(BOX_ADDRESS, BoxV2);
-//     console.log("Box upgraded");
-// }
+export async function main() {
+	const network = await ethers.provider.getNetwork();
+	const storage = new Storage("addresses.json");
+	const addresses: AddressStorage = storage.fetch(network.chainId);
+	const blyat = await ethers.getContractFactory("Blyatversity");
+	console.log(addresses.blyat);
+	const blyatUpgrade = await upgrades.upgradeProxy(addresses.blyat, blyat);
+	addresses.blyat = blyatUpgrade.address;
+	storage.save(network.chainId, addresses);
+}
 
-// main();
+main()
+	.then(() => console.log("done"))
+	.catch((e) => console.log(e));
