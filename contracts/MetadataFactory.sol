@@ -1,16 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "./lib/IMetadataFactory.sol";
 import "./lib/String.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract MetadataFactory is IMetadataFactory, AccessControl {
+contract MetadataFactory is IMetadataFactory, AccessControlUpgradeable {
     using String for string;
-    using Counters for Counters.Counter;
+    using CountersUpgradeable for CountersUpgradeable.Counter;
 
-    Counters.Counter private _attributeCounter;
+    CountersUpgradeable.Counter private _attributeCounter;
 
     string private _description;
     // Id => Attribute
@@ -18,7 +19,7 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     // AttributeId => Variant => Id
     mapping(uint256 => mapping(string => uint256)) private _indexedVariant;
     // AttributeId => Variant Amount
-    mapping(uint256 => Counters.Counter) private _variantCounter;
+    mapping(uint256 => CountersUpgradeable.Counter) private _variantCounter;
     // AttributeId => VariantId => Variant
     mapping(uint256 => mapping(uint256 => string)) private _variantName;
     // AttributeId => VariantId => Attribute
@@ -29,14 +30,15 @@ contract MetadataFactory is IMetadataFactory, AccessControl {
     mapping(uint256 => mapping(uint256 => mapping(uint256 => string)))
         private _variantStyle;
     // AttributeId => VariantId => Style Amount
-    mapping(uint256 => mapping(uint256 => Counters.Counter))
+    mapping(uint256 => mapping(uint256 => CountersUpgradeable.Counter))
         private _variantStyleCounter;
 
     error ZeroValue();
     error EmptyString();
     error UnequalArrays();
 
-    constructor() {
+    function initialize() public initializer {
+        __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 

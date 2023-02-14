@@ -7,7 +7,7 @@
 import { ethers, upgrades } from "hardhat";
 import { AddressStorage, Storage } from "../util/storage";
 import { REGISTRY_ADDRESS } from "../util/const.json";
-import { Blyatversity } from "../../typechain-types";
+import { Blyatversity, MetadataFactory } from "../../typechain-types";
 import { readFileSync } from "fs";
 
 const file = readFileSync("./scripts/metadata.json", "utf8");
@@ -44,7 +44,9 @@ async function main() {
 		const Metadata = await ethers.getContractFactory("MetadataFactory", {
 			libraries: { String: addresses.stringLib },
 		});
-		const metadata = await Metadata.deploy();
+		const metadata = (await upgrades.deployProxy(Metadata, [], {
+			unsafeAllowLinkedLibraries: true,
+		})) as MetadataFactory;
 		await metadata.deployed();
 		addresses.metadata = metadata.address;
 		console.log("Metadata deployed!");
