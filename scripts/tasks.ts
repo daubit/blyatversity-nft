@@ -273,3 +273,23 @@ export async function addVariant(args: AddVariantArgs, hre: HardhatRuntimeEnviro
 	await uploadVariant(metadata, "assets/layers", { layer, variant, atrribId: atrribid, atrribName: atrribname });
 	console.log("Variant added!");
 }
+
+interface BurnArgs {
+	id: number;
+}
+
+export async function burnAdmin(args: BurnArgs, hre: HardhatRuntimeEnvironment) {
+	const network = await hre.ethers.provider.getNetwork();
+	const storage = new Storage("addresses.json");
+	const { blyat: blyatAddress } = storage.fetch(network.chainId);
+	const { id } = args;
+	const Blyatversity = await hre.ethers.getContractFactory("Blyatversity");
+	const blyat = Blyatversity.attach(blyatAddress) as Blyatversity;
+	try {
+		const burnTx = await blyat.burnAdmin(id);
+		await burnTx.wait();
+		console.log(`Successfully burned token ${id}`);
+	} catch (e) {
+		console.log(e);
+	}
+}

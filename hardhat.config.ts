@@ -29,6 +29,7 @@ import {
 	setContractDescription,
 	addItemIndexed,
 	addVariant,
+	burnAdmin,
 } from "./scripts/tasks";
 import { benchmarkTokenURI } from "./scripts/util/test";
 
@@ -42,6 +43,7 @@ task("accounts", "Prints the list of accounts", async (_args, hre: HardhatRuntim
 });
 
 task("mint", "Mint Blyat Token", mint).addParam("to", "Address to mint to").addParam("seasonid");
+task("burnAdmin", "Admin burn token", burnAdmin).addParam("id", "Token to burn");
 task("setDescription", setDescription);
 task("addAttributes", addAttributes);
 task("upload", "Upload variants", upload)
